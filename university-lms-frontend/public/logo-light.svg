@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg
+  width="180"
+  height="40"
+  viewBox="0 0 180 40"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+  role="img"
+  aria-labelledby="title desc"
+>
+  <title id="title">University LMS - Dark Logo</title>
+  <desc id="desc">Logo for the University Learning Management System for dark backgrounds</desc>
+
+  <!-- Shield icon -->
+  <defs>
+    <linearGradient id="shieldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#60A5FA" />
+      <stop offset="100%" stop-color="#2563EB" />
+    </linearGradient>
+  </defs>
+
+  <g transform="translate(4,4)">
+    <!-- Rounded square background for icon -->
+    <rect
+      x="0"
+      y="0"
+      width="32"
+      height="32"
+      rx="8"
+      fill="url(#shieldGradient)"
+    />
+    <!-- Shield -->
+    <path
+      d="M16 6 L8 9.5 V17 C8 21.8 11 26.4 16 28 C21 26.4 24 21.8 24 17 V9.5 Z"
+      fill="none"
+      stroke="#EFF6FF"
+      stroke-width="1.8"
+      stroke-linejoin="round"
+    />
+    <!-- Book -->
+    <path
+      d="M11 12.5 H21 V20 H11 Z"
+      fill="#EFF6FF"
+      opacity="0.95"
+    />
+    <path
+      d="M11 12.5 L16 15 L21 12.5"
+      fill="none"
+      stroke="#1D4ED8"
+      stroke-width="0.9"
+    />
+    <path
+      d="M13.5 16.4 H18.5"
+      stroke="#1D4ED8"
+      stroke-width="0.9"
+      stroke-linecap="round"
+    />
+    <path
+      d="M13.5 18.4 H18.5"
+      stroke="#1D4ED8"
+      stroke-width="0.9"
+      stroke-linecap="round"
+    />
+  </g>
+
+  <!-- Text: University LMS -->
+  <g transform="translate(46, 9)">
+    <!-- "University" -->
+    <text
+      x="0"
+      y="12"
+      font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Inter', sans-serif"
+      font-size="13"
+      font-weight="600"
+      fill="#E5E7EB"
+      letter-spacing="0.03em"
+    >
+      UNIVERSITY
+    </text>
+
+    <!-- "LMS" -->
+    <text
+      x="0"
+      y="25"
+      font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Inter', sans-serif"
+      font-size="13"
+      font-weight="700"
+      fill="#BFDBFE"
+      letter-spacing="0.12em"
+    >
+      LMS
+    </text>
+  </g>
+</svg>
