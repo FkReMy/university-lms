@@ -35,7 +35,7 @@ const quizApi = {
    */
   get(quizId) {
     return axiosInstance.get(`/quizzes/${quizId}`);
-  }
+  },
 
   /**
    * Create a quiz.
