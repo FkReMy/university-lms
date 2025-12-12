@@ -1,2 +1,33 @@
-# Auto detect text files and perform LF normalization
-* text=auto
+# Normalize line endings across the repo (LF everywhere).
+* text=auto eol=lf
+
+# Treat common binary assets correctly (no diff/merge attempts).
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.svg   text   # allow diffing SVG (XML-based)
+*.ico   binary
+*.mp4   binary
+*.mov   binary
+*.pdf   binary
+*.woff  binary
+*.woff2 binary
+*.ttf   binary
+*.otf   binary
+*.zip   binary
+
+# Keep lockfiles marked as text with LF endings.
+package-lock.json text eol=lf
+yarn.lock        text eol=lf
+pnpm-lock.yaml   text eol=lf
+
+# Optimize GitHub language statistics if needed (examples).
+# Adjust or remove these lines based on your stack.
+*.scss linguist-language=SCSS
+*.css  linguist-language=CSS
+*.jsx  linguist-language=JavaScript
+*.js   linguist-language=JavaScript
+
+# Docs and markdown should stay text with LF.
+*.md text eol=lf

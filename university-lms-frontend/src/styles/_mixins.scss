@@ -1,33 +1,44 @@
+// Shared Sass mixins and design utilities for the LMS UI.
+// - Centralizes media queries, truncation, flex helpers, focus rings, cards, and scrollbars.
+// - Uses design tokens from _variables.scss. Keep variable names stable for compatibility.
+
 @use 'sass:map';
-@use 'sass:math';
 @use './variables' as *;
 
-// Media query helpers
+// -----------------------------------------------------------------------------
+// Breakpoints
+// -----------------------------------------------------------------------------
+$breakpoints: (
+  sm: 640px,
+  md: 768px,
+  lg: 1024px,
+  xl: 1280px,
+  2xl: 1536px
+);
+
+// Media query helper (mobile-first).
+// Usage:
+// .example {
+//   @include respond-up(md) {
+//     font-size: 1.125rem;
+//   }
+// }
 @mixin respond-up($breakpoint) {
-  @if $breakpoint == sm {
-    @media (min-width: 640px) {
-      @content;
-    }
-  } @else if $breakpoint == md {
-    @media (min-width: 768px) {
-      @content;
-    }
-  } @else if $breakpoint == lg {
-    @media (min-width: 1024px) {
-      @content;
-    }
-  } @else if $breakpoint == xl {
-    @media (min-width: 1280px) {
-      @content;
-    }
-  } @else if $breakpoint == 2xl {
-    @media (min-width: 1536px) {
-      @content;
-    }
+  $value: map.get($breakpoints, $breakpoint);
+
+  @if $value == null {
+    @error "Unknown breakpoint `#{$breakpoint}`. Available: #{map.keys($breakpoints)}";
+  }
+
+  @media (min-width: $value) {
+    @content;
   }
 }
 
-// Text truncation
+// -----------------------------------------------------------------------------
+// Text utilities
+// -----------------------------------------------------------------------------
+// Truncate to 1 line (ellipsis) or N lines (line clamp).
 @mixin truncate($lines: 1) {
   @if $lines == 1 {
     overflow: hidden;
@@ -41,7 +52,9 @@
   }
 }
 
-// Flex helpers
+// -----------------------------------------------------------------------------
+// Flex alignment helpers
+// -----------------------------------------------------------------------------
 @mixin flex-center {
   display: flex;
   align-items: center;
@@ -54,7 +67,11 @@
   justify-content: space-between;
 }
 
+// -----------------------------------------------------------------------------
 // Focus ring
+// -----------------------------------------------------------------------------
+// Accessible focus outline with configurable color/offset/width.
+// Use on focus-visible to reduce visual noise.
 @mixin focus-ring($color: $color-primary, $offset: 1px, $width: 2px) {
   outline: none;
   box-shadow:
@@ -62,7 +79,10 @@
     0 0 0 $width rgba($color, 0.6);
 }
 
+// -----------------------------------------------------------------------------
 // Card / surface
+// -----------------------------------------------------------------------------
+// Consistent elevated surface styling; accepts custom padding.
 @mixin card($padding: $space-4) {
   background-color: $color-surface;
   border-radius: $radius-xl;
@@ -71,7 +91,10 @@
   padding: $padding;
 }
 
+// -----------------------------------------------------------------------------
 // Scrollbar (WebKit)
+// -----------------------------------------------------------------------------
+// Lightweight custom scrollbar; adjust colors/size as needed.
 @mixin custom-scrollbar(
   $thumb-color: #9ca3af,
   $track-color: transparent,

@@ -1,0 +1,177 @@
+@use './reset';
+@use './variables' as *;
+@use './themes';
+@use './typography';
+@use './mixins';
+@use './animations';
+
+/*
+ * Global styles entry point.
+ * - Imports reset, tokens, themes, typography, mixins, and animations.
+ * - Defines base layout, utilities, and component primitives (buttons, forms, tables).
+ * - Relies on CSS custom properties from _themes.scss for light/dark support.
+ */
+
+/* -------------------------------------------------------------------------- */
+/* Base document setup                                                        */
+/* -------------------------------------------------------------------------- */
+:root {
+  color-scheme: light; // Hint browsers for form controls, scrollbars, etc.
+}
+
+[data-theme='dark'] {
+  color-scheme: dark;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Utility classes                                                            */
+/* -------------------------------------------------------------------------- */
+.container {
+  width: min(1120px, 100% - 2rem);
+  margin: 0 auto;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  padding: $space-5;
+}
+
+.surface-elevated {
+  background: var(--surface-elevated);
+  box-shadow: var(--shadow-md);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Buttons                                                                    */
+/* -------------------------------------------------------------------------- */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $space-2;
+  padding: 0.65rem 1rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid transparent;
+  font-weight: $font-weight-medium;
+  transition:
+    background-color $transition-fast,
+    color $transition-fast,
+    border-color $transition-fast,
+    box-shadow $transition-fast;
+  text-decoration: none;
+
+  &--primary {
+    background: var(--primary);
+    color: #fff;
+    box-shadow: var(--shadow-sm);
+
+    &:hover {
+      background: $color-primary-strong;
+    }
+
+    &:focus-visible {
+      @include mixins.focus-ring($color-primary);
+    }
+  }
+
+  &--ghost {
+    background: transparent;
+    color: var(--text);
+    border-color: var(--border);
+
+    &:hover {
+      background: var(--bg-muted);
+    }
+
+    &:focus-visible {
+      @include mixins.focus-ring($color-border);
+    }
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Forms                                                                      */
+/* -------------------------------------------------------------------------- */
+input,
+textarea,
+select {
+  width: 100%;
+  padding: 0.65rem 0.75rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  transition:
+    border-color $transition-fast,
+    box-shadow $transition-fast;
+
+  &:focus-visible {
+    border-color: var(--primary);
+    @include mixins.focus-ring($color-primary);
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Tables                                                                     */
+/* -------------------------------------------------------------------------- */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: $font-size-sm;
+
+  th,
+  td {
+    padding: $space-3 $space-4;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+
+  th {
+    font-weight: $font-weight-semibold;
+    color: var(--text-soft);
+    background: var(--bg-muted);
+  }
+
+  tr:hover td {
+    background: var(--bg-subtle);
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Scrollbar for scrollable regions                                           */
+/* -------------------------------------------------------------------------- */
+.scrollable {
+  @include mixins.custom-scrollbar(#9ca3af, transparent, 8px);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Animation helpers                                                          */
+/* -------------------------------------------------------------------------- */
+.fade-in {
+  animation: fade-in 200ms ease-out;
+}
+
+.slide-up-fade {
+  animation: slide-up-fade 220ms ease-out;
+}
+
+.pulse {
+  animation: pulse 1.2s ease-in-out infinite;
+}

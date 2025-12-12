@@ -2,25 +2,25 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <!-- Title and basic SEO -->
     <title>University LMS</title>
     <meta
       name="description"
       content="University Learning Management System – courses, quizzes, assignments, grades, and more."
     />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Progressive enhancement: theme color for address bar on mobile -->
+    <meta name="theme-color" content="#2563EB" />
 
     <!-- Favicon & PWA manifest -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="manifest" href="/manifest.webmanifest" />
 
-    <!-- Fonts (optional: you can also self-host via /src/assets/fonts) -->
+    <!-- Preconnects for faster font loading (optional if self-hosting fonts) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link
-      rel="preconnect"
-      href="https://fonts.gstatic.com"
-      crossorigin="anonymous"
-    />
-    <!-- Example: Inter as a fallback hosted font (you can remove if not needed) -->
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+
+    <!-- Hosted font example: Inter (remove if fully self-hosted in assets) -->
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
@@ -28,6 +28,7 @@
   </head>
 
   <body>
+    <!-- React mounts here -->
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

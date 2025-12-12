@@ -1,6 +1,10 @@
 {
+  // jsconfig enables path aliases and editor IntelliSense for this Vite + React project.
   "compilerOptions": {
+    // Resolve non-relative imports from the "src" directory.
     "baseUrl": "src",
+
+    // Path aliases to mirror Vite's @ shortcuts.
     "paths": {
       "@/assets/*": ["assets/*"],
       "@/styles/*": ["styles/*"],
@@ -12,14 +16,24 @@
       "@/components/*": ["components/*"],
       "@/pages/*": ["pages/*"]
     },
+
+    // React 17+ JSX transform.
     "jsx": "react-jsx",
+
+    // Modern ESM settings to align with Vite.
     "module": "esnext",
     "moduleResolution": "node",
     "target": "esnext",
+
+    // Quality-of-life flags
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
     "checkJs": false
   },
+
+  // Project files to include.
   "include": ["src"],
+
+  // Folders to ignore.
   "exclude": ["node_modules", "dist"]
 }

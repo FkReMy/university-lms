@@ -1,19 +1,67 @@
 {
+  //Human-friendly name shown in install prompts.
   "name": "University LMS",
+  // Short label for homescreen / launcher.
   "short_name": "LMS",
+  // Purpose of the app.
   "description": "University Learning Management System – courses, quizzes, assignments, and grades.",
+  // The page that loads when launched.
   "start_url": "/",
+  // Limit what URLs the PWA can navigate to.
   "scope": "/",
+  // Display mode (standalone removes browser UI).
   "display": "standalone",
+  // Preferred orientation for best experience.
   "orientation": "portrait-primary",
+  // Background color used on the splash screen.
   "background_color": "#0B1120",
+  // Theme color for UI elements (address bar, task switcher).
   "theme_color": "#2563EB",
+  // Default language.
   "lang": "en",
+  // Whether to hint the platform about related native apps.
+  "prefer_related_applications": false,
+  // Icons used across install surfaces and splash screens.
   "icons": [
     {
       "src": "/favicon.svg",
       "type": "image/svg+xml",
       "sizes": "64x64"
+    },
+    {
+      "src": "/icons/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512-maskable.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
     }
-  ]
+  ],
+  // Quick actions (optional; remove if not used).
+  "shortcuts": [
+    {
+      "name": "My Courses",
+      "short_name": "Courses",
+      "description": "Jump to your enrolled courses",
+      "url": "/courses"
+    },
+    {
+      "name": "Grades",
+      "short_name": "Grades",
+      "description": "View your latest grades",
+      "url": "/grades"
+    }
+  ],
+  // Optional categorization for stores/directories.
+  "categories": ["education", "productivity"]
 }

@@ -1,0 +1,105 @@
+@use './variables' as *;
+
+/*
+ * Typography and font setup for the LMS UI.
+ * - Loads Inter variable font (swap for quick rendering).
+ * - Uses CSS custom properties (from _themes.scss) for theme-aware colors.
+ * - Provides sensible defaults for headings, body text, links, and lists.
+ */
+
+/* Font faces (example using Inter variable font).
+ * Prefer WOFF2 for better compression; include TTF as a fallback if needed.
+ */
+@font-face {
+  font-family: 'Inter';
+  src: url('../assets/fonts/Inter-Variable.ttf') format('truetype-variations');
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+// Base typography
+body {
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    sans-serif;
+  color: var(--text);
+  background-color: var(--bg);
+  line-height: 1.6;
+  font-size: $font-size-md;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// Headings
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--text);
+  font-weight: $font-weight-semibold;
+  line-height: 1.25;
+  margin: 0 0 $space-3 0;
+}
+
+h1 {
+  font-size: $font-size-3xl;
+}
+
+h2 {
+  font-size: $font-size-2xl;
+}
+
+h3 {
+  font-size: $font-size-xl;
+}
+
+h4 {
+  font-size: $font-size-lg;
+}
+
+h5 {
+  font-size: $font-size-md;
+}
+
+h6 {
+  font-size: $font-size-sm;
+}
+
+// Links
+a {
+  color: var(--primary);
+  text-decoration: none;
+  transition: color $transition-fast;
+
+  &:hover {
+    color: var(--primary-strong);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba($color-primary, 0.25);
+    border-radius: $radius-xs;
+  }
+}
+
+// Paragraphs and lists
+p {
+  margin: 0 0 $space-4 0;
+}
+
+ul,
+ol {
+  margin: 0 0 $space-4 $space-5;
+  padding: 0;
+}
+
+// Small text and muted utility
+small {
+  font-size: $font-size-sm;
+  color: var(--text-soft);
+}
+
+.text-muted {
+  color: var(--text-muted);
+}

@@ -6,21 +6,18 @@ It is designed around a PostgreSQL schema that models users, roles, courses, qui
 ---
 
 ## Tech Stack
-
 - **Build tool:** Vite
 - **Framework:** React (JSX, functional components, hooks)
 - **Styling:** SCSS modules + global SCSS
-- **State management:** Lightweight custom stores (e.g. Zustand or similar pattern) in `src/store/`
+- **State management:** Lightweight custom stores (e.g., Zustand) in `src/store/`
 - **HTTP client:** Axios
 - **Routing:** React Router
 - **Realtime:** WebSocket client wrappers in `src/services/realtime/`
-
-You can swap out the exact libraries if needed; the structure is kept generic.
+- *(Comment: You can swap libraries if you keep the structure intact.)*
 
 ---
 
 ## Project Structure
-
 ```text
 university-lms-frontend/
 ├── public/                 # Static assets served as-is
@@ -38,8 +35,9 @@ university-lms-frontend/
     └── pages/              # Route-level pages grouped by domain
 ```
 
-The structure is aligned with the backend schema tables like:
+*(Comment: The folder layout maps cleanly to backend domains for easier maintenance.)*
 
+Backend-aligned domains (example tables):
 - `users`, `user_roles`, `admins`, `students`, `professors`, `associate_teachers`
 - `departments`, `specializations`
 - `course_catalog`, `course_offerings`, `course_enrollments`
@@ -50,39 +48,33 @@ The structure is aligned with the backend schema tables like:
 - `grades`
 - `uploaded_files`
 
-Each domain has a corresponding `services/api/*Api.js` module and route pages in `src/pages/`.
+*(Comment: Each domain should have a `services/api/*Api.js` module and route pages in `src/pages/`.)*
 
 ---
 
 ## Getting Started
 
 ### Prerequisites
-
-- Node.js (LTS recommended, e.g. >= 18)
-- npm (or yarn/pnpm, but this template assumes npm)
+- Node.js (LTS recommended, e.g., >= 18)
+- npm (or yarn/pnpm; scripts assume npm)
 
 ### Install dependencies
-
 ```bash
 npm install
 ```
 
 ### Run development server
-
 ```bash
 npm run dev
 ```
-
-Vite will print a local dev URL (usually http://localhost:5173).
+*(Comment: Vite prints a local dev URL, usually http://localhost:5173.)*
 
 ### Build for production
-
 ```bash
 npm run build
 ```
 
 ### Preview production build
-
 ```bash
 npm run preview
 ```
@@ -90,75 +82,67 @@ npm run preview
 ---
 
 ## Environment Variables
-
 Create a `.env` file in the project root (do **not** commit it):
-
 ```bash
 cp .env.example .env
 ```
 
-Typical variables might include:
-
+Typical variables:
 ```bash
 VITE_API_BASE_URL=http://localhost:3000/api
 VITE_WS_BASE_URL=ws://localhost:3000
 ```
-
-Adjust these according to your backend.
+*(Comment: Adjust to match your backend endpoints.)*
 
 ---
 
 ## Role-Based Access & Routing
 
-The system supports the following roles:
-
+Supported roles (from `user_roles.role`):
 - `Admin`
 - `Professor`
 - `AssociateTeacher`
 - `Student`
 
-These map directly from the `user_roles.role` column in the database.
-
-Front-end routing structure:
-
-- `src/router/routes.jsx` – central definition of all routes.
-- `ProtectedRoute.jsx` – blocks unauthenticated users.
-- `AdminRoute.jsx`, `ProfessorRoute.jsx`, `AssociateRoute.jsx`, `StudentRoute.jsx` – apply role-based guards.
+Front-end routing:
+- `src/router/routes.jsx` – central route definitions
+- `ProtectedRoute.jsx` – blocks unauthenticated users
+- `AdminRoute.jsx`, `ProfessorRoute.jsx`, `AssociateRoute.jsx`, `StudentRoute.jsx` – role-based guards
 
 Helpers & state:
+- `src/store/authStore.js` – current user/role snapshot
+- `src/hooks/useAuth.js` – login, logout, load current user
+- `src/hooks/useRoleAccess.js` – role helpers (`isAdmin`, `isProfessor`, `canGrade`, etc.)
+- `src/components/layout/RoleSwitcher.jsx` – dev-only role switcher (remove in prod)
 
-- `src/store/authStore.js` – current user and role snapshot.
-- `src/hooks/useAuth.js` – login, logout, load current user.
-- `src/hooks/useRoleAccess.js` – `isAdmin`, `isProfessor`, `canGrade`, etc.
-- `src/components/layout/RoleSwitcher.jsx` – dev-only role switcher for testing (can be removed in production).
+*(Comment: Keep guards aligned with backend role definitions to avoid drift.)*
 
 ---
 
 ## API Layer
 
-All backend calls are organized by domain:
-
+Domain-specific modules (examples):
 - `authApi.js` – login, logout, refresh current user
 - `userApi.js` – CRUD for users & roles
 - `departmentApi.js` – departments & specializations
-- `courseApi.js` – course catalog and offerings
+- `courseApi.js` – catalog and offerings
 - `enrollmentApi.js` – enrollments
-- `sectionApi.js` – section groups and student section assignments
+- `sectionApi.js` – sections and assignments
 - `sessionApi.js` – academic sessions, rooms, schedule slots
-- `quizApi.js` – quizzes, questions, options, attempts, answers, quiz attachments, file submissions
+- `quizApi.js` – quizzes, questions, options, attempts, answers, attachments
 - `assignmentApi.js` – assignments and submissions
 - `gradeApi.js` – grades and gradebook views
 - `fileApi.js` – file uploads and library management
 
-All of them use `axiosInstance.js` which sets the base URL, authorization headers, and interceptors.
+*(Comment: All use `axiosInstance.js` for base URL, auth headers, and interceptors.)*
 
 ---
 
 ## Styling
 
-- `src/styles/global.scss` is imported in `main.jsx` and sets the base theme, reset, tokens, and typography.
-- Component-level styles use `.module.scss` for local scoping.
-- Shared variables, mixins, typography, and themes live in:
+- `src/styles/global.scss` is imported in `main.jsx` (reset, tokens, typography).
+- Component styles use `.module.scss` for scoping.
+- Shared tokens and helpers:
   - `_variables.scss`
   - `_mixins.scss`
   - `_typography.scss`
@@ -170,14 +154,11 @@ All of them use `axiosInstance.js` which sets the base URL, authorization header
 
 ## Development Notes
 
-- Use `src/lib/constants.js` to centralize:
-  - enums from the DB (roles, quiz types, question types, etc.)
-  - application statuses for offerings, enrollments, etc.
-- This keeps forms, filters, and guards in sync with the backend schema.
-- Prefer **feature folders** under `pages/` and `components/` so each database domain has a clear front-end home.
+- Use `src/lib/constants.js` to centralize enums/statuses (roles, quiz types, etc.).
+- Keep forms, filters, and guards in sync with backend schema.
+- Prefer feature folders in `pages/` and `components/` so each domain is easy to find.
 
 ---
 
 ## License
-
-Internal / educational use. Add a proper license here once decided.
+Internal / educational use.

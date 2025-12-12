@@ -1,0 +1,82 @@
+@use './variables' as *;
+
+/*
+ * Theme tokens -> CSS custom properties
+ * ------------------------------------------------------------
+ * - Default (light) theme lives on :root.
+ * - Dark theme overrides when `[data-theme='dark']` is present
+ *   on <html> or <body>.
+ * - Keep variable names stable to avoid breaking existing styles.
+ */
+
+/* Light theme tokens (default) */
+:root {
+  --bg: #{$color-bg};
+  --surface: #{$color-surface};
+  --surface-elevated: #{$color-surface};
+  --border: #{$color-border};
+
+  --text: #{$color-text};
+  --text-soft: #{$color-text-soft};
+  --text-muted: #{$color-text-muted};
+
+  --primary: #{$color-primary};
+  --primary-soft: #{$color-primary-soft};
+  --primary-strong: #{$color-primary-strong};
+
+  --success: #{$color-success};
+  --warning: #{$color-warning};
+  --danger: #{$color-danger};
+  --info: #{$color-info};
+
+  --bg-muted: #{$color-bg-muted};
+  --bg-subtle: #{$color-bg-subtle};
+
+  --shadow-sm: #{$shadow-sm};
+  --shadow-md: #{$shadow-md};
+  --shadow-lg: #{$shadow-lg};
+
+  --radius-sm: #{$radius-sm};
+  --radius-md: #{$radius-md};
+  --radius-lg: #{$radius-lg};
+  --radius-xl: #{$radius-xl};
+  --radius-2xl: #{$radius-2xl};
+  --radius-full: #{$radius-full};
+}
+
+/* Dark theme tokens (opt-in via data-theme="dark") */
+[data-theme='dark'] {
+  --bg: #{$color-bg-dark};
+  --surface: #{$color-surface-dark};
+  --surface-elevated: #{$color-surface-elevated-dark};
+  --border: #{$color-border-dark};
+
+  --text: #{$color-text-dark};
+  --text-soft: #{$color-text-soft-dark};
+  --text-muted: #{$color-text-muted-dark};
+
+  --primary: #{$color-primary-dark};
+  --primary-soft: #{$color-primary-soft-dark};
+  --primary-strong: #{$color-primary-dark};
+
+  --success: #{$color-success};
+  --warning: #{$color-warning};
+  --danger: #{$color-danger};
+  --info: #{$color-info};
+
+  /* Slight translucency for layered dark surfaces */
+  --bg-muted: rgba(255, 255, 255, 0.04);
+  --bg-subtle: rgba(255, 255, 255, 0.02);
+
+  /* Heavier shadows improve contrast on dark backgrounds */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.45);
+
+  --radius-sm: #{$radius-sm};
+  --radius-md: #{$radius-md};
+  --radius-lg: #{$radius-lg};
+  --radius-xl: #{$radius-xl};
+  --radius-2xl: #{$radius-2xl};
+  --radius-full: #{$radius-full};
+}
