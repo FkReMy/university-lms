@@ -1,0 +1,74 @@
+/*
+ * input.module.scss
+ * ----------------------------------------------------------
+ * Styles for the reusable Input component using CSS Modules.
+ * Covers wrapper, label, input, help, and error states.
+ */
+
+/*
+ * Input wrapper styles (for spacing and layout)
+ */
+.input__wrapper {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1.25rem;
+}
+
+/*
+ * Label styles
+ */
+.input__label {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #374151; // gray-700
+  margin-bottom: 0.4rem;
+  letter-spacing: 0.01em;
+}
+
+/*
+ * Base input styles
+ */
+.input {
+  display: block;
+  width: 100%;
+  padding: 0.58rem 0.85rem;
+  font-size: 1rem;
+  border: 1px solid #d1d5db; // gray-300
+  border-radius: 0.375rem; // 6px
+  outline: none;
+  background: #fff;
+  color: #111827;           // gray-900
+  transition: border-color 0.15s, box-shadow 0.15s;
+
+  &:focus {
+    border-color: #2563eb;  // blue-600
+    box-shadow: 0 0 0 2px rgba(37,99,235,0.18);
+  }
+}
+
+/*
+ * Invalid/error input styles
+ */
+.input--error {
+  border-color: #dc2626 !important;  // red-600
+  background: #fef2f2;               // red-50
+}
+
+/*
+ * Help text (informational, below input)
+ */
+.input__help {
+  margin-top: 0.2rem;
+  color: #6b7280; // gray-500
+  font-size: 0.94rem;
+}
+
+/*
+ * Error message (below input)
+ */
+.input__error {
+  margin-top: 0.2rem;
+  color: #dc2626; // red-600
+  font-size: 0.96rem;
+  font-weight: 500;
+}

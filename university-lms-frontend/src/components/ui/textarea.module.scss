@@ -1,0 +1,74 @@
+/*
+ * textarea.module.scss
+ * ----------------------------------------------------------
+ * Styles for the reusable Textarea component using CSS Modules.
+ * Covers wrapper, label, field, help, and error states.
+ */
+
+/*
+ * Wrapper styles for proper spacing and column layout
+ */
+.textarea__wrapper {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1.25rem;
+}
+
+/*
+ * Label styling above the textarea
+ */
+.textarea__label {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #374151; // gray-700
+  margin-bottom: 0.4rem;
+}
+
+/*
+ * Textarea base field styles
+ */
+.textarea {
+  width: 100%;
+  min-height: 2.8rem;
+  font-size: 1rem;
+  padding: 0.58rem 0.85rem;
+  border: 1px solid #d1d5db; // gray-300
+  border-radius: 0.375rem; // 6px
+  outline: none;
+  background: #fff;
+  color: #111827; // gray-900
+  resize: vertical;
+  transition: border-color 0.15s, box-shadow 0.15s;
+
+  &:focus {
+    border-color: #2563eb; // blue-600
+    box-shadow: 0 0 0 2px rgba(37,99,235,0.13);
+  }
+}
+
+/*
+ * Error/invalid textarea styles
+ */
+.textarea--error {
+  border-color: #dc2626 !important; // red-600
+  background: #fef2f2; // red-50
+}
+
+/*
+ * Help text styling below the textarea
+ */
+.textarea__help {
+  margin-top: 0.2rem;
+  color: #6b7280; // gray-500
+  font-size: 0.94rem;
+}
+
+/*
+ * Error message styling below the textarea
+ */
+.textarea__error {
+  margin-top: 0.2rem;
+  color: #dc2626; // red-600
+  font-size: 0.96rem;
+  font-weight: 500;
+}

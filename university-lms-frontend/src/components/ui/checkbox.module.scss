@@ -1,0 +1,81 @@
+/*
+ * checkbox.module.scss
+ * ----------------------------------------------------------
+ * Styles for the Checkbox UI component using CSS Modules.
+ * Handles wrapper, label, input, help, and error states.
+ */
+
+/*
+ * Wrapper for the entire checkbox field (spacing/layout)
+ */
+.checkbox__wrapper {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1.25rem;
+}
+
+/*
+ * Row for checkbox + label to align them horizontally
+ */
+.checkbox__inputRow {
+  display: flex;
+  align-items: center;
+}
+
+/*
+ * Checkbox input base styles
+ */
+.checkbox {
+  width: 1.1em;
+  height: 1.1em;
+  min-width: 1.1em;
+  min-height: 1.1em;
+  margin-right: 0.65em;
+  accent-color: #2563eb;     // Blue accent (for modern browsers)
+  border-radius: 0.23em;
+  border: 1.5px solid #d1d5db;
+  background: #fff;
+  appearance: checkbox;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+
+  &:focus {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+/*
+ * Label next to the box
+ */
+.checkbox__label {
+  font-size: 1rem;
+  color: #374151; // gray-700
+  user-select: none;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+/*
+ * Help text below checkbox
+ */
+.checkbox__help {
+  margin-top: 0.18rem;
+  color: #6b7280; // gray-500
+  font-size: 0.93rem;
+}
+
+/*
+ * Error message below checkbox
+ */
+.checkbox__error {
+  margin-top: 0.18rem;
+  color: #dc2626; // red-600
+  font-size: 0.96rem;
+  font-weight: 500;
+}

@@ -1,0 +1,101 @@
+/*
+ * tabs.module.scss
+ * ----------------------------------------------------------
+ * Styles for the Tabs UI component using CSS Modules.
+ * Includes root, tab list, tab button, active state, disabled, and panel.
+ */
+
+/*
+ * Root wrapper for the tabs component
+ */
+.tabs__root {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+/*
+ * Tab list -- row of tab buttons
+ */
+.tabs__list {
+  display: flex;
+  align-items: stretch;
+  border-bottom: 2px solid #e5e7eb; // gray-200
+  gap: 0.2rem;
+  background: none;
+}
+
+/*
+ * Individual tab button
+ */
+.tabs__tab {
+  appearance: none;
+  background: none;
+  border: none;
+  margin: 0;
+  padding: 0.65rem 1.2rem 0.5rem 1.2rem;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #6b7280; // gray-500
+  border-bottom: 2.5px solid transparent;
+  cursor: pointer;
+  outline: none;
+  transition: color 0.15s, border-bottom-color 0.18s, background 0.13s;
+
+  &:hover,
+  &:focus-visible {
+    color: #2563eb; // blue-600
+    background: #f2f6ff;
+  }
+}
+
+/*
+ * Active tab styles
+ */
+.tabs__tab--active {
+  color: #2563eb; // blue-600
+  border-bottom: 2.5px solid #2563eb;
+  background: #fff;
+  z-index: 1;
+}
+
+/*
+ * Disabled tab styles
+ */
+.tabs__tab--disabled {
+  color: #a1a1aa; // gray-400
+  background: transparent;
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+/*
+ * Tab panel (content area)
+ */
+.tabs__panel {
+  background: #fff;
+  padding: 1.25rem 1rem 1.1rem 1rem;
+  border-radius: 0.6rem;
+  border: 1px solid #e5e7eb;
+  margin-top: 0.15rem;
+  font-size: 1rem;
+  color: #374151;
+  min-height: 3.5rem;
+  box-shadow: 0 1px 6px 0 rgba(30,34,89,0.07);
+  animation: tabs__panel-fadein 0.22s;
+}
+
+/*
+ * Subtle fade-in animation for panel switching
+ */
+@keyframes tabs__panel-fadein {
+  from {
+    opacity: 0;
+    transform: translateY(0.35rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

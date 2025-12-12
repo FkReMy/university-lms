@@ -1,0 +1,57 @@
+/*
+ * card.module.scss
+ * ----------------------------------------------------------
+ * Styles for the Card UI component using CSS Modules.
+ * Card contains base, header, body, and footer styling.
+ */
+
+/*
+ * Base card style
+ */
+.card {
+  background: #fff;
+  border-radius: 0.75rem;         // large, smooth corners
+  box-shadow: 0 2px 12px 0 rgba(30,34,89,0.10), 0 1px 2px 0 rgba(18,38,63,0.08); // subtle depth
+  border: 1px solid #e5e7eb;     // light gray border
+  padding: 1.5rem 1.5rem 1.25rem 1.5rem;
+  margin: 0.75rem 0;
+  transition: box-shadow 0.20s;
+  display: flex;
+  flex-direction: column;
+}
+
+/*
+ * Card header, optional
+ */
+.card__header {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #253053;
+  margin-bottom: 1rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid #f3f4f6; // subtle separation
+}
+
+/*
+ * Card body
+ */
+.card__body {
+  flex: 1 1 auto;
+  font-size: 1rem;
+  color: #374151;   // gray-700
+  padding-bottom: 0.5rem;
+}
+
+/*
+ * Card footer, optional
+ */
+.card__footer {
+  margin-top: 1.25rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #e5e7eb;
+  font-size: 0.98rem;
+  color: #6b7280; // gray-500
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
