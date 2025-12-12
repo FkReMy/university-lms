@@ -1,39 +1,53 @@
 {
-  // jsconfig enables path aliases and editor IntelliSense for this Vite + React project.
+  // JS project config for editor IntelliSense / path aliases.
+  // Notes:
+  // - TypeScript 6 deprecates baseUrl/moduleResolution=node10. We keep baseUrl for paths
+  //   and silence the notice with ignoreDeprecations: "6.0".
+  // - moduleResolution "bundler" matches Vite/ESM setups.
   "compilerOptions": {
-    // Resolve non-relative imports from the "src" directory.
-    "baseUrl": "src",
+    "ignoreDeprecations": "6.0",
 
-    // Path aliases to mirror Vite's @ shortcuts.
+    // Path alias base (keep "." so aliases resolve from project root)
+    "baseUrl": ".",
+
+    // Aliases (map "@/..." to src/...)
     "paths": {
-      "@/assets/*": ["assets/*"],
-      "@/styles/*": ["styles/*"],
-      "@/lib/*": ["lib/*"],
-      "@/services/*": ["services/*"],
-      "@/store/*": ["store/*"],
-      "@/hooks/*": ["hooks/*"],
-      "@/router/*": ["router/*"],
-      "@/components/*": ["components/*"],
-      "@/pages/*": ["pages/*"]
+      "@/*": ["src/*"],
+      "@/assets/*": ["src/assets/*"],
+      "@/styles/*": ["src/styles/*"],
+      "@/lib/*": ["src/lib/*"],
+      "@/services/*": ["src/services/*"],
+      "@/store/*": ["src/store/*"],
+      "@/hooks/*": ["src/hooks/*"],
+      "@/router/*": ["src/router/*"],
+      "@/components/*": ["src/components/*"],
+      "@/pages/*": ["src/pages/*"]
     },
 
-    // React 17+ JSX transform.
+    // JS/JSX settings
     "jsx": "react-jsx",
-
-    // Modern ESM settings to align with Vite.
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "target": "esnext",
 
-    // Quality-of-life flags
+    // Useful flags
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
-    "checkJs": false
+    "checkJs": false,
+
+    // Prevent TS from trying to auto-include missing @types (avoids the jsx-a11y type lookup)
+    "types": []
   },
 
-  // Project files to include.
+  // Scope JS/JSX files
   "include": ["src"],
 
-  // Folders to ignore.
-  "exclude": ["node_modules", "dist"]
+  // Exclude build and dependencies
+  "exclude": ["node_modules", "dist"],
+
+  // Optional: further restrict automatic type acquisition
+  "typeAcquisition": {
+    "enable": true,
+    "exclude": ["eslint-plugin-jsx-a11y"]
+  }
 }
