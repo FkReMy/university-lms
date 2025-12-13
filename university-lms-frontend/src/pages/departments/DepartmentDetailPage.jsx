@@ -14,10 +14,12 @@
  */
 
 import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 
 import styles from './DepartmentDetailPage.module.scss';
 
-export default function DepartmentDetailPage({ deptId /* from router params */ }) {
+export default function DepartmentDetailPage() {
+  const { deptId } = useParams();
   // Demo department and courses info (would be fetched by ID in real app)
   const [dept, setDept] = useState(null);
   const [courses, setCourses] = useState([]);

@@ -15,6 +15,8 @@ import { Link } from 'react-router-dom';
 
 import { ROUTES } from '@/lib/constants';
 import styles from './AccessDeniedPage.module.scss';
+import styles from "./AccessDeniedPage.module.scss";
+import { ROUTES } from '@/lib/constants';
 
 export default function AccessDeniedPage() {
   return (
@@ -26,6 +28,7 @@ export default function AccessDeniedPage() {
           Sorry, you don&apos;t have permission to view this page.
         </div>
         <div className={styles.accessDeniedPage__actions}>
+          {/* Example: Could link to login or home here */}
           <Link to={ROUTES.HOME} className={styles.accessDeniedPage__homeBtn}>
             Go to Home
           </Link>

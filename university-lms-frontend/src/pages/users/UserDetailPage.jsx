@@ -15,10 +15,12 @@
  */
 
 import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 
 import styles from './UserDetailPage.module.scss';
 
-export default function UserDetailPage({ userId /* from router params */ }) {
+export default function UserDetailPage() {
+  const { userId } = useParams();
   // User state (in real app, fetch API)
   const [user, setUser] = useState(null);
   const [enrollments, setEnrollments] = useState([]); // List of courses

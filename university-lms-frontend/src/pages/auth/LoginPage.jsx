@@ -14,11 +14,12 @@
  *   <Route path="/login" element={<LoginPage />} />
  */
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuthStore } from '@/store/authStore'; // <-- Replace with the actual path to your auth store
 
 import styles from './LoginPage.module.scss';
+import { useAuth } from '@/hooks/useAuth';
+import { ROUTES } from '@/lib/constants';
 
 export default function LoginPage() {
   // Form state
@@ -34,6 +35,13 @@ export default function LoginPage() {
   // Auth store actions
   const loginSuccess = useAuthStore(state => state.loginSuccess);
   const loginFailure = useAuthStore(state => state.loginFailure);
+  const { login, isAuthenticated, ready, error } = useAuth();
+
+  useEffect(() => {
+    if (ready && isAuthenticated) {
+      navigate(ROUTES.DASHBOARD, { replace: true });
+    }
+  }, [isAuthenticated, ready, navigate]);
 
   // Handler for form submit
   async function handleSubmit(e) {
@@ -70,8 +78,24 @@ export default function LoginPage() {
         loginFailure('Invalid username or password.');
         setLoading(false);
         setErrorMsg('Invalid username or password.');
+    try {
+      // Simple demo credential check
+      const allowed = {
+        student: 'studentpass',
+        admin: 'adminpass',
+      };
+      if (!allowed[username] || allowed[username] !== password) {
+        throw new Error('Invalid username or password.');
       }
-    }, 1100);
+
+      await login({ username, password, remember });
+      setSuccessMsg('Login successful! Redirecting…');
+      setTimeout(() => navigate(ROUTES.DASHBOARD), 400);
+    } catch (err) {
+      setErrorMsg(err?.message || 'Unable to sign in.');
+    } finally {
+      setLoading(false);
+    }
   }
 
   // Handler for forgot password
@@ -137,6 +161,7 @@ export default function LoginPage() {
           </div>
           {/* Error/message */}
           {errorMsg && <div className={styles.loginPage__errorMsg}>{errorMsg}</div>}
+          {error && !errorMsg && <div className={styles.loginPage__errorMsg}>{error}</div>}
           {successMsg && <div className={styles.loginPage__successMsg}>{successMsg}</div>}
           {/* Submit */}
           <button

@@ -55,7 +55,7 @@ export default function AppShell({
   ...rest
 }) {
   // Sidebar Responsiveness (open/close for mobile)
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   // Compose class names for layout
   const shellClass = [styles.shell, className].filter(Boolean).join(' ');
@@ -72,7 +72,7 @@ export default function AppShell({
       {sidebar !== undefined ? (
         sidebar
       ) : (
-        <Sidebar open={sidebarOpen} setOpen={setSidebarOpen} />
+        <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       )}
 
       {/* Overlay for sidebar on mobile */}
@@ -91,7 +91,19 @@ export default function AppShell({
         {header !== undefined ? (
           header
         ) : (
-          <Topbar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+          <Topbar
+            brand={<span className={styles.shell__brand}>University LMS</span>}
+            actions={(
+              <button
+                type="button"
+                className={styles.shell__menuBtn}
+                aria-label={sidebarOpen ? 'Hide navigation' : 'Show navigation'}
+                onClick={() => setSidebarOpen((open) => !open)}
+              >
+                ☰
+              </button>
+            )}
+          />
         )}
 
         {/* Page Content */}

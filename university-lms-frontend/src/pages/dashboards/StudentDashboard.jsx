@@ -20,6 +20,7 @@ import { Link } from 'react-router-dom';
 import GradeDistributionChart from '../../components/analytics/GradeDistributionChart';
 import { ROUTES } from '@/lib/constants';
 import styles from './StudentDashboard.module.scss';
+import { ROUTES } from '@/lib/constants';
 
 export default function StudentDashboard() {
   // Student dashboard state (replace with real API in production)
@@ -135,6 +136,7 @@ export default function StudentDashboard() {
           </section>
           {/* Quick links row */}
           <section className={styles.studentDashboard__quickLinks}>
+            {/* Quick links should match the actual route definitions! */}
             <Link className={styles.studentDashboard__quickLink} to={ROUTES.COURSES}>
               My Courses
             </Link>

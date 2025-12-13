@@ -13,10 +13,12 @@
  */
 
 import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 
 import styles from './SectionGroupsPage.module.scss';
 
-export default function SectionGroupsPage({ sectionId /* from router params */ }) {
+export default function SectionGroupsPage() {
+  const { sectionId } = useParams();
   // State for list of groups and searching
   const [groups, setGroups] = useState([]);
   const [search, setSearch] = useState('');

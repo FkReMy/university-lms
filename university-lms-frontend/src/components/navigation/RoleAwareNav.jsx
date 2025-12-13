@@ -31,6 +31,7 @@
  *   />
  */
 
+import { NavLink } from 'react-router-dom';
 import styles from './RoleAwareNav.module.scss';
 
 export default function RoleAwareNav({
@@ -64,13 +65,16 @@ export default function RoleAwareNav({
                   <span className={styles.roleAwareNav__label}>{item.label}</span>
                 </a>
               ) : (
-                <a
-                  href={item.href}
-                  className={styles.roleAwareNav__link}
+                <NavLink
+                  to={item.href}
+                  className={({ isActive }) => [
+                    styles.roleAwareNav__link,
+                    isActive ? styles.roleAwareNav__linkActive : ''
+                  ].filter(Boolean).join(' ')}
                 >
                   {item.icon && (<span className={styles.roleAwareNav__icon}>{item.icon}</span>)}
                   <span className={styles.roleAwareNav__label}>{item.label}</span>
-                </a>
+                </NavLink>
               )}
             </li>
           ))}

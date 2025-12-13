@@ -29,12 +29,15 @@
  *   />
  */
 
-import { useLocation, Link } from 'react-router-dom';
-
+import { NavLink, useLocation } from 'react-router-dom';
+import { useMemo } from 'react';
+import { ROUTES } from '@/lib/constants';
+import { useAuth } from '@/hooks/useAuth';
 import styles from './Sidebar.module.scss'; // Correct import for sidebar-specific styles
 
 export default function Sidebar({
   nav = [],
+  navConfig,
   brand,
   bottom,
   open = false,
@@ -42,6 +45,36 @@ export default function Sidebar({
   className = '',
   ...rest
 }) {
+  const { user } = useAuth();
+  const role = (user?.role || 'student').toLowerCase();
+
+  const defaultNavConfig = useMemo(
+    () => ({
+      student: [
+        { label: 'Dashboard', to: ROUTES.DASHBOARD },
+        { label: 'Courses', to: ROUTES.COURSES },
+        { label: 'Assignments', to: ROUTES.ASSIGNMENTS },
+        { label: 'Quizzes', to: ROUTES.QUIZZES },
+        { label: 'Grades', to: ROUTES.GRADES },
+        { label: 'Files', to: ROUTES.FILE_LIBRARY },
+        { label: 'Settings', to: ROUTES.SETTINGS },
+      ],
+      admin: [
+        { label: 'Dashboard', to: ROUTES.DASHBOARD },
+        { label: 'Courses', to: ROUTES.COURSES },
+        { label: 'Users', to: ROUTES.USERS },
+        { label: 'Departments', to: ROUTES.DEPARTMENTS },
+        { label: 'Files', to: ROUTES.FILE_LIBRARY },
+        { label: 'Settings', to: ROUTES.SETTINGS },
+      ],
+    }),
+    []
+  );
+
+  const navItems = nav.length
+    ? nav
+    : navConfig?.[role] || defaultNavConfig[role] || defaultNavConfig.student;
+
   // Get current path for "active" highlighting
   const location = useLocation();
 
@@ -79,16 +112,20 @@ export default function Sidebar({
 
       {/* Navigation menu */}
       <nav className={styles.sidebar__nav}>
-        {nav.map(item => (
-          <Link
-            key={item.href}
-            to={item.href}
-            className={[
+        {navItems.map(item => (
+          <NavLink
+            key={item.to || item.href}
+            to={item.to || item.href}
+            end={item.end}
+            className={({ isActive }) => [
               styles.sidebar__navitem,
-              location.pathname === item.href ? styles['sidebar__navitem--active'] : '',
+              isActive || location.pathname === (item.to || item.href)
+                ? styles['sidebar__navitem--active']
+                : '',
             ].filter(Boolean).join(' ')}
-            aria-current={location.pathname === item.href ? 'page' : undefined}
+            aria-current={location.pathname === (item.to || item.href) ? 'page' : undefined}
             tabIndex={0}
+            onClick={onClose}
           >
             {item.icon && (
               <span
