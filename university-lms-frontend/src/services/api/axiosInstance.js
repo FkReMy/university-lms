@@ -56,10 +56,12 @@ const axiosInstance = axios.create({
 
 // -----------------------------------------------------------------------------
 // Request interceptor: attach Authorization from authStore if present
+// Note: Using getState() to access Zustand store outside React component context
 // -----------------------------------------------------------------------------
 axiosInstance.interceptors.request.use(
   (config) => {
-    // Get token from auth store instead of localStorage directly
+    // Get token from auth store using Zustand's getState() method
+    // This is safe to use outside of React components
     const token = useAuthStore.getState().token;
     if (token && !config.headers.Authorization) {
       config.headers.Authorization = `Bearer ${token}`;

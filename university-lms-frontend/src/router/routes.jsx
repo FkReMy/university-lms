@@ -26,10 +26,9 @@ import { useAuthStore } from '@/store/authStore';
 const LoginPage = lazy(() => import('@/pages/auth/LoginPage'));
 const RegisterPage = lazy(() => import('@/pages/auth/RegisterPage'));
 
-// Dashboard pages (pick desired default)
+// Dashboard page - currently using StudentDashboard as default
 const StudentDashboardPage = lazy(() => import('@/pages/dashboards/StudentDashboard'));
-// Or use one dashboard as the default for /
-const DashboardPage = StudentDashboardPage; // Change as needed
+const DashboardPage = StudentDashboardPage;
 
 // Course pages (catalog and detail)
 const CoursesPage = lazy(() => import('@/pages/courses/CourseOfferingsPage'));
