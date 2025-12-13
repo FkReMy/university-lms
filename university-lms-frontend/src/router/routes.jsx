@@ -13,7 +13,9 @@
  */
 
 import { lazy, Suspense } from 'react';
-import { Navigate, Outlet } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
+
+import { useAuthStore } from '@/store/authStore';
 
 // -------------------------------
 // Lazy loaded pages for bundle splitting
@@ -26,8 +28,6 @@ const RegisterPage = lazy(() => import('@/pages/auth/RegisterPage'));
 
 // Dashboard pages (pick desired default)
 const StudentDashboardPage = lazy(() => import('@/pages/dashboards/StudentDashboard'));
-const ProfessorDashboardPage = lazy(() => import('@/pages/dashboards/ProfessorDashboard'));
-const AdminDashboardPage = lazy(() => import('@/pages/dashboards/AdminDashboard'));
 // Or use one dashboard as the default for /
 const DashboardPage = StudentDashboardPage; // Change as needed
 
@@ -59,9 +59,6 @@ function RequireAuth({ children, redirectTo = '/login' }) {
   
   return isAuthenticated ? children : <Navigate to={redirectTo} replace />;
 }
-
-// Import the auth store
-import { useAuthStore } from '@/store/authStore';
 
 // -------------------------------
 // Routes definition
