@@ -140,12 +140,14 @@ export default function NotificationBell({
               No new notifications.
             </div>
           ) : (
-            notifications.map(n => (
-              <DefaultNotificationItem
-                key={n.id ?? n.title}
-                n={n}
-              />
-            ))
+            notifications.map(n =>
+              renderNotification ? renderNotification(n) : (
+                <DefaultNotificationItem
+                  key={n.id ?? n.title}
+                  n={n}
+                />
+              )
+            )
           )}
         </div>
       )}

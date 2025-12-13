@@ -112,7 +112,8 @@ export default function Dialog({
       ref={overlayRef}
       tabIndex={-1}
       aria-hidden={!open}
-      onMouseDown={onBackdropClick}
+      role="presentation"
+      onClick={onBackdropClick}
       data-testid="dialog-overlay"
     >
       <div

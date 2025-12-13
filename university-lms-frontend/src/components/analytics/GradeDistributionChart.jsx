@@ -93,10 +93,7 @@ export default function GradeDistributionChart({
               style={{
                 height: bin.count === 0 ? 0 : `${(bin.count / maxCount) * 100}%`
               }}
-              aria-valuenow={bin.count}
-              aria-valuemax={maxCount}
               aria-label={`${binLabel(bin)}, ${bin.count} student${bin.count !== 1 ? 's' : ''}`}
-              role="presentation"
             />
             {/* Count label above bar */}
             {bin.count > 0 && (

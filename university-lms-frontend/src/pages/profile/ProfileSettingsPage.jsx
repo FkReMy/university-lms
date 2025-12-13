@@ -38,6 +38,10 @@ export default function ProfileSettingsPage() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const avatarInputRef = useRef();
+  const nameInputId = "profile-name";
+  const emailInputId = "profile-email";
+  const roleInputId = "profile-role";
+  const avatarInputId = "profile-avatar";
 
   // To track previous blob for proper cleanup
   const previousBlobUrl = useRef(null);
@@ -144,7 +148,10 @@ export default function ProfileSettingsPage() {
               encType="multipart/form-data"
             >
               <div className={styles.profileSettingsPage__avatarRow}>
-                <label className={styles.profileSettingsPage__avatarLabel}>
+                <label
+                  className={styles.profileSettingsPage__avatarLabel}
+                  htmlFor={avatarInputId}
+                >
                   {avatarUrl ? (
                     <img
                       src={avatarUrl}
@@ -161,6 +168,7 @@ export default function ProfileSettingsPage() {
                     type="file"
                     accept="image/*"
                     ref={avatarInputRef}
+                    id={avatarInputId}
                     onChange={handleAvatarChange}
                     aria-label="Upload avatar"
                   />
@@ -178,12 +186,13 @@ export default function ProfileSettingsPage() {
                 )}
               </div>
               <div className={styles.profileSettingsPage__fieldRow}>
-                <label>
+                <label htmlFor={nameInputId}>
                   Name
                   <Input
                     className={styles.profileSettingsPage__input}
                     type="text"
                     value={name}
+                    id={nameInputId}
                     maxLength={50}
                     required
                     onChange={(e) => setName(e.target.value)}
@@ -191,23 +200,25 @@ export default function ProfileSettingsPage() {
                 </label>
               </div>
               <div className={styles.profileSettingsPage__fieldRow}>
-                <label>
+                <label htmlFor={emailInputId}>
                   Email
                   <Input
                     className={styles.profileSettingsPage__input}
                     type="email"
                     value={profile.email || ""}
+                    id={emailInputId}
                     disabled
                   />
                 </label>
               </div>
               <div className={styles.profileSettingsPage__fieldRow}>
-                <label>
+                <label htmlFor={roleInputId}>
                   Role
                   <Input
                     className={styles.profileSettingsPage__input}
                     type="text"
                     value={profile.role || ""}
+                    id={roleInputId}
                     disabled
                   />
                 </label>

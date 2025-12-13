@@ -23,13 +23,14 @@ import { Navigate, useLocation } from 'react-router-dom';
 
 import { useAuth } from '@/hooks/useAuth';
 import { useRoleAccess } from '@/hooks/useRoleAccess';
+import { ROUTES } from '@/lib/constants';
 
 export default function ProtectedRoute({
   allowedRoles,
   redirectTo = '/login',
   children,
 }) {
-  const { ready, isAuthenticated, user } = useAuth();
+  const { ready, isAuthenticated } = useAuth();
   const { hasAnyRole } = useRoleAccess();
   const location = useLocation();
 
@@ -53,7 +54,7 @@ export default function ProtectedRoute({
   if (allowedRoles && allowedRoles.length > 0) {
     if (!hasAnyRole(allowedRoles)) {
       // Unauthorized: you may want to redirect elsewhere
-      return <Navigate to="/unauthorized" replace />;
+      return <Navigate to={ROUTES.ACCESS_DENIED} replace />;
     }
   }
 

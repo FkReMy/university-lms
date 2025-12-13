@@ -2,27 +2,16 @@
  * LoginPage Component
  * ----------------------------------------------------------
  * The LMS login page, handling user authentication.
- *
- * Responsibilities:
- * - Renders login form for email/username and password.
- * - Handles form state, errors, loading, and submission.
- * - On success, updates auth state and redirects the user.
- * - Can display error/success messages (e.g., invalid, password reset link sent, etc).
- * - Optionally supports "Remember me", forgot password, and social logins.
- *
- * Usage:
- *   <Route path="/login" element={<LoginPage />} />
  */
 
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import styles from './LoginPage.module.scss';
 import { useAuth } from '@/hooks/useAuth';
 import { ROUTES } from '@/lib/constants';
+import styles from './LoginPage.module.scss';
 
 export default function LoginPage() {
-  // Form state
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [remember, setRemember] = useState(false);
@@ -31,10 +20,6 @@ export default function LoginPage() {
   const [successMsg, setSuccessMsg] = useState('');
 
   const navigate = useNavigate();
-
-  // Auth store actions
-  const loginSuccess = useAuthStore(state => state.loginSuccess);
-  const loginFailure = useAuthStore(state => state.loginFailure);
   const { login, isAuthenticated, ready, error } = useAuth();
 
   useEffect(() => {
@@ -43,62 +28,22 @@ export default function LoginPage() {
     }
   }, [isAuthenticated, ready, navigate]);
 
-  // Handler for form submit
   async function handleSubmit(e) {
     e.preventDefault();
     setErrorMsg('');
     setSuccessMsg('');
     setLoading(true);
-
-    // Simulated API for demo; replace with real auth call
-    setTimeout(() => {
-      if (
-        (username === 'student' && password === 'studentpass') ||
-        (username === 'admin' && password === 'adminpass')
-      ) {
-        // Update global auth state with proper structure
-        const user = {
-          id: username === 'admin' ? 1 : 2,
-          username,
-          email: `${username}@university.edu`,
-          name: username === 'admin' ? 'Admin User' : 'Student User',
-          role: username === 'admin' ? 'Admin' : 'Student',
-        };
-        const token = `mock-jwt-token-${username}-${Date.now()}`;
-        
-        loginSuccess({ user, token });
-        setSuccessMsg('Login successful! Redirecting…');
-        setLoading(false);
-        
-        // Redirect user to dashboard or desired page
-        setTimeout(() => {
-          navigate('/');
-        }, 600);
-      } else {
-        loginFailure('Invalid username or password.');
-        setLoading(false);
-        setErrorMsg('Invalid username or password.');
     try {
-      // Simple demo credential check
-      const allowed = {
-        student: 'studentpass',
-        admin: 'adminpass',
-      };
-      if (!allowed[username] || allowed[username] !== password) {
-        throw new Error('Invalid username or password.');
-      }
-
       await login({ username, password, remember });
       setSuccessMsg('Login successful! Redirecting…');
       setTimeout(() => navigate(ROUTES.DASHBOARD), 400);
     } catch (err) {
-      setErrorMsg(err?.message || 'Unable to sign in.');
+      setErrorMsg(err?.message || 'Invalid username or password.');
     } finally {
       setLoading(false);
     }
   }
 
-  // Handler for forgot password
   function handleForgot(e) {
     e.preventDefault();
     setErrorMsg('');
@@ -110,7 +55,6 @@ export default function LoginPage() {
       <div className={styles.loginPage__box}>
         <h1 className={styles.loginPage__title}>Sign in to LMS</h1>
         <form className={styles.loginPage__form} onSubmit={handleSubmit} autoComplete="on">
-          {/* Username/email */}
           <label className={styles.loginPage__label}>
             Email or Username
             <input
@@ -119,12 +63,11 @@ export default function LoginPage() {
               autoComplete="username"
               placeholder="jane@student.edu"
               value={username}
-              onChange={e => setUsername(e.target.value)}
+              onChange={(e) => setUsername(e.target.value)}
               disabled={loading}
               required
             />
           </label>
-          {/* Password */}
           <label className={styles.loginPage__label}>
             Password
             <input
@@ -133,18 +76,17 @@ export default function LoginPage() {
               autoComplete="current-password"
               placeholder="••••••••"
               value={password}
-              onChange={e => setPassword(e.target.value)}
+              onChange={(e) => setPassword(e.target.value)}
               disabled={loading}
               required
             />
           </label>
-          {/* Remember me + forgot password */}
           <div className={styles.loginPage__row}>
             <label className={styles.loginPage__checkboxLabel}>
               <input
                 type="checkbox"
                 checked={remember}
-                onChange={e => setRemember(e.target.checked)}
+                onChange={(e) => setRemember(e.target.checked)}
                 disabled={loading}
               />
               Remember me
@@ -159,11 +101,9 @@ export default function LoginPage() {
               Forgot password?
             </button>
           </div>
-          {/* Error/message */}
           {errorMsg && <div className={styles.loginPage__errorMsg}>{errorMsg}</div>}
           {error && !errorMsg && <div className={styles.loginPage__errorMsg}>{error}</div>}
           {successMsg && <div className={styles.loginPage__successMsg}>{successMsg}</div>}
-          {/* Submit */}
           <button
             className={styles.loginPage__submit}
             type="submit"
@@ -172,14 +112,6 @@ export default function LoginPage() {
             {loading ? 'Signing in…' : 'Sign in'}
           </button>
         </form>
-
-        {/* Optional: Social login providers */}
-        {/* 
-        <div className={styles.loginPage__divider}><span>OR</span></div>
-        <div className={styles.loginPage__social}>
-          <button>Sign in with Google</button>
-        </div>
-        */}
       </div>
       <div className={styles.loginPage__footer}>
         © {new Date().getFullYear()} LMS University. All rights reserved.
@@ -187,12 +119,3 @@ export default function LoginPage() {
     </div>
   );
 }
-
-/**
- * Notes:
- * - The useAuthStore hook should expose a login or setAuth type of function/object for global state.
- * - Actual login logic should use the real API; redirect path can be changed as per your routing.
- * - Replaced <a> with <button type="button"> for "Forgot password" to satisfy a11y/lint rules.
- * - Removed autoFocus for a11y compliance.
- * - You may want to tweak what is stored in the auth state (token, user, etc) based on your actual authStore.
- */

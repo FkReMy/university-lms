@@ -136,7 +136,7 @@ export default function Sidebar({
               </span>
             )}
             {item.label}
-          </Link>
+          </NavLink>
         ))}
       </nav>
 

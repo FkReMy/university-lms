@@ -121,50 +121,6 @@ export default function TimetablePage() {
     dayMap[m.day].push(m);
   }
 
-  // Render a cell for each grid slot
-  function renderGridCell(day, hour) {
-    // Find a meeting that starts at this day/hour
-    const meeting = (dayMap[day] || []).find(
-      m =>
-        m.startHour === hour &&
-        m.startMinute === 0 // only render block in first cell
-    );
-    if (!meeting) return <td key={hour} />;
-
-    // Rowspan for overlapping lessons: how many half-hour slots
-    const totalMins =
-      (meeting.endHour - meeting.startHour) * 60 +
-      (meeting.endMinute - meeting.startMinute);
-    const slotCount = Math.max(Math.ceil(totalMins / 30), 1);
-
-    return (
-      <td
-        key={hour}
-        rowSpan={slotCount}
-        className={styles.timetablePage__meetingCell}
-        style={{
-          background: '#e0edff',
-          borderLeft: '4.5px solid #2563eb',
-        }}
-      >
-        <div className={styles.timetablePage__meetingTitle}>
-          <b>{meeting.course}</b> - {meeting.name}
-        </div>
-        <div className={styles.timetablePage__meetingInfo}>
-          <span>
-            <b>{meeting.instructor}</b>
-          </span>
-          <span> &middot; {meeting.room}</span>
-        </div>
-        <div className={styles.timetablePage__meetingTime}>
-          {fmtTime(meeting.startHour, meeting.startMinute)}
-          {" – "}
-          {fmtTime(meeting.endHour, meeting.endMinute)}
-        </div>
-      </td>
-    );
-  }
-
   // Build grid rows (each row = half-hour slot)
   const timeSlots = [];
   for (let hour = START_HOUR; hour < END_HOUR; ++hour) {

@@ -105,7 +105,6 @@ export default function ScheduleGrid({
       className={rootClass}
       style={style}
       {...rest}
-      tabIndex={0}
       aria-label="Class schedule grid"
       role="table"
     >
@@ -128,7 +127,7 @@ export default function ScheduleGrid({
       </div>
       <div className={styles.scheduleGrid__body} role="rowgroup">
         {/* For each hour slot */}
-        {hours.map((h, r) => (
+        {hours.map((h) => (
           <div className={styles.scheduleGrid__row} key={h} style={{ height: `${cellHeight}px` }} role="row">
             <div className={styles.scheduleGrid__hourCell} role="rowheader">
               {pad(h)}:00
