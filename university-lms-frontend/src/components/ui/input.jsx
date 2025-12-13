@@ -31,7 +31,7 @@
  *   />
  */
 
-import React from 'react';
+import { useId } from 'react';
 
 import styles from './input.module.scss';
 
@@ -46,7 +46,8 @@ export default function Input({
   ...rest
 }) {
   // Unique id fallback for label/input association, if no id is passed
-  const inputId = id || React.useId();
+  const generatedId = useId();
+  const inputId = id || generatedId;
 
   // Compose base classes for input and wrapper
   const wrapperClass = [styles.input__wrapper, className].filter(Boolean).join(' ');

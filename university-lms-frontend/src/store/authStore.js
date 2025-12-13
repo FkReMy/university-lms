@@ -11,6 +11,10 @@ const safeStorage = () => {
 };
 
 const loadPersistedState = () => {
+  // Only access localStorage in browser environment
+  if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
+    return undefined;
+  }
   try {
     const storage = safeStorage();
     if (!storage) return undefined;
@@ -23,6 +27,11 @@ const loadPersistedState = () => {
   }
 };
 
+const savePersistedState = (state) => {
+  // Only access localStorage in browser environment
+  if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
+    return;
+  }
 const savePersistedState = (state, remember = true) => {
   try {
     if (!remember) return;

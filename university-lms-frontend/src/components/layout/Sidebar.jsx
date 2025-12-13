@@ -76,12 +76,7 @@ export default function Sidebar({
     : navConfig?.[role] || defaultNavConfig[role] || defaultNavConfig.student;
 
   // Get current path for "active" highlighting
-  let location = { pathname: "/" };
-  try {
-    location = useLocation();
-  } catch {
-    location.pathname = window.location?.pathname || "/";
-  }
+  const location = useLocation();
 
   // Sidebar class: includes open state for mobile
   const sidebarClass = [
@@ -141,7 +136,7 @@ export default function Sidebar({
               </span>
             )}
             {item.label}
-          </NavLink>
+          </Link>
         ))}
       </nav>
 

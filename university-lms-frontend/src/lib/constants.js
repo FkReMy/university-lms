@@ -32,10 +32,10 @@ export const ROUTES = {
 // Export a frozen copy for safer imports (optional usage).
 export const ROUTES_FROZEN = Object.freeze({ ...ROUTES });
 
-// API base URL falls back to localhost for local development.
-// Keep this consistent with your Vite env variable naming.
+// API base URL falls back to /api for local development (proxy through Vite).
+// Keep this consistent with axiosInstance configuration.
 export const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+  import.meta.env.VITE_API_BASE_URL || '/api';
 
 // Helper to prefix API routes consistently.
 export const apiPath = (path = '') =>

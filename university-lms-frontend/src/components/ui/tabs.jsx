@@ -32,7 +32,7 @@
  *   </Tabs>
  */
 
-import React, { useState, useMemo, Children, cloneElement } from 'react';
+import { useState, useMemo, Children } from 'react';
 
 import styles from './tabs.module.scss';
 

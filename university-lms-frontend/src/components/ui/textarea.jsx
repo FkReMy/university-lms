@@ -30,7 +30,7 @@
  *   />
  */
 
-import React from 'react';
+import { useId } from 'react';
 
 import styles from './textarea.module.scss';
 
@@ -44,7 +44,8 @@ export default function Textarea({
   ...rest
 }) {
   // Generate a unique fallback id for accessibility if not provided
-  const textareaId = id || React.useId();
+  const generatedId = useId();
+  const textareaId = id || generatedId;
 
   // Wrapper and field class names using CSS modules & custom classes
   const wrapperClass = [styles.textarea__wrapper, className].filter(Boolean).join(' ');

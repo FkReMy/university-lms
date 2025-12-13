@@ -16,7 +16,9 @@
 
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+
 import GradeDistributionChart from '../../components/analytics/GradeDistributionChart';
+import { ROUTES } from '@/lib/constants';
 import styles from './StudentDashboard.module.scss';
 import { ROUTES } from '@/lib/constants';
 

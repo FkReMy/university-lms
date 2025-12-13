@@ -12,6 +12,9 @@
  */
 
 import { Link } from 'react-router-dom';
+
+import { ROUTES } from '@/lib/constants';
+import styles from './NotFoundPage.module.scss';
 import styles from "./NotFoundPage.module.scss";
 import { ROUTES } from '@/lib/constants';
 
