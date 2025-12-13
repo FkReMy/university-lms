@@ -13,10 +13,10 @@
  */
 
 import { useEffect, useState } from 'react';
-
+import { Link } from 'react-router-dom';
 import GradeDistributionChart from '../../components/analytics/GradeDistributionChart';
-
 import styles from './AssociateDashboard.module.scss';
+import { ROUTES } from '@/lib/constants';
 
 export default function AssociateDashboard() {
   // Example dashboard state (replace with real API fetches)
@@ -166,15 +166,15 @@ export default function AssociateDashboard() {
           </section>
           {/* Quick links row */}
           <section className={styles.associateDashboard__quickLinks}>
-            <a className={styles.associateDashboard__quickLink} href="/associate/courses">
+            <Link className={styles.associateDashboard__quickLink} to={ROUTES.COURSES}>
               Assisted Courses
-            </a>
-            <a className={styles.associateDashboard__quickLink} href="/associate/requests">
+            </Link>
+            <Link className={styles.associateDashboard__quickLink} to={ROUTES.ASSIGNMENTS}>
               Review Requests
-            </a>
-            <a className={styles.associateDashboard__quickLink} href="/associate/sessions">
-              Session Calendar
-            </a>
+            </Link>
+            <Link className={styles.associateDashboard__quickLink} to={ROUTES.SECTIONS}>
+              Section Calendar
+            </Link>
           </section>
         </div>
       )}

@@ -177,6 +177,31 @@
   }
 }
 
+.courseOfferingsPage__detailsBtn {
+  display: inline-block;
+  background: #fff;
+  color: #2563eb;
+  border: 1.5px solid #2563eb;
+  padding: 0.6em 1.3em;
+  border-radius: 0.7em;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s, box-shadow 0.12s;
+
+  &:hover,
+  &:focus-visible {
+    background: #2563eb;
+    color: #fff;
+    box-shadow: 0 8px 22px #2563eb27;
+  }
+}
+
+.courseOfferingsPage__actionsRow {
+  display: flex;
+  gap: 0.75rem;
+  margin: 1.2rem 0;
+}
+
 /* Responsive for mobile */
 @media (max-width: 700px) {
   .courseOfferingsPage__controls {
