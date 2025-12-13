@@ -53,6 +53,7 @@ const UserManagementPage = lazy(() => import('@/pages/users/UserManagementPage')
 const UserDetailPage = lazy(() => import('@/pages/users/UserDetailPage'));
 const DepartmentsPage = lazy(() => import('@/pages/departments/DepartmentsPage'));
 const DepartmentDetailPage = lazy(() => import('@/pages/departments/DepartmentDetailPage'));
+const SectionAssignmentPage = lazy(() => import('@/pages/sections/StudentSectionAssignmentPage'));
 const SectionGroupsPage = lazy(() => import('@/pages/sections/SectionGroupsPage'));
 
 // Errors & fallback
@@ -106,7 +107,7 @@ const routes = [
       // PROTECTED ROUTES (requires authentication)
       // -------------------------------------
       {
-        index: true,
+        path: ROUTES.HOME,
         element: (
           <RequireAuth>
             <Suspense fallback={<div>Loading dashboard…</div>}>
@@ -280,7 +281,7 @@ const routes = [
         element: (
           <RequireAuth>
             <Suspense fallback={<div>Loading sections…</div>}>
-              <SectionGroupsPage />
+              <SectionAssignmentPage />
             </Suspense>
           </RequireAuth>
         ),
