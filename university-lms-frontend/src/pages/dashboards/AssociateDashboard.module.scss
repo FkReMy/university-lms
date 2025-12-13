@@ -1,0 +1,236 @@
+/*
+ * AssociateDashboard.module.scss
+ * ----------------------------------------------------------
+ * Styles for the AssociateDashboard (LMS staff/TA view).
+ * Stat grid, card/table layout, blue/orange/green highlights, responsive.
+ */
+
+/* Root dashboard */
+.associateDashboard {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2.1em 1.2em 3.2em 1.2em;
+  background: #f8fafc;
+  min-height: 100vh;
+  font-size: 1.065em;
+  display: flex;
+  flex-direction: column;
+}
+
+.associateDashboard__title {
+  font-size: 2em;
+  font-weight: 800;
+  letter-spacing: 0.018em;
+  color: #213050;
+  margin: 1.3em 0 1.7em 0;
+  text-align: left;
+}
+
+.associateDashboard__loading {
+  font-size: 1.15em;
+  color: #64748b;
+  margin: 3em 0;
+  text-align: center;
+}
+
+/* Stat grid as cards */
+.associateDashboard__statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10.5em, 1fr));
+  gap: 1.22em;
+  margin-bottom: 2.2em;
+}
+
+.associateDashboard__statBox {
+  background: #fff;
+  border-radius: 0.75em;
+  border: 1.1px solid #e0edff;
+  box-shadow: 0 2px 18px #2563eb13;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.2em 0.7em;
+  min-width: 8.6em;
+}
+
+.associateDashboard__statLabel {
+  color: #64748b;
+  font-size: 1.04em;
+  font-weight: 500;
+  letter-spacing: 0.011em;
+  margin-bottom: 0.18em;
+}
+
+.associateDashboard__statValue {
+  font-size: 1.6em;
+  color: #2563eb;
+  font-weight: 800;
+  letter-spacing: 0.015em;
+  margin: 0.08em 0 0.1em 0;
+  text-shadow: 0 2px 11px #2563eb18;
+}
+
+/* Section titles */
+.associateDashboard__section {
+  margin-bottom: 2.7em;
+  margin-top: 0.1em;
+}
+
+.associateDashboard__sectionTitle {
+  font-size: 1.17em;
+  font-weight: 700;
+  color: #213050;
+  letter-spacing: 0.012em;
+  margin-bottom: 0.75em;
+  margin-top: 0.22em;
+}
+
+/* Upcoming events list */
+.associateDashboard__upcomingList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65em;
+}
+
+.associateDashboard__upcomingItem {
+  display: flex;
+  align-items: center;
+  gap: 0.7em;
+  background: #fff;
+  border-radius: 0.58em;
+  box-shadow: 0 1px 6px 0 #2563eb13;
+  border: 1.1px solid #e0edff;
+  padding: 0.56em 1.2em 0.56em 0.9em;
+  font-size: 0.98em;
+}
+
+.associateDashboard__upcomingType {
+  font-weight: 700;
+  font-size: 0.99em;
+  color: #2563eb;
+  background: #e0edff;
+  border-radius: 0.51em;
+  padding: 0.13em 0.68em;
+  margin-right: 0.5em;
+}
+
+.associateDashboard__upcomingTitle {
+  font-weight: 500;
+  color: #273046;
+  font-size: 1em;
+  flex: 1 1 0;
+  min-width: 0;
+  word-break: break-word;
+}
+
+.associateDashboard__upcomingWhen {
+  font-size: 0.96em;
+  color: #64748b;
+}
+
+/* Requests table */
+.associateDashboard__requestsTable {
+  width: 100%;
+  background: #fff;
+  border-radius: 0.68em;
+  border: 1.1px solid #e5e7eb;
+  box-shadow: 0 1.7px 11px #2563eb07;
+  font-size: 1em;
+  margin-bottom: 0.3em;
+  border-spacing: 0;
+  overflow: hidden;
+  table-layout: auto;
+}
+
+.associateDashboard__requestsTable th {
+  font-weight: 700;
+  color: #233151;
+  background: #e0edff;
+  padding: 0.66em 1em;
+  text-align: left;
+  font-size: 1em;
+  border-bottom: 1px solid #e5e7eb;
+  letter-spacing: 0.02em;
+}
+
+.associateDashboard__requestsTable td {
+  color: #273046;
+  padding: 0.66em 1em;
+  font-size: 1em;
+  border-bottom: 1px solid #f3f3f6;
+  vertical-align: middle;
+}
+
+.associateDashboard__requestsTable tr:last-child td {
+  border-bottom: none;
+}
+
+.associateDashboard__requestsTable tr {
+  background: #fff;
+  transition: background 0.13s;
+}
+.associateDashboard__requestsTable tr:hover {
+  background: #f4f7fd;
+}
+
+/* Quick links row */
+.associateDashboard__quickLinks {
+  display: flex;
+  gap: 1.39em;
+  margin-top: 2em;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.associateDashboard__quickLink {
+  background: #2563eb;
+  color: #fff;
+  font-weight: 700;
+  font-size: 1em;
+  border-radius: 0.7em;
+  padding: 0.68em 1.77em;
+  text-decoration: none;
+  box-shadow: 0 2.5px 12px #2563eb19;
+  border: none;
+  outline: none;
+  transition: background 0.13s, color 0.13s, box-shadow 0.11s;
+
+  &:hover,
+  &:focus-visible {
+    background: #174ca6;
+    color: #fff;
+    outline: none;
+  }
+}
+
+/* Responsive for mobile */
+@media (max-width: 900px) {
+  .associateDashboard {
+    padding: 1.1em 0.2em 4em 0.2em;
+    font-size: 0.97em;
+  }
+  .associateDashboard__statsGrid {
+    gap: 0.75em;
+  }
+  .associateDashboard__requestsTable {
+    font-size: 0.99em;
+  }
+  .associateDashboard__statBox {
+    padding: 1em 0.4em;
+    min-width: 7em;
+  }
+}
+
+/* Responsive table horizontal scrolling */
+@media (max-width: 530px) {
+  .associateDashboard__requestsTable {
+    display: block;
+    overflow-x: auto;
+    min-width: 350px;
+    width: 100%;
+  }
+}

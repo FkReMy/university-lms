@@ -1,0 +1,176 @@
+/*
+ * NotificationCenter.module.scss
+ * ----------------------------------------------------------
+ * Styles for the NotificationCenter component.
+ * Provides sticky bar, clean list spacing, and highlight for unread.
+ */
+
+/* Main panel */
+.notificationCenter {
+  width: 100%;
+  max-width: 34em;
+  background: #fff;
+  color: #273046;
+  border-radius: 1.28em;
+  box-shadow: 0 3.8px 36px 0 rgba(30, 34, 89, 0.13);
+  border: 1.7px solid #e5e7eb;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Sticky header bar */
+.notificationCenter__bar {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: #f8fafc;
+  border-bottom: 1.5px solid #e5e7eb;
+  padding: 1.02em 1.29em 0.92em 1.19em;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5em;
+}
+
+.notificationCenter__barTitle {
+  font-size: 1.22em;
+  font-weight: 700;
+  color: #213050;
+  letter-spacing: 0.01em;
+}
+
+.notificationCenter__barActions {
+  display: flex;
+  align-items: center;
+  gap: 0.7em;
+}
+
+.notificationCenter__barButton {
+  background: none;
+  color: #2563eb;
+  border: none;
+  font-weight: 500;
+  font-size: 1em;
+  cursor: pointer;
+  border-radius: 0.6em;
+  padding: 0.33em 1.1em;
+  transition: background 0.11s, color 0.13s;
+
+  &:hover,
+  &:focus-visible {
+    background: #e0edff;
+    color: #1453b7;
+    outline: none;
+    text-decoration: none;
+  }
+}
+
+/* Main list area */
+.notificationCenter__main {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.06em;
+  min-height: 14em;
+  padding: 0.5em 0.15em 1em 0.15em;
+  overflow-y: auto;
+}
+
+/* Default item */
+.notificationCenter__item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.76em;
+  padding: 0.92em 1.5em 0.92em 1.1em;
+  margin: 0.12em 0;
+  border-radius: 0.66em;
+  background: #f4f7fd;
+  box-shadow: 0 1.2px 7px 0 rgba(37, 99, 235, 0.05);
+  font-size: 1em;
+  cursor: pointer;
+  transition: background 0.14s;
+  outline: none;
+
+  &:hover,
+  &:focus-visible {
+    background: #e0edff;
+    outline: none;
+  }
+}
+
+.notificationCenter__item--read {
+  background: #fafbfc;
+  opacity: 0.85;
+}
+
+/* Icon area */
+.notificationCenter__itemIcon {
+  flex-shrink: 0;
+  color: #2563eb;
+  font-size: 1.22em;
+  display: flex;
+  align-items: center;
+  min-width: 1.44em;
+  min-height: 1.44em;
+}
+
+/* Text block */
+.notificationCenter__itemText {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1em;
+}
+
+.notificationCenter__itemTitle {
+  font-weight: 600;
+  font-size: 1.08em;
+  color: #213050;
+  margin-bottom: 0.07em;
+  letter-spacing: 0.01em;
+}
+
+.notificationCenter__itemDescription {
+  font-size: 1em;
+  color: #485471;
+  line-height: 1.5;
+}
+
+.notificationCenter__itemTime {
+  color: #64748b;
+  font-size: 0.97em;
+  margin-top: 0.09em;
+  font-weight: 400;
+}
+
+/* Loading and empty message */
+.notificationCenter__loading,
+.notificationCenter__empty {
+  width: 100%;
+  text-align: center;
+  color: #64748b;
+  font-size: 1.09em;
+  opacity: 0.97;
+  margin: 2.8em 0 2em 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8em;
+}
+
+.notificationCenter__spinner {
+  width: 2.3em;
+  height: 2.3em;
+  border-radius: 50%;
+  border: 3.5px solid #e0edff;
+  border-top: 3.5px solid #2563eb;
+  animation: notificationCenter-spin 0.7s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes notificationCenter-spin {
+  to { transform: rotate(360deg); }
+}

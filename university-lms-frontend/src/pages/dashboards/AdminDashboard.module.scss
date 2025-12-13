@@ -1,0 +1,197 @@
+/*
+ * AdminDashboard.module.scss
+ * ----------------------------------------------------------
+ * Styles for the AdminDashboard (LMS admin view).
+ * Stat grid, card/table layout, blue highlights, responsive.
+ */
+
+/* Root dashboard */
+.adminDashboard {
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 2.2em 1.3em 3.3em 1.3em;
+  background: #f8fafc;
+  min-height: 100vh;
+  font-size: 1.065em;
+  display: flex;
+  flex-direction: column;
+}
+
+.adminDashboard__title {
+  font-size: 2em;
+  font-weight: 800;
+  letter-spacing: 0.018em;
+  color: #213050;
+  margin: 1.3em 0 1.7em 0;
+  text-align: left;
+}
+
+.adminDashboard__loading {
+  font-size: 1.15em;
+  color: #64748b;
+  margin: 3em 0;
+  text-align: center;
+}
+
+/* Dashboard stat grid */
+.adminDashboard__statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10.5em, 1fr));
+  gap: 1.22em;
+  margin-bottom: 2.2em;
+}
+
+.adminDashboard__statBox {
+  background: #fff;
+  border-radius: 0.75em;
+  border: 1.1px solid #e0edff;
+  box-shadow: 0 2px 18px #2563eb13;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.2em 0.7em;
+  min-width: 8.6em;
+}
+
+.adminDashboard__statLabel {
+  color: #64748b;
+  font-size: 1.04em;
+  font-weight: 500;
+  letter-spacing: 0.011em;
+  margin-bottom: 0.18em;
+}
+
+.adminDashboard__statValue {
+  font-size: 1.6em;
+  color: #2563eb;
+  font-weight: 800;
+  letter-spacing: 0.015em;
+  margin: 0.08em 0 0.1em 0;
+  text-shadow: 0 2px 11px #2563eb18;
+}
+
+/* Section titles */
+.adminDashboard__section {
+  margin-bottom: 2.7em;
+  margin-top: 0.1em;
+}
+
+.adminDashboard__sectionTitle {
+  font-size: 1.17em;
+  font-weight: 700;
+  color: #213050;
+  letter-spacing: 0.012em;
+  margin-bottom: 0.85em;
+  margin-top: 0.22em;
+}
+
+/* Courses/assignment table styles */
+.adminDashboard__coursesTable,
+.adminDashboard__submissionsTable {
+  width: 100%;
+  background: #fff;
+  border-radius: 0.68em;
+  border: 1.1px solid #e5e7eb;
+  box-shadow: 0 1.7px 11px #2563eb07;
+  font-size: 1em;
+  margin-bottom: 0.3em;
+  border-spacing: 0;
+  overflow: hidden;
+  table-layout: auto;
+}
+
+.adminDashboard__coursesTable th,
+.adminDashboard__submissionsTable th {
+  font-weight: 700;
+  color: #233151;
+  background: #e0edff;
+  padding: 0.66em 1em;
+  text-align: left;
+  font-size: 1em;
+  border-bottom: 1px solid #e5e7eb;
+  letter-spacing: 0.02em;
+}
+
+.adminDashboard__coursesTable td,
+.adminDashboard__submissionsTable td {
+  color: #273046;
+  padding: 0.66em 1em;
+  font-size: 1em;
+  border-bottom: 1px solid #f3f3f6;
+}
+
+.adminDashboard__coursesTable tr:last-child td,
+.adminDashboard__submissionsTable tr:last-child td {
+  border-bottom: none;
+}
+
+.adminDashboard__coursesTable tr,
+.adminDashboard__submissionsTable tr {
+  background: #fff;
+  transition: background 0.13s;
+}
+.adminDashboard__coursesTable tr:hover,
+.adminDashboard__submissionsTable tr:hover {
+  background: #f4f7fd;
+}
+
+/* Quick links row */
+.adminDashboard__quickLinks {
+  display: flex;
+  gap: 1.39em;
+  margin-top: 2em;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.adminDashboard__quickLink {
+  background: #2563eb;
+  color: #fff;
+  font-weight: 700;
+  font-size: 1em;
+  border-radius: 0.7em;
+  padding: 0.68em 1.77em;
+  text-decoration: none;
+  box-shadow: 0 2.5px 12px #2563eb19;
+  border: none;
+  outline: none;
+  transition: background 0.13s, color 0.13s, box-shadow 0.11s;
+
+  &:hover,
+  &:focus-visible {
+    background: #174ca6;
+    color: #fff;
+    outline: none;
+  }
+}
+
+/* Responsive for mobile */
+@media (max-width: 900px) {
+  .adminDashboard {
+    padding: 1.1em 0.2em 4em 0.2em;
+    font-size: 0.97em;
+  }
+  .adminDashboard__statsGrid {
+    gap: 0.75em;
+  }
+  .adminDashboard__coursesTable,
+  .adminDashboard__submissionsTable {
+    font-size: 0.99em;
+  }
+  .adminDashboard__statBox {
+    padding: 1em 0.4em;
+    min-width: 7em;
+  }
+}
+
+/* Responsive table horizontal scrolling */
+@media (max-width: 530px) {
+  .adminDashboard__coursesTable,
+  .adminDashboard__submissionsTable {
+    display: block;
+    overflow-x: auto;
+    min-width: 350px;
+    width: 100%;
+  }
+}

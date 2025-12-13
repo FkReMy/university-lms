@@ -1,0 +1,188 @@
+/*
+ * QuestionRenderer.module.scss
+ * ----------------------------------------------------------
+ * Styles for the QuestionRenderer component (quiz/exam question).
+ * Clean, responsive, highlights correctness and disables with feedback.
+ */
+
+/* Main root */
+.questionRenderer {
+  width: 100%;
+  background: #f8fafc;
+  border-radius: 0.82em;
+  box-shadow: 0 1.6px 13px 0 rgba(30,34,89,0.07);
+  border: 1.3px solid #e5e7eb;
+  padding: 1.5em 1.4em 1.2em 1.4em;
+  margin-bottom: 2.1em;
+  font-size: 1.07em;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1em;
+  transition: box-shadow 0.13s, border-color 0.13s, background 0.11s;
+
+  &:focus-within {
+    border-color: #2563eb;
+    box-shadow: 0 4px 20px 0 rgba(37,99,235,0.11);
+  }
+}
+
+/* Question text */
+.questionRenderer__text {
+  font-size: 1.14em;
+  font-weight: 600;
+  color: #213050;
+  margin-bottom: 0.32em;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+.questionRenderer__required {
+  color: #e62727;
+  font-size: 1.13em;
+  margin-right: 0.2em;
+}
+
+/* Answer options list */
+.questionRenderer__options {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6em;
+}
+
+/* Option row */
+.questionRenderer__option {
+  background: #fff;
+  border-radius: 0.7em;
+  display: flex;
+  align-items: center;
+  gap: 0.9em;
+  padding: 0.62em 1.2em 0.62em 0.9em;
+  border: 1.2px solid #e5e7eb;
+  font-weight: 500;
+  color: #233151;
+  position: relative;
+  transition: border-color 0.13s, background 0.12s;
+
+  &:hover,
+  &:focus-within {
+    border-color: #2563eb;
+    background: #eaf3ff;
+  }
+}
+
+/* Correct/incorrect highlights */
+.questionRenderer__option--correct {
+  border-color: #0fa958;
+  background: #e5ffe9;
+}
+
+.questionRenderer__option--incorrect {
+  border-color: #e62727;
+  background: #fbeaea;
+}
+
+/* Option radio/input and label */
+.questionRenderer__option label {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.62em;
+  width: 100%;
+}
+
+.questionRenderer__option input[type="radio"] {
+  accent-color: #2563eb;
+  width: 1.16em;
+  height: 1.16em;
+  margin-right: 0.34em;
+}
+
+.questionRenderer__optionText {
+  flex: 1 1 auto;
+  min-width: 0;
+  word-break: break-word;
+}
+
+.questionRenderer__badge {
+  margin-left: 0.77em;
+  font-size: 1.2em;
+  user-select: none;
+  color: #0fa958;
+
+  /* Red X if incorrect */
+  .questionRenderer__option--incorrect & {
+    color: #e62727;
+  }
+}
+
+/* Input for short answer */
+.questionRenderer__inputGroup {
+  margin-top: 0.7em;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.37em;
+}
+
+.questionRenderer__input {
+  border-radius: 0.75em;
+  border: 1.2px solid #e5e7eb;
+  padding: 0.61em 1.1em;
+  font-size: 1.04em;
+  font-weight: 500;
+  color: #233151;
+  background: #fff;
+  transition: border-color 0.12s, background 0.13s;
+  outline: none;
+  width: 100%;
+
+  &:focus {
+    border-color: #2563eb;
+    background: #eaf3ff;
+  }
+}
+
+.questionRenderer__textarea {
+  border-radius: 0.75em;
+  border: 1.2px solid #e5e7eb;
+  padding: 0.7em 1.08em;
+  font-size: 1.04em;
+  color: #233151;
+  resize: vertical;
+  width: 100%;
+  background: #fff;
+  min-height: 6em;
+  transition: border-color 0.12s, background 0.14s;
+
+  &:focus {
+    border-color: #2563eb;
+    background: #eaf3ff;
+  }
+}
+
+/* Solution/correct answer feedback area */
+.questionRenderer__solution {
+  background: #e0edff;
+  color: #233151;
+  border-radius: 0.6em;
+  margin-top: 1em;
+  padding: 0.96em 1.15em;
+  font-size: 1.01em;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+}
+
+.questionRenderer__solutionText {
+  color: #2563eb;
+  font-weight: 600;
+}
+
+.questionRenderer__feedback {
+  color: #2563eb;
+  font-size: 0.97em;
+  margin-top: 0.3em;
+}

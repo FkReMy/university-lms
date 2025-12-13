@@ -1,0 +1,56 @@
+/*
+ * QuizTimer.module.scss
+ * ----------------------------------------------------------
+ * Styles for the QuizTimer countdown clock for quizzes.
+ * Uses blue, orange, and red for normal/warning/expired states.
+ */
+
+/* Base timer appearance */
+.quizTimer {
+  display: inline-block;
+  font-family: 'JetBrains Mono', 'Fira Mono', 'Menlo', 'Consolas', monospace;
+  font-size: 1.19em;
+  font-weight: 700;
+  color: #2563eb;
+  letter-spacing: 0.04em;
+  background: #f4f7fd;
+  padding: 0.33em 0.96em 0.33em 0.96em;
+  border-radius: 0.67em;
+  border: 1.3px solid #e0edff;
+  box-shadow: 0 1px 8px 0 rgba(30,34,89,0.06);
+  transition: color 0.17s, background 0.16s, border 0.13s;
+  min-width: 4.5em;
+  text-align: center;
+}
+
+/* Warning time: e.g. < 1 min left */
+.quizTimer--warning {
+  color: #e67e22;
+  background: #fff6e0;
+  border-color: #ffe9c5;
+  animation: quizTimer-blink 0.8s linear infinite alternate;
+}
+
+/* Expired (finished) */
+.quizTimer--expired {
+  color: #e62727;
+  background: #fff0f0;
+  border-color: #fbeaea;
+  animation: none;
+  opacity: 0.86;
+}
+
+/* Blinking for last minute */
+@keyframes quizTimer-blink {
+  from { box-shadow: 0 0 10px 0 #ffe0a2; }
+  to   { box-shadow: 0 0 20px 3px #ffd993; }
+}
+
+/* Mobile tweaks */
+@media (max-width: 480px) {
+  .quizTimer {
+    font-size: 1.03em;
+    padding: 0.21em 0.63em;
+    min-width: 3.7em;
+  }
+}

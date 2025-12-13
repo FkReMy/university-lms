@@ -1,0 +1,65 @@
+/*
+ * FileUploadZone.module.scss
+ * ----------------------------------------------------------
+ * Styles for the FileUploadZone drag-and-drop/upload component.
+ * Visibly highlights on drag, accessible/focus ring, stylized prompt area.
+ */
+
+/* Main dropzone wrapper */
+.fileUploadZone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 9em;
+  width: 100%;
+  background: #f4f7fd;
+  border: 2.2px dashed #cfd8ed;
+  color: #273046;
+  font-size: 1.13em;
+  font-weight: 500;
+  border-radius: 1.15em;
+  box-shadow: 0 1.1px 13px 0 rgba(30, 34, 89, 0.11);
+  cursor: pointer;
+  user-select: none;
+  text-align: center;
+  transition: border-color 0.18s, background 0.15s, box-shadow 0.18s;
+  outline: none;
+  padding: 1.8em 1.5em;
+  position: relative;
+
+  &:hover,
+  &:focus-visible {
+    border-color: #2563eb;
+    box-shadow: 0 5px 27px 0 rgba(37, 99, 235, 0.10);
+    background: #e6f0fe;
+  }
+}
+
+/* Drag active (highlight) */
+.fileUploadZone--active {
+  border-color: #2563eb;
+  background: #e0edff;
+  box-shadow: 0 7px 24px 0 rgba(37, 99, 235, 0.13);
+}
+
+/* The prompt message (icon/text) */
+.fileUploadZone__prompt {
+  width: 100%;
+  max-width: 26em;
+  margin: 0 auto;
+  color: #2563eb;
+  opacity: 0.93;
+  font-size: 1.07em;
+  font-weight: 500;
+  line-height: 1.8;
+
+  svg, img {
+    display: block;
+    margin: 0 auto 0.9em auto;
+    font-size: 2em;
+    width: 2.4em;
+    height: 2.4em;
+    color: #2563eb;
+    opacity: 0.91;
+  }
+}

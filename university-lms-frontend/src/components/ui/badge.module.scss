@@ -1,0 +1,68 @@
+/*
+ * badge.module.scss
+ * ----------------------------------------------------------
+ * Styles for the Badge UI component using CSS Modules.
+ * Includes base styles and color variants.
+ */
+
+/*
+ * Base badge style
+ */
+.badge {
+  display: inline-block;
+  padding: 0.14em 0.72em;
+  min-width: 1.45em;
+  min-height: 1.45em;
+  border-radius: 1em;
+  font-size: 0.98em;
+  font-weight: 500;
+  background: #e5e7eb; // fallback neutral
+  color: #27272a;
+  letter-spacing: 0.03em;
+  line-height: 1.35;
+  text-align: center;
+  vertical-align: middle;
+  white-space: nowrap;
+  user-select: none;
+  transition: background 0.14s, color 0.14s;
+}
+
+/*
+ * Info variant (default)
+ */
+.badge--info {
+  background: #e0edff;
+  color: #1453b7; // blue
+}
+
+/*
+ * Success variant
+ */
+.badge--success {
+  background: #d1fae5;
+  color: #15803d; // green
+}
+
+/*
+ * Warning variant
+ */
+.badge--warning {
+  background: #fef9c3;
+  color: #b45309; // amber
+}
+
+/*
+ * Error variant
+ */
+.badge--error {
+  background: #fee2e2;
+  color: #b91c1c; // red
+}
+
+/*
+ * Neutral/gray variant
+ */
+.badge--neutral {
+  background: #f3f4f6;
+  color: #374151; // gray
+}

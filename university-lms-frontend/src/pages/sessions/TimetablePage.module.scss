@@ -1,0 +1,193 @@
+/*
+ * TimetablePage.module.scss
+ * ----------------------------------------------------------
+ * Styles for the TimetablePage (weekly course schedule grid).
+ * Responsive grid, blue highlight card, clear headers and times.
+ */
+
+/* Root page layout */
+.timetablePage {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2em 1.2em 2.7em 1.2em;
+  min-height: 97vh;
+  background: #f8fafc;
+  display: flex;
+  flex-direction: column;
+}
+
+.timetablePage__title {
+  font-size: 2em;
+  font-weight: 800;
+  color: #213050;
+  letter-spacing: 0.018em;
+  margin: 1em 0 1.19em 0;
+  text-align: left;
+}
+
+/* Controls */
+.timetablePage__controls {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  margin-bottom: 1.7em;
+  flex-wrap: wrap;
+}
+
+.timetablePage__search {
+  border-radius: 0.7em;
+  border: 1.4px solid #d1d5db;
+  background: #fff;
+  padding: 0.79em 1.04em;
+  font-size: 1em;
+  min-width: 14em;
+  font-weight: 500;
+  color: #233151;
+  transition: border-color 0.13s, box-shadow 0.13s;
+  outline: none;
+  &:focus {
+    border-color: #2563eb;
+    background: #eaf3ff;
+    box-shadow: 0 1.2px 15px #2563eb16;
+  }
+}
+
+/* Table grid */
+.timetablePage__gridArea {
+  width: 100%;
+  background: #fff;
+  border-radius: 1.05em;
+  box-shadow: 0 4.5px 25px 0 rgba(30,34,89,0.093);
+  border: 1.2px solid #e5e7eb;
+  min-height: 9em;
+  padding: 0;
+  margin-bottom: 1.1em;
+  display: flex;
+  flex-direction: column;
+}
+
+.timetablePage__loading {
+  font-size: 1.12em;
+  color: #64748b;
+  margin: 2.5em 0;
+  text-align: center;
+  font-weight: 500;
+}
+
+/* Grid table styling */
+.timetablePage__grid {
+  width: 100%;
+  border-radius: 1.05em;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  font-size: 0.99em;
+}
+
+.timetablePage__grid th {
+  font-weight: 700;
+  color: #233151;
+  background: #e0edff;
+  padding: 0.61em 0.9em;
+  text-align: center;
+  font-size: 1em;
+  border-bottom: 1px solid #e5e7eb;
+  letter-spacing: 0.03em;
+}
+
+.timetablePage__grid td {
+  color: #273046;
+  padding: 0.51em 0.7em;
+  font-size: 0.97em;
+  border-bottom: 1px solid #f3f3f6;
+  border-right: 1px solid #f3f3f6;
+  min-width: 88px;
+  min-height: 44px;
+  background: #fff;
+  transition: background 0.18s;
+  text-align: center;
+  vertical-align: top;
+}
+
+.timetablePage__grid tr:last-child td {
+  border-bottom: none;
+}
+.timetablePage__grid tr td:last-child,
+.timetablePage__grid th:last-child {
+  border-right: none;
+}
+
+.timetablePage__timeCell {
+  font-size: 1em;
+  font-weight: 700;
+  color: #485471;
+  background: #f8fafc;
+  border-right: 1.5px solid #e0edff;
+  text-align: right;
+  letter-spacing: 0.04em;
+}
+
+/* Meeting cell */
+.timetablePage__meetingCell {
+  background: #e0edff !important;
+  border-left: 4.5px solid #2563eb !important;
+  border-radius: 0.5em 0.9em 0.9em 0.5em;
+  box-shadow: 0 3px 13px #2563eb1c;
+  font-size: 0.98em;
+  color: #213050;
+  text-align: left;
+  vertical-align: top;
+  padding: 0.7em 0.85em 0.51em 1.3em !important;
+}
+
+.timetablePage__meetingTitle {
+  font-weight: 700;
+  color: #174ca6;
+  font-size: 1em;
+  margin-bottom: 0.13em;
+}
+
+.timetablePage__meetingInfo {
+  font-size: 0.98em;
+  color: #485471;
+  margin-bottom: 0.07em;
+  display: flex;
+  gap: 0.75em;
+}
+
+.timetablePage__meetingTime {
+  font-size: 0.94em;
+  color: #2563eb;
+  font-weight: 600;
+  margin-top: 0.08em;
+}
+
+/* Responsive for mobile */
+@media (max-width: 900px) {
+  .timetablePage__grid th,
+  .timetablePage__grid td {
+    font-size: 0.95em;
+    min-width: 62px;
+    padding: 0.4em 0.28em;
+  }
+}
+@media (max-width: 750px) {
+  .timetablePage {
+    font-size: 0.97em;
+    padding: 1em 0.2em 2em 0.2em;
+  }
+  .timetablePage__gridArea {
+    border-radius: 0.55em;
+    box-shadow: 0 3px 13px 0 rgba(30,34,89,0.05);
+  }
+}
+
+@media (max-width: 600px) {
+  .timetablePage__grid {
+    font-size: 0.93em;
+    min-width: 620px;
+    display: block;
+    overflow-x: auto;
+  }
+}

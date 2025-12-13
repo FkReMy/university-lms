@@ -1,0 +1,241 @@
+/*
+ * appShell.module.scss
+ * ----------------------------------------------------------
+ * Styles for the AppShell layout: shell, header, sidebar, overlay, and main content.
+ * Provides responsive grid/flex structure and utility classes.
+ */
+
+/*
+ * Accessibility: Skip to main content link (hidden until focused)
+ */
+.skiplink {
+  position: absolute;
+  left: 0;
+  top: 0;
+  background: #2563eb;
+  color: #fff;
+  font-weight: 600;
+  padding: 0.65em 1.1em;
+  z-index: 2000;
+  border-radius: 0 0 0.65em 0.65em;
+  transform: translateY(-120%);
+  transition: transform 0.19s;
+  outline: none;
+  border: none;
+  &:focus {
+    transform: translateY(0%);
+    box-shadow: 0 2px 8px 0 rgba(37, 99, 235, 0.22);
+  }
+}
+
+/*
+ * Main AppShell grid/flex container
+ */
+.shell {
+  min-height: 100vh;
+  width: 100vw;
+  background: #f3f4f6;
+  display: flex;
+  flex-direction: row;
+  position: relative;
+}
+
+/*
+ * Sidebar (desktop: fixed width; mobile: overlays; hidden/shown via class)
+ */
+.sidebar {
+  position: relative;
+  width: 250px;
+  min-width: 210px;
+  max-width: 300px;
+  background: #1e293b;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  border-right: 1px solid #e0e7ef;
+  z-index: 1100;
+  transition: transform 0.24s cubic-bezier(.5,.2,.24,.99), box-shadow 0.24s;
+  box-shadow: 1px 0 15px 0 rgba(15,15,32,0.09);
+
+  @media (max-width: 880px) {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    transform: translateX(-101%);
+    box-shadow: none;
+    border-right: none;
+  }
+}
+
+/*
+ * Sidebar open on mobile
+ */
+.sidebar--open {
+  @media (max-width: 880px) {
+    transform: translateX(0%);
+    box-shadow: 4px 0 32px 0 rgba(16,18,48,0.28);
+    border-right: 1px solid #1e293b;
+    z-index: 2100;
+  }
+}
+
+/*
+ * Sidebar overlay (covers page when sidebar open)
+ */
+.sidebar__overlay {
+  display: none;
+  @media (max-width: 880px) {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0; right: 0; bottom: 0;
+    background: rgba(30,41,59,0.31);
+    z-index: 2000;
+    cursor: pointer;
+  }
+}
+
+/*
+ * Sidebar header/title
+ */
+.sidebar__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 3.4rem;
+  padding: 1.1rem 1.1rem 0.3rem 1.2rem;
+}
+.sidebar__title {
+  font-size: 1.16rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: #fff;
+}
+.sidebar__closebtn {
+  background: none;
+  border: none;
+  font-size: 1.7rem;
+  color: #94a3b8;
+  border-radius: 0.35em;
+  padding: 0.14em 0.32em;
+  cursor: pointer;
+  transition: background 0.11s, color 0.13s;
+  &:hover,
+  &:focus-visible {
+    background: #334155;
+    color: #fff;
+  }
+}
+
+/*
+ * Sidebar nav items
+ */
+.sidebar__nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding: 0.3rem 0 1.5rem 0.7rem;
+
+  a {
+    text-decoration: none;
+  }
+}
+.sidebar__navitem {
+  color: #e2e8f0;
+  padding: 0.8em 0.7em 0.8em 0.6em;
+  border-radius: 0.4em;
+  font-size: 1.02rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  transition: background 0.13s, color 0.16s;
+  margin-right: 1.5em;
+
+  &:hover,
+  &:focus-visible,
+  &[aria-current="page"] {
+    background: #2563eb;
+    color: #fff;
+  }
+}
+
+/*
+ * Main app shell container (holds header/content)
+ */
+.shell__main {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 100vh;
+  background: #f3f4f6;
+}
+
+/*
+ * Header (top bar)
+ */
+.header {
+  height: 3.7rem;
+  background: #fff;
+  color: #273046;
+  box-shadow: 0 1.5px 10px 0 rgba(30,34,89,0.15);
+  display: flex;
+  align-items: center;
+  padding: 0 2.1rem;
+  position: sticky;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+}
+
+/*
+ * Header brand area (site name/logotype)
+ */
+.header__brand {
+  font-size: 1.19rem;
+  font-weight: 700;
+  padding-left: 0.8rem;
+  color: #273046;
+  letter-spacing: 0.008em;
+}
+
+/*
+ * Header menu toggle on mobile
+ */
+.header__menubtn {
+  display: none;
+  background: none;
+  border: none;
+  margin-right: 0.4em;
+  padding: 0.3em 0.33em 0.38em 0.2em;
+  border-radius: 0.32em;
+  font-size: 1.5rem;
+  color: #374151;
+  cursor: pointer;
+  transition: background 0.13s, color 0.13s;
+  &:hover,
+  &:focus-visible {
+    background: #dbecff;
+    color: #2563eb;
+  }
+  @media (max-width: 880px) {
+    display: block;
+  }
+}
+
+/*
+ * Main page content area
+ */
+.main {
+  flex: 1 1 auto;
+  width: 100%;
+  max-width: 110em;
+  margin: 0 auto;
+  padding: 2.2em 1.3em 2.4em 1.3em;
+  background: transparent;
+  min-height: 0;
+  outline: none;
+  @media (max-width: 540px) {
+    padding: 1em 0.3em 1.2em 0.3em;
+  }
+}

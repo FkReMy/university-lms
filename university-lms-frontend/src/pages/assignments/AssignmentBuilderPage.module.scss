@@ -1,0 +1,211 @@
+/*
+ * AssignmentBuilderPage.module.scss
+ * ----------------------------------------------------------
+ * Styles for the AssignmentBuilderPage (assignment editor).
+ * Form layout, blue-accented inputs, file upload chip, responsive.
+ */
+
+/* Page/card shell */
+.assignmentBuilderPage {
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 2em 1.2em 3em 1.2em;
+  min-height: 98vh;
+  background: #f8fafc;
+  display: flex;
+  flex-direction: column;
+}
+
+.assignmentBuilderPage__title {
+  font-size: 2em;
+  font-weight: 800;
+  color: #213050;
+  letter-spacing: 0.018em;
+  margin: 1.18em 0 1.30em 0;
+  text-align: left;
+}
+
+.assignmentBuilderPage__formArea {
+  background: #fff;
+  border-radius: 1.05em;
+  box-shadow: 0 4px 22px 0 rgba(30,34,89,0.08);
+  border: 1.1px solid #e5e7eb;
+  padding: 2em 1.2em 2.3em 1.2em;
+  margin-bottom: 1em;
+  flex: 1 1 auto;
+}
+
+.assignmentBuilderPage__loading {
+  font-size: 1.13em;
+  color: #64748b;
+  margin: 2.2em 0;
+  text-align: center;
+  font-weight: 500;
+}
+
+/* Form fields */
+.assignmentBuilderPage__form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.15em;
+}
+
+.assignmentBuilderPage__fieldRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1em 2em;
+  margin-bottom: 0.23em;
+  align-items: center;
+}
+
+.assignmentBuilderPage__label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 700;
+  color: #233151;
+  font-size: 1em;
+  gap: 0.44em;
+  margin-bottom: 0.14em;
+}
+
+.assignmentBuilderPage__input {
+  border-radius: 0.74em;
+  border: 1.5px solid #d1d5db;
+  background: #fff;
+  padding: 0.72em 1.02em;
+  font-size: 1em;
+  font-weight: 500;
+  color: #233151;
+  outline: none;
+  margin-top: 0.08em;
+  width: 100%;
+  max-width: 380px;
+  transition: border-color 0.15s, background 0.13s;
+  &:focus {
+    border-color: #2563eb;
+    background: #eaf3ff;
+    box-shadow: 0 1.6px 15px #2563eb13;
+  }
+}
+.assignmentBuilderPage__input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.36) sepia(1) saturate(4) hue-rotate(203deg);
+}
+
+.assignmentBuilderPage__textarea {
+  border-radius: 0.74em;
+  border: 1.5px solid #d1d5db;
+  background: #fafdff;
+  padding: 0.72em 1.02em;
+  font-size: 1em;
+  font-weight: 500;
+  color: #233151;
+  outline: none;
+  margin-top: 0.08em;
+  width: 100%;
+  min-width: 220px;
+  max-width: 410px;
+  min-height: 80px;
+  resize: vertical;
+  transition: border-color 0.15s, background 0.13s;
+  &:focus {
+    border-color: #2563eb;
+    background: #eaf3ff;
+    box-shadow: 0 1.6px 15px #2563eb13;
+  }
+}
+
+/* File input and chip */
+.assignmentBuilderPage__fileInput {
+  border-radius: 0.7em;
+  border: 1.2px solid #d1d5db;
+  background: #fff;
+  padding: 0.68em 1em;
+  font-size: 1em;
+  color: #233151;
+  cursor: pointer;
+  outline: none;
+  width: 100%;
+  max-width: 323px;
+  margin-top: 0.12em;
+  margin-bottom: 0.17em;
+  &:focus {
+    border-color: #2563eb;
+    background: #eaf3ff;
+  }
+}
+
+.assignmentBuilderPage__fileChip {
+  display: flex;
+  align-items: center;
+  background: #e0edff;
+  color: #2563eb;
+  border-radius: 1.3em;
+  font-weight: 600;
+  padding: 0.32em 1.25em 0.32em 1em;
+  margin-left: 0.61em;
+  margin-top: 0.23em;
+  font-size: 0.96em;
+  gap: 0.34em;
+}
+
+.assignmentBuilderPage__fileRemoveBtn {
+  border-radius: 50%;
+  background: #fbeaea;
+  border: none;
+  color: #e62727;
+  font-size: 1.10em;
+  width: 2em;
+  height: 2em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  margin-left: 0.19em;
+  cursor: pointer;
+  transition: background 0.11s, color 0.13s;
+  outline: none;
+  &:hover,
+  &:focus-visible {
+    background: #e62727;
+    color: #fff;
+    outline: none;
+  }
+}
+
+/* Actions */
+.assignmentBuilderPage__actions {
+  display: flex;
+  gap: 1.2em;
+  margin-top: 1.14em;
+}
+
+.assignmentBuilderPage__saveBtn {
+  border-radius: 0.7em;
+  background: #2563eb;
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.11em;
+  border: none;
+  padding: 0.85em 2.09em;
+  box-shadow: 0 2.8px 13px #2563eb13;
+  cursor: pointer;
+  outline: none;
+  transition: background 0.14s;
+  &:hover,
+  &:focus-visible {
+    background: #174ca6;
+    outline: none;
+  }
+}
+
+/* Responsive mobile */
+@media (max-width: 600px) {
+  .assignmentBuilderPage {
+    padding: 1.5em 0.15em 2.2em 0.15em;
+    font-size: 0.98em;
+  }
+  .assignmentBuilderPage__formArea {
+    padding: 1.11em 0.24em 1.4em 0.24em;
+  }
+}

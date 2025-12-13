@@ -1,0 +1,255 @@
+/*
+ * ProfileSettingsPage.module.scss
+ * ----------------------------------------------------------
+ * Styles for the ProfileSettingsPage (user profile settings).
+ * Card layout, avatar picker, blue-accented controls, divider, responsive.
+ */
+
+/* Page/card shell */
+.profileSettingsPage {
+  width: 100%;
+  max-width: 530px;
+  margin: 0 auto;
+  padding: 2.2em 1.2em 3em 1.2em;
+  min-height: 96vh;
+  background: #f8fafc;
+  display: flex;
+  flex-direction: column;
+}
+
+.profileSettingsPage__title {
+  font-size: 2em;
+  font-weight: 800;
+  color: #213050;
+  letter-spacing: 0.018em;
+  margin: 1.15em 0 1.2em 0;
+  text-align: left;
+}
+
+/* Main card */
+.profileSettingsPage__mainBox {
+  background: #fff;
+  border-radius: 1.05em;
+  box-shadow: 0 4px 22px 0 rgba(30,34,89,0.10);
+  border: 1.1px solid #e5e7eb;
+  padding: 1.7em 1.3em 2.4em 1.3em;
+  margin-bottom: 1em;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Loading state */
+.profileSettingsPage__loading {
+  font-size: 1.13em;
+  color: #64748b;
+  margin: 2.2em 0;
+  text-align: center;
+  font-weight: 500;
+}
+
+/* Avatar picker row */
+.profileSettingsPage__avatarRow {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  margin-bottom: 1.5em;
+}
+
+.profileSettingsPage__avatarLabel {
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.profileSettingsPage__avatarImg {
+  width: 74px;
+  height: 74px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid #2563eb;
+  background: #e0edff;
+  box-shadow: 0 2px 7px #2563eb22;
+}
+
+.profileSettingsPage__avatarInitials {
+  width: 74px;
+  height: 74px;
+  border-radius: 50%;
+  background: #e0edff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.1em;
+  color: #2563eb;
+  font-weight: 800;
+  border: 3px solid #2563eb;
+  user-select: none;
+  box-shadow: 0 2px 7px #2563eb17;
+}
+
+/* Hidden input for avatar file */
+.profileSettingsPage__avatarInput {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  width: 74px;
+  height: 74px;
+  cursor: pointer;
+}
+
+.profileSettingsPage__avatarRemoveBtn {
+  border-radius: 50%;
+  background: #fbeaea;
+  border: none;
+  color: #e62727;
+  font-size: 1.24em;
+  width: 2.18em;
+  height: 2.18em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  margin-left: 0.27em;
+  cursor: pointer;
+  transition: background 0.10s, color 0.13s;
+  outline: none;
+  &:hover,
+  &:focus-visible {
+    background: #e62727;
+    color: #fff;
+    outline: none;
+  }
+}
+
+/* Input/form fields */
+.profileSettingsPage__form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.09em;
+}
+
+.profileSettingsPage__fieldRow {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.37em;
+  margin-bottom: 0.07em;
+}
+
+.profileSettingsPage__input {
+  border-radius: 0.7em;
+  border: 1.5px solid #d1d5db;
+  background: #fff;
+  padding: 0.78em 1.12em;
+  font-size: 1em;
+  font-weight: 500;
+  color: #233151;
+  outline: none;
+  width: 100%;
+  max-width: 360px;
+  margin-top: 0.08em;
+  transition: border-color 0.14s, background 0.14s;
+  &:focus {
+    border-color: #2563eb;
+    background: #eaf3ff;
+    box-shadow: 0 1.2px 14px #2563eb13;
+  }
+  &:disabled {
+    background: #e5e7eb;
+    color: #b1b1b1;
+    cursor: not-allowed;
+  }
+}
+
+/* Actions */
+.profileSettingsPage__actions {
+  display: flex;
+  align-items: center;
+  gap: 1.2em;
+  margin-top: 1.23em;
+}
+
+.profileSettingsPage__saveBtn {
+  border-radius: 0.7em;
+  background: #2563eb;
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.11em;
+  border: none;
+  padding: 0.87em 2.13em;
+  box-shadow: 0 2.8px 13px #2563eb13;
+  cursor: pointer;
+  outline: none;
+  transition: background 0.14s;
+  &:hover,
+  &:focus-visible {
+    background: #174ca6;
+    outline: none;
+  }
+  &:disabled {
+    background: #c7d5fa;
+    color: #fff;
+    cursor: not-allowed;
+  }
+}
+
+.profileSettingsPage__savedMsg {
+  font-size: 1.09em;
+  font-weight: 700;
+  color: #179a4e;
+  background: #e5ffe9;
+  border-radius: 0.7em;
+  padding: 0.65em 1.28em;
+  text-align: center;
+  margin-left: 1.04em;
+}
+
+/* Divider for sections */
+.profileSettingsPage__divider {
+  height: 1.2px;
+  border-radius: 0.5em;
+  background: #e5e7eb;
+  margin: 2em 0 1.5em 0;
+  border: none;
+}
+
+/* Password section */
+.profileSettingsPage__pwRow {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  margin-bottom: 0.6em;
+}
+
+.profileSettingsPage__pwShowBtn {
+  background: #edeff9;
+  color: #2563eb;
+  border: 1.07px solid #dbeafe;
+  border-radius: 0.7em;
+  font-size: 0.98em;
+  font-weight: 700;
+  padding: 0.63em 1.32em;
+  cursor: pointer;
+  outline: none;
+  transition: background 0.13s, color 0.13s;
+  &:hover,
+  &:focus-visible {
+    background: #e0edff;
+    color: #174ca6;
+    outline: none;
+  }
+}
+
+/* Responsive for mobile */
+@media (max-width: 640px) {
+  .profileSettingsPage {
+    padding: 1.2em 0.13em 2em 0.13em;
+    font-size: 0.97em;
+  }
+  .profileSettingsPage__mainBox {
+    padding: 0.94em 0.19em 1.6em 0.19em;
+  }
+}

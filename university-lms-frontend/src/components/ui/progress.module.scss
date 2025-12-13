@@ -1,0 +1,113 @@
+/*
+ * progress.module.scss
+ * ----------------------------------------------------------
+ * Styles for the Progress UI component using CSS Modules.
+ * Includes wrapper, label, bar, fill (variants), and value display.
+ */
+
+/*
+ * Wrapper layout and spacing
+ */
+.progress__wrapper {
+  width: 100%;
+  max-width: 32rem;
+  margin: 0.85rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.38rem;
+}
+
+/*
+ * Optional external label above the bar
+ */
+.progress__label {
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 0.1rem;
+  color: #374151; // gray-700
+}
+
+/*
+ * Outer progress bar (track)
+ */
+.progress {
+  width: 100%;
+  height: 1.14rem;
+  background: #f3f4f6;
+  border-radius: 0.56rem;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  box-shadow: 0 0.5px 2.5px 0 rgba(30,34,89,0.11);
+}
+
+/*
+ * Filled bar (actual progress)
+ */
+.progress__bar {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  border-radius: 0.56rem 0 0 0.56rem;
+  transition: width 0.33s cubic-bezier(.5,.11,.34,.99), background 0.15s;
+  font-size: 0.97rem;
+  font-weight: 500;
+  color: #fff;
+  position: relative;
+  white-space: nowrap;
+  justify-content: flex-end;
+  padding-right: 0.7em;
+  box-sizing: border-box;
+}
+
+/*
+ * Default/primary variant (Blue)
+ */
+.progress--primary {
+  background: linear-gradient(90deg, #2563eb 0%, #3b82f6 100%);
+}
+
+/*
+ * Success/green variant
+ */
+.progress--success {
+  background: linear-gradient(90deg, #22c55e 0%, #16a34a 100%);
+}
+
+/*
+ * Warning/yellow variant
+ */
+.progress--warning {
+  background: linear-gradient(90deg, #facc15 0%, #eab308 100%);
+  color: #7d5605 !important;
+}
+
+/*
+ * Error/red variant
+ */
+.progress--error {
+  background: linear-gradient(90deg, #f87171 0%, #dc2626 100%);
+}
+
+/*
+ * Neutral/gray variant
+ */
+.progress--neutral {
+  background: linear-gradient(90deg, #e4e4e7 0%, #94a3b8 100%);
+  color: #334155 !important;
+}
+
+/*
+ * Value label inside the bar (shows %)
+ */
+.progress__value {
+  padding-left: 0.5em;
+  padding-right: 0.2em;
+  font-size: 0.97rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: inherit;
+  text-shadow: 0 1.5px 6px rgba(30,34,89,0.10);
+}

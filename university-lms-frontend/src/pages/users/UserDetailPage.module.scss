@@ -1,0 +1,188 @@
+/*
+ * UserDetailPage.module.scss
+ * ----------------------------------------------------------
+ * Styles for the UserDetailPage (user profile/admin view).
+ * Card panel, section accent, blue highlights, responsive.
+ */
+
+/* Root page layout */
+.userDetailPage {
+  max-width: 840px;
+  margin: 0 auto;
+  padding: 2.3em 1.3em 3.5em 1.3em;
+  min-height: 94vh;
+  background: #f8fafc;
+  display: flex;
+  flex-direction: column;
+}
+
+.userDetailPage__loading,
+.userDetailPage__empty {
+  font-size: 1.15em;
+  color: #64748b;
+  margin: 3em 0;
+  text-align: center;
+  font-weight: 500;
+}
+
+/* Main card container */
+.userDetailPage__container {
+  background: #fff;
+  border-radius: 1em;
+  box-shadow: 0 3.5px 24px 0 rgba(30,34,89,0.11);
+  border: 1.3px solid #e0edff;
+  padding: 2em 2.1em 2.6em 2em;
+  display: flex;
+  flex-direction: column;
+  gap: 1.6em;
+}
+
+.userDetailPage__header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45em;
+  margin-bottom: 0.9em;
+}
+
+.userDetailPage__title {
+  font-size: 1.5em;
+  font-weight: 800;
+  color: #213050;
+  letter-spacing: 0.016em;
+  margin-bottom: 0.25em;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 0.72em; /* For badges */
+}
+
+.userDetailPage__infoRow {
+  font-size: 1em;
+  color: #273046;
+  margin-bottom: 0.09em;
+  display: flex;
+  gap: 0.52em;
+  align-items: baseline;
+}
+
+.userDetailPage__label {
+  font-weight: 600;
+  color: #485471;
+  margin-right: 0.17em;
+}
+
+.userDetailPage__email {
+  font-family: 'JetBrains Mono', 'Consolas', monospace;
+  color: #2563eb;
+  font-size: 1em;
+  letter-spacing: 0.01em;
+}
+
+/* Section accent card */
+.userDetailPage__section {
+  margin-bottom: 1.7em;
+  margin-top: -0.35em;
+}
+
+.userDetailPage__sectionTitle {
+  font-size: 1.13em;
+  font-weight: 700;
+  color: #213050;
+  letter-spacing: 0.009em;
+  margin-bottom: 0.58em;
+  margin-top: 0.2em;
+}
+
+/* Enrollments/courses table */
+.userDetailPage__coursesTable {
+  width: 100%;
+  background: #f8fafc;
+  border-radius: 0.74em;
+  border: 1.1px solid #e5e7eb;
+  box-shadow: 0 1.7px 12px #2563eb06;
+  font-size: 1em;
+  margin-bottom: 0.3em;
+  border-spacing: 0;
+  overflow: hidden;
+  table-layout: auto;
+}
+
+.userDetailPage__coursesTable th {
+  font-weight: 700;
+  color: #233151;
+  background: #e0edff;
+  padding: 0.62em 1.1em;
+  text-align: left;
+  font-size: 1em;
+  border-bottom: 1px solid #e5e7eb;
+  letter-spacing: 0.019em;
+}
+
+.userDetailPage__coursesTable td {
+  color: #273046;
+  padding: 0.62em 1.1em;
+  font-size: 1em;
+  border-bottom: 1px solid #f3f3f6;
+  vertical-align: middle;
+}
+
+.userDetailPage__coursesTable tr:last-child td {
+  border-bottom: none;
+}
+
+.userDetailPage__coursesTable tr {
+  background: #fff;
+  transition: background 0.13s;
+}
+.userDetailPage__coursesTable tr:hover {
+  background: #f4f7fd;
+}
+
+/* Actions row (admin) */
+.userDetailPage__actions {
+  display: flex;
+  gap: 1.2em;
+  margin-top: 1.2em;
+}
+
+.userDetailPage__actionBtn {
+  border-radius: 0.7em;
+  background: #f1f5f9;
+  color: #2563eb;
+  font-weight: 700;
+  font-size: 1em;
+  border: 1.1px solid #dbeafe;
+  padding: 0.69em 1.59em;
+  box-shadow: 0 1.2px 8px #2563eb0b;
+  transition: background 0.13s, color 0.13s, border-color 0.11s;
+  outline: none;
+  cursor: pointer;
+  &:hover,
+  &:focus-visible {
+    background: #e0edff;
+    color: #174ca6;
+    outline: none;
+  }
+  &:disabled {
+    background: #f1f5f9;
+    color: #bdbdbd;
+    border-color: #ececec;
+    cursor: default;
+  }
+}
+
+/* Responsive for mobile */
+@media (max-width: 700px) {
+  .userDetailPage__container {
+    padding: 1.1em 0.3em 2em 0.2em;
+  }
+}
+
+@media (max-width: 500px) {
+  .userDetailPage__coursesTable {
+    font-size: 0.96em;
+    min-width: 380px;
+    display: block;
+    overflow-x: auto;
+  }
+}

@@ -1,0 +1,153 @@
+/*
+ * FileUploadItem.module.scss
+ * ----------------------------------------------------------
+ * Styles for FileUploadItem component in upload list.
+ * Modern, compact display for LMS: icon, info, progress, remove.
+ */
+
+/* Item wrapper */
+.fileUploadItem {
+  display: flex;
+  align-items: stretch;
+  gap: 1.02em;
+  background: #f7fafc;
+  border-radius: 0.83em;
+  box-shadow: 0 1.1px 9px 0 rgba(30, 34, 89, 0.06);
+  padding: 0.93em 1.28em 0.93em 0.93em;
+  margin-bottom: 0.6em;
+  position: relative;
+  min-height: 3.9em;
+  font-size: 1.08em;
+  transition: box-shadow 0.14s, background 0.14s;
+
+  &.fileUploadItem--uploading {
+    background: #e0edff;
+    box-shadow: 0 3px 19px 0 rgba(37,99,235,0.10);
+  }
+  &.fileUploadItem--error {
+    background: #fbeaea;
+    box-shadow: 0 1.1px 9px 0 rgba(230,39,39,0.09);
+  }
+  &.fileUploadItem--done {
+    background: #f7fafc;
+  }
+}
+
+/* Icon area */
+.fileUploadItem__icon {
+  min-width: 2.2em;
+  min-height: 2.2em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2em;
+  color: #2563eb;
+  background: #e0edff;
+  border-radius: 0.58em;
+  box-shadow: 0 0.5px 4px #2563eb14;
+
+  svg, img {
+    width: 1.3em;
+    height: 1.3em;
+  }
+}
+
+/* Info area (name, size, status) */
+.fileUploadItem__info {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.18em;
+}
+
+.fileUploadItem__name {
+  font-weight: 600;
+  color: #213050;
+  font-size: 1.1em;
+  line-height: 1.17;
+  word-break: break-all;
+}
+
+.fileUploadItem__meta {
+  font-size: 0.97em;
+  color: #64748b;
+  margin-top: 0.05em;
+}
+
+.fileUploadItem__size {
+  font-variant-numeric: tabular-nums;
+}
+
+.fileUploadItem__statusLine {
+  margin-top: 0.16em;
+  display: flex;
+  align-items: center;
+  gap: 0.8em;
+}
+
+/* Remove (✕) button */
+.fileUploadItem__remove {
+  position: absolute;
+  right: 0.72em;
+  top: 0.72em;
+  background: none;
+  color: #a1a1a1;
+  border: none;
+  font-size: 1.28em;
+  cursor: pointer;
+  padding: 0.13em 0.32em;
+  border-radius: 50%;
+  transition: color 0.13s, background 0.11s;
+
+  &:hover,
+  &:focus-visible {
+    background: #ffeaea;
+    color: #dc2626;
+    outline: none;
+  }
+}
+
+/* Progress bar for uploading */
+.fileUploadItem__progressWrap {
+  display: flex;
+  align-items: center;
+  gap: 0.57em;
+}
+
+.fileUploadItem__progressBar {
+  width: 6.5em;
+  height: 0.48em;
+  background: #e5e7eb;
+  border-radius: 5em;
+  overflow: hidden;
+  margin-right: 0.3em;
+}
+
+.fileUploadItem__progress {
+  height: 100%;
+  background: #2563eb;
+  border-radius: 5em 0 0 5em;
+  transition: width 0.19s cubic-bezier(0.33,1,0.68,1);
+}
+
+/* Progress as text */
+.fileUploadItem__progressText {
+  font-size: 0.96em;
+  color: #2563eb;
+  font-weight: 500;
+}
+
+/* Status label */
+.fileUploadItem__statusText {
+  font-size: 0.99em;
+  color: #64748b;
+  font-weight: 400;
+  margin-left: 0.14em;
+}
+
+.fileUploadItem__statusText--error {
+  color: #e62727;
+  font-weight: 600;
+}

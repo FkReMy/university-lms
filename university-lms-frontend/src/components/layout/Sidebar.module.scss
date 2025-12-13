@@ -1,0 +1,122 @@
+/*
+ * Sidebar.module.scss
+ * ----------------------------------------------------------
+ * Styles for the standalone Sidebar layout component.
+ * Ensures consistency with AppShell but allows for isolated use if desired.
+ */
+
+/*
+ * Sidebar wrapper
+ */
+.sidebar {
+  position: relative;
+  width: 250px;
+  min-width: 210px;
+  max-width: 300px;
+  background: #1e293b;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  border-right: 1px solid #e0e7ef;
+  z-index: 1100;
+  transition: transform 0.24s cubic-bezier(.5,.2,.24,.99), box-shadow 0.24s;
+  box-shadow: 1px 0 15px 0 rgba(15,15,32,0.09);
+
+  @media (max-width: 880px) {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    transform: translateX(-101%);
+    box-shadow: none;
+    border-right: none;
+  }
+}
+
+.sidebar--open {
+  @media (max-width: 880px) {
+    transform: translateX(0%);
+    box-shadow: 4px 0 32px 0 rgba(16,18,48,0.28);
+    border-right: 1px solid #1e293b;
+    z-index: 2100;
+  }
+}
+
+/*
+ * Sidebar header (brand/logo and close button)
+ */
+.sidebar__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 3.4rem;
+  padding: 1.1rem 1.1rem 0.3rem 1.2rem;
+}
+.sidebar__closebtn {
+  background: none;
+  border: none;
+  font-size: 1.7rem;
+  color: #94a3b8;
+  border-radius: 0.35em;
+  padding: 0.14em 0.32em;
+  cursor: pointer;
+  transition: background 0.11s, color 0.13s;
+  &:hover,
+  &:focus-visible {
+    background: #334155;
+    color: #fff;
+  }
+}
+
+/*
+ * Sidebar nav list
+ */
+.sidebar__nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding: 0.3rem 0 1.5rem 0.7rem;
+
+  a {
+    text-decoration: none;
+  }
+}
+
+.sidebar__navitem {
+  color: #e2e8f0;
+  padding: 0.8em 0.7em 0.8em 0.6em;
+  border-radius: 0.4em;
+  font-size: 1.02rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  transition: background 0.13s, color 0.16s;
+  margin-right: 1.5em;
+
+  &:hover,
+  &:focus-visible {
+    background: #2563eb;
+    color: #fff;
+  }
+}
+
+/*
+ * Active nav item modifier (for current page)
+ */
+.sidebar__navitem--active,
+.sidebar__navitem[aria-current="page"] {
+  background: #2563eb;
+  color: #fff;
+}
+
+/*
+ * Footer/bottom area (e.g., user info, copyright)
+ */
+.sidebar__bottom {
+  margin-top: auto;
+  padding: 1rem 1.1rem 1.2rem 1.1rem;
+  font-size: 0.98rem;
+  color: #cbd5e1;
+  border-top: 1px solid #334155;
+  background: #192132;
+}

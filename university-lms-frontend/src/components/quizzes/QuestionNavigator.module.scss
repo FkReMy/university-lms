@@ -1,0 +1,115 @@
+/*
+ * QuestionNavigator.module.scss
+ * ----------------------------------------------------------
+ * Styles for the QuestionNavigator component (quiz/page nav dots/tabs).
+ * Highlights current, answered; spacing for Prev/Next; mobile friendly.
+ */
+
+/* Root nav */
+.questionNavigator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1em;
+  padding: 1.1em 0 0.85em 0;
+  background: transparent;
+  font-size: 1.08em;
+  user-select: none;
+}
+
+/* Prev/Next arrows */
+.questionNavigator__arrow {
+  background: #e0edff;
+  color: #2563eb;
+  border: none;
+  font-size: 1.25em;
+  padding: 0.38em 0.88em;
+  margin: 0 0.1em;
+  border-radius: 0.85em;
+  font-weight: 700;
+  box-shadow: 0 1.2px 9px 0 rgba(37,99,235,0.04);
+  cursor: pointer;
+  transition: background 0.15s, color 0.13s, box-shadow 0.11s;
+
+  &:disabled {
+    background: #f1f5f9;
+    color: #bdbdbd;
+    cursor: default;
+    box-shadow: none;
+  }
+
+  &:hover:not(:disabled),
+  &:focus-visible:not(:disabled) {
+    background: #2563eb;
+    color: #fff;
+    outline: none;
+  }
+}
+
+/* Numbered tab/list */
+.questionNavigator__list {
+  display: flex;
+  align-items: center;
+  gap: 0.56em;
+  flex-wrap: wrap;
+}
+
+/* Individual dot/tab */
+.questionNavigator__tab {
+  min-width: 2.32em;
+  height: 2.32em;
+  border-radius: 0.66em;
+  background: #f4f7fd;
+  color: #213050;
+  border: 1.6px solid #e0edff;
+  font-weight: 600;
+  font-size: 1em;
+  cursor: pointer;
+  box-shadow: 0 1px 9px 0 rgba(30,34,89,0.04);
+  transition: background 0.12s, color 0.13s, border 0.11s;
+  outline: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover:not(.questionNavigator__tab--active):not(:disabled),
+  &:focus-visible:not(.questionNavigator__tab--active):not(:disabled) {
+    border-color: #2563eb;
+    color: #2563eb;
+    background: #e0edff;
+  }
+}
+
+/* Current (active) tab */
+.questionNavigator__tab--active {
+  background: #2563eb;
+  color: #fff;
+  border-color: #2563eb;
+  box-shadow: 0 3px 13px 0 rgba(37,99,235,0.14);
+  cursor: default;
+  z-index: 2;
+}
+
+/* Answered tab */
+.questionNavigator__tab--answered:not(.questionNavigator__tab--active) {
+  background: #e0edff;
+  border-color: #bae5fd;
+  color: #2563eb;
+}
+
+/* Responsive for small screens */
+@media (max-width: 500px) {
+  .questionNavigator {
+    font-size: 1em;
+    gap: 0.45em;
+  }
+  .questionNavigator__tab {
+    min-width: 1.8em;
+    height: 1.8em;
+    font-size: 0.98em;
+  }
+  .questionNavigator__arrow {
+    font-size: 1.06em;
+    padding: 0.32em 0.47em;
+  }
+}

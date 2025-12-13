@@ -1,0 +1,206 @@
+/*
+ * SpecializationsPage.module.scss
+ * ----------------------------------------------------------
+ * Styles for the SpecializationsPage (specialization/minor directory).
+ * Card-panel layout, filter/search/add controls, blue accent, responsive.
+ */
+
+/* Root page layout */
+.specializationsPage {
+  width: 100%;
+  max-width: 950px;
+  margin: 0 auto;
+  padding: 2em 1.2em 3.3em 1.2em;
+  min-height: 100vh;
+  background: #f8fafc;
+  display: flex;
+  flex-direction: column;
+}
+
+.specializationsPage__title {
+  font-size: 2em;
+  font-weight: 800;
+  color: #213050;
+  letter-spacing: 0.018em;
+  margin: 1.25em 0 1.3em 0;
+  text-align: left;
+}
+
+/* Controls */
+.specializationsPage__controls {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  margin-bottom: 1.7em;
+  flex-wrap: wrap;
+}
+
+.specializationsPage__search {
+  border-radius: 0.7em;
+  border: 1.45px solid #d1d5db;
+  background: #fff;
+  padding: 0.8em 1.05em;
+  font-size: 1em;
+  min-width: 14em;
+  font-weight: 500;
+  color: #233151;
+  transition: border-color 0.13s, box-shadow 0.13s;
+  outline: none;
+  &:focus {
+    border-color: #2563eb;
+    background: #eaf3ff;
+    box-shadow: 0 1.2px 15px #2563eb16;
+  }
+}
+
+.specializationsPage__departmentSelect {
+  border-radius: 0.7em;
+  border: 1.45px solid #d1d5db;
+  background: #fff;
+  padding: 0.8em 1.35em 0.8em 0.8em;
+  font-size: 1em;
+  color: #2563eb;
+  font-weight: 600;
+  min-width: 11em;
+  outline: none;
+  transition: border-color 0.13s, box-shadow 0.13s;
+  &:focus {
+    border-color: #2563eb;
+    background: #eaf3ff;
+  }
+}
+
+.specializationsPage__addBtn {
+  border-radius: 0.75em;
+  background: #2563eb;
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.07em;
+  border: none;
+  padding: 0.81em 1.87em;
+  box-shadow: 0 2.8px 13px #2563eb12;
+  transition: background 0.14s;
+  cursor: pointer;
+  outline: none;
+  &:hover,
+  &:focus-visible {
+    background: #174ca6;
+    outline: none;
+  }
+}
+
+/* Table area */
+.specializationsPage__listArea {
+  background: #fff;
+  border-radius: 1.05em;
+  box-shadow: 0 4.5px 29px 0 rgba(30,34,89,0.11);
+  border: 1.2px solid #e5e7eb;
+  margin-bottom: 1em;
+  padding: 0;
+  min-height: 12em;
+  display: flex;
+  flex-direction: column;
+}
+
+.specializationsPage__loading,
+.specializationsPage__empty {
+  font-size: 1.16em;
+  color: #64748b;
+  margin: 3em 0;
+  text-align: center;
+  font-weight: 500;
+}
+
+/* Table styling */
+.specializationsPage__table {
+  width: 100%;
+  border-radius: 1.05em;
+  background: #fff;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  font-size: 1em;
+}
+
+.specializationsPage__table th {
+  font-weight: 700;
+  color: #233151;
+  background: #e0edff;
+  padding: 0.68em 1em;
+  text-align: left;
+  font-size: 1em;
+  border-bottom: 1.1px solid #e5e7eb;
+  letter-spacing: 0.02em;
+}
+
+.specializationsPage__table td {
+  color: #273046;
+  padding: 0.74em 1em;
+  font-size: 1em;
+  border-bottom: 1px solid #f3f3f6;
+  vertical-align: middle;
+}
+
+.specializationsPage__table tr:last-child td {
+  border-bottom: none;
+}
+
+.specializationsPage__table tr {
+  background: #fff;
+  transition: background 0.13s;
+}
+.specializationsPage__table tr:hover {
+  background: #f4f7fd;
+}
+
+/* Action buttons */
+.specializationsPage__actionBtn {
+  border-radius: 0.6em;
+  background: #f1f5f9;
+  color: #2563eb;
+  border: 1.1px solid #dbeafe;
+  font-weight: 600;
+  font-size: 0.99em;
+  padding: 0.39em 1.1em;
+  margin-right: 0.48em;
+  cursor: pointer;
+  transition: background 0.13s, color 0.15s, border-color 0.11s;
+  outline: none;
+  &:hover,
+  &:focus-visible {
+    background: #e0edff;
+    color: #174ca6;
+    outline: none;
+  }
+  &:last-child {
+    margin-right: 0;
+  }
+}
+
+/* Responsive for mobile */
+@media (max-width: 700px) {
+  .specializationsPage__controls {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.55em;
+  }
+}
+
+@media (max-width: 600px) {
+  .specializationsPage {
+    font-size: 0.97em;
+    padding: 1em 0.2em 3em 0.2em;
+  }
+
+  .specializationsPage__listArea {
+    padding: 0;
+  }
+
+  .specializationsPage__table {
+    font-size: 0.97em;
+    width: 98vw;
+    min-width: 400px;
+    display: block;
+    overflow-x: auto;
+  }
+}

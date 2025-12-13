@@ -1,0 +1,131 @@
+/*
+ * GradeDistributionChart.module.scss
+ * ----------------------------------------------------------
+ * Styles for the GradeDistributionChart component.
+ * Modern, clean histogram; blue bars, axis, value markers.
+ */
+
+/* Chart region root */
+.gradeDistributionChart {
+  width: 100%;
+  max-width: 34em;
+  background: #fff;
+  border-radius: 1.1em;
+  box-shadow: 0 3.5px 18px 0 rgba(30,34,89,0.10);
+  border: 1.4px solid #e5e7eb;
+  font-size: 1.01em;
+  margin-bottom: 1.5em;
+  padding: 1.2em 1.7em 1.6em 1.2em;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  min-width: 13em;
+}
+
+/* Horizontal axis (bin ticks) */
+.gradeDistributionChart__axis {
+  display: flex;
+  align-items: flex-end;
+  gap: 0;
+  margin-bottom: 0.6em;
+  padding: 0 0.18em;
+}
+
+/* Tick under each bin */
+.gradeDistributionChart__tick {
+  flex: 1 1 0;
+  text-align: center;
+  font-size: 0.99em;
+}
+
+.gradeDistributionChart__tickLabel {
+  color: #64748b;
+  font-size: 0.99em;
+  opacity: 0.95;
+  letter-spacing: 0.01em;
+  font-weight: 500;
+  user-select: none;
+}
+
+/* Main bars area */
+.gradeDistributionChart__bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.27em;
+  min-height: 7em;
+  width: 100%;
+  background: #f8fafc;
+  border-radius: 0.45em;
+  box-shadow: 0 1px 9px 0 #2563eb0b;
+  position: relative;
+}
+
+/* Wrapper for each bar column (bar + label) */
+.gradeDistributionChart__barWrap {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  justify-content: flex-end;
+  position: relative;
+}
+
+/* The bar itself */
+.gradeDistributionChart__bar {
+  width: 76%;
+  min-width: 1.1em;
+  max-width: 1.8em;
+  background: linear-gradient(180deg, #4f97fd 0%, #2563eb 100%);
+  border-radius: 0.62em 0.62em 0 0;
+  margin-bottom: 0.25em;
+  box-shadow: 0 1.5px 7px 0 #2563eb22;
+  transition: height 0.25s, background 0.14s;
+  display: block;
+}
+
+/* Count label for each bar */
+.gradeDistributionChart__countLabel {
+  font-size: 0.95em;
+  color: #2563eb;
+  font-weight: 600;
+  margin-bottom: 0.18em;
+  text-shadow: 0 1px 6px #fff;
+  opacity: 0.93;
+  pointer-events: none;
+}
+
+/* X-axis label */
+.gradeDistributionChart__xlabel {
+  text-align: center;
+  color: #64748b;
+  font-size: 0.98em;
+  font-weight: 500;
+  opacity: 0.95;
+  margin-top: 0.84em;
+  letter-spacing: 0.02em;
+}
+
+.gradeDistributionChart__empty {
+  width: 100%;
+  text-align: center;
+  color: #64748b;
+  font-size: 1.07em;
+  opacity: 0.93;
+  margin-top: 2.2em;
+  position: absolute;
+  left: 0;
+}
+
+/* Responsive for small screens */
+@media (max-width: 600px) {
+  .gradeDistributionChart {
+    padding: 0.8em 0.6em 1.0em 0.8em;
+    font-size: 0.96em;
+    min-width: 0;
+    max-width: 100vw;
+  }
+  .gradeDistributionChart__bars {
+    min-height: 5em;
+  }
+}

@@ -1,0 +1,57 @@
+/*
+ * LoadingState.module.scss
+ * ----------------------------------------------------------
+ * Styles for LoadingState spinner/indicator component.
+ * Centers spinner and provides clean label presentation.
+ */
+
+/* Main wrapper centers its content */
+.loadingState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 32vh;
+  width: 100%;
+  padding: 2.1em 1em 1.9em 1em;
+  background: transparent;
+  text-align: center;
+  user-select: none;
+}
+
+/* Centering spinner + label group */
+.loadingState__center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.12em;
+}
+
+/* Spinner SVG wrapper */
+.loadingState__spinner {
+  display: block;
+  width: 2.6em;
+  height: 2.6em;
+  color: #2563eb;
+
+  svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+}
+
+/* Animated spinner */
+.loadingState__spinner svg path[stroke="#2563eb"] {
+  /* The rotating arc */
+  transform-origin: center;
+}
+
+/* Status label */
+.loadingState__label {
+  font-size: 1.09em;
+  font-weight: 500;
+  color: #273046;
+  margin-top: 0.1em;
+  letter-spacing: 0.01em;
+}

@@ -1,0 +1,76 @@
+/*
+ * Breadcrumbs.module.scss
+ * ----------------------------------------------------------
+ * Styles for Breadcrumbs navigation component.
+ * Provides horizontal list, separators, and accessible focus/active states.
+ */
+
+/* Breadcrumbs nav wrapper */
+.breadcrumbs {
+  width: 100%;
+  background: transparent;
+  padding: 0.1em 0;
+  font-size: 1.05rem;
+  user-select: none;
+}
+
+/* Breadcrumbs list (ol) */
+.breadcrumbs__list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Individual crumb (li) */
+.breadcrumbs__item {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* Link or label styling */
+.breadcrumbs__link {
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.13s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 19em;
+  display: inline-block;
+
+  &:hover,
+  &:focus-visible {
+    color: #174ca6;
+    text-decoration: underline;
+    outline: none;
+  }
+}
+
+/* Current/active crumb (not a link) */
+.breadcrumbs__link--current {
+  color: #273046;
+  font-weight: 600;
+  cursor: default;
+  text-decoration: none;
+  pointer-events: none;
+}
+
+/* Chevron or separator */
+.breadcrumbs__separator {
+  margin: 0 0.47em;
+  color: #b6becb;
+  opacity: 0.68;
+  display: flex;
+  align-items: center;
+
+  svg {
+    display: block;
+    vertical-align: middle;
+  }
+}

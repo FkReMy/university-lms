@@ -1,0 +1,57 @@
+/*
+ * skeleton.module.scss
+ * ----------------------------------------------------------
+ * Styles for the Skeleton UI component using CSS Modules.
+ * Includes shimmer animation and shapes.
+ */
+
+/*
+ * Base skeleton block
+ */
+.skeleton {
+  background: #f3f4f6;
+  border-radius: 0.36em;
+  min-width: 1.2em;
+  min-height: 1em;
+  display: inline-block;
+  position: relative;
+  overflow: hidden;
+  vertical-align: middle;
+  box-shadow: 0 1.2px 4.5px rgba(30,34,89,0.08);
+
+  /* Shimmer animation */
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      110deg,
+      transparent 0%,
+      #e0e7ef 40%,
+      #e5e7eb 60%,
+      transparent 100%
+    );
+    animation: skeleton-shimmer 1.35s linear infinite;
+    z-index: 1;
+  }
+}
+
+/*
+ * Circle variant (for avatar, icon loading placeholders)
+ */
+.skeleton__circle {
+  border-radius: 50% !important;
+  aspect-ratio: 1 / 1;
+}
+
+/*
+ * Keyframes for shimmer
+ */
+@keyframes skeleton-shimmer {
+  to {
+    transform: translateX(100%);
+  }
+  from {
+    transform: translateX(-100%);
+  }
+}

@@ -1,0 +1,205 @@
+/*
+ * AssignmentSubmissionPage.module.scss
+ * ----------------------------------------------------------
+ * Styles for the AssignmentSubmissionPage (student submission form).
+ * Card form, blue-accented input, file chip, responsive, thank you UI.
+ */
+
+/* Page/card shell */
+.assignmentSubmissionPage {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 2em 1.2em 3em 1.2em;
+  min-height: 95vh;
+  background: #f8fafc;
+  display: flex;
+  flex-direction: column;
+}
+
+.assignmentSubmissionPage__mainBox {
+  background: #fff;
+  border-radius: 1.05em;
+  box-shadow: 0 4px 22px 0 rgba(30,34,89,0.11);
+  border: 1.1px solid #e5e7eb;
+  padding: 2em 1.15em 2.5em 1.15em;
+  margin-bottom: 1em;
+  flex: 1 1 auto;
+}
+
+.assignmentSubmissionPage__title {
+  font-size: 2em;
+  font-weight: 800;
+  color: #213050;
+  margin-bottom: 0.37em;
+}
+
+.assignmentSubmissionPage__due {
+  color: #2563eb;
+  font-size: 1.07em;
+  font-weight: 700;
+  background: #e0edff;
+  padding: 0.51em 1.1em;
+  border-radius: 0.6em;
+  display: inline-block;
+  margin-bottom: 1.19em;
+}
+
+.assignmentSubmissionPage__desc {
+  font-size: 1.05em;
+  background: #f4f6fa;
+  color: #233151;
+  border-radius: 0.6em;
+  padding: 1.1em 1.37em;
+  margin-bottom: 1.21em;
+  line-height: 1.7;
+  font-weight: 500;
+  font-style: normal;
+}
+
+/* Form area */
+.assignmentSubmissionPage__form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.15em;
+}
+
+.assignmentSubmissionPage__fileRow {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  flex-wrap: wrap;
+}
+
+.assignmentSubmissionPage__label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 700;
+  color: #233151;
+  font-size: 1em;
+  gap: 0.37em;
+}
+
+.assignmentSubmissionPage__fileInput {
+  border-radius: 0.7em;
+  border: 1.2px solid #d1d5db;
+  background: #fff;
+  padding: 0.68em 1em;
+  font-size: 1em;
+  color: #233151;
+  cursor: pointer;
+  outline: none;
+  width: 100%;
+  max-width: 323px;
+  margin-top: 0.12em;
+  margin-bottom: 0.17em;
+  &:focus {
+    border-color: #2563eb;
+    background: #eaf3ff;
+  }
+}
+
+/* File chip */
+.assignmentSubmissionPage__fileChip {
+  display: flex;
+  align-items: center;
+  background: #e0edff;
+  color: #2563eb;
+  border-radius: 1.3em;
+  font-weight: 600;
+  padding: 0.32em 1.19em 0.32em 1em;
+  font-size: 0.96em;
+  gap: 0.29em;
+}
+
+.assignmentSubmissionPage__fileRemoveBtn {
+  border-radius: 50%;
+  background: #fbeaea;
+  border: none;
+  color: #e62727;
+  font-size: 1.09em;
+  width: 2.04em;
+  height: 2.04em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  margin-left: 0.19em;
+  cursor: pointer;
+  transition: background 0.10s, color 0.13s;
+  outline: none;
+  &:hover,
+  &:focus-visible {
+    background: #e62727;
+    color: #fff;
+    outline: none;
+  }
+}
+
+/* Submit button */
+.assignmentSubmissionPage__actions {
+  display: flex;
+  gap: 1.2em;
+  margin-top: 1.14em;
+}
+
+.assignmentSubmissionPage__submitBtn {
+  border-radius: 0.7em;
+  background: #2563eb;
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.09em;
+  border: none;
+  padding: 0.85em 2.05em;
+  box-shadow: 0 2.8px 13px #2563eb13;
+  cursor: pointer;
+  outline: none;
+  transition: background 0.14s;
+  &:hover,
+  &:focus-visible {
+    background: #174ca6;
+    outline: none;
+  }
+  &:disabled {
+    background: #c7d5fa;
+    color: #fff;
+    cursor: not-allowed;
+  }
+}
+
+.assignmentSubmissionPage__submitted {
+  font-size: 1.22em;
+  font-weight: 600;
+  color: #179a4e;
+  background: #e5ffe9;
+  border-radius: 0.74em;
+  padding: 1.13em 1.5em;
+  text-align: center;
+  margin: 2em auto 1.7em auto;
+}
+
+/* Loading and error states */
+.assignmentSubmissionPage__loading,
+.assignmentSubmissionPage__error {
+  font-size: 1.12em;
+  color: #64748b;
+  margin: 2em 0 2.2em 0;
+  text-align: center;
+  font-weight: 500;
+}
+
+/* Responsive for mobile */
+@media (max-width: 650px) {
+  .assignmentSubmissionPage {
+    padding: 1.5em 0.19em 2.2em 0.19em;
+    font-size: 0.98em;
+  }
+  .assignmentSubmissionPage__mainBox {
+    padding: 1em 0.19em 1.7em 0.19em;
+  }
+  .assignmentSubmissionPage__due,
+  .assignmentSubmissionPage__desc {
+    padding-left: 0.75em;
+    padding-right: 0.75em;
+  }
+}

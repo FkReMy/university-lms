@@ -1,0 +1,159 @@
+/*
+ * NotificationBell.module.scss
+ * ----------------------------------------------------------
+ * Styles for the NotificationBell component.
+ * Styles the bell icon, badge, dropdown, and notification items.
+ */
+
+/* Wrapper */
+.notificationBell {
+  position: relative;
+  display: inline-block;
+}
+
+/* Bell button */
+.notificationBell__button {
+  background: none;
+  border: none;
+  padding: 0.23em 0.23em;
+  border-radius: 50%;
+  cursor: pointer;
+  outline: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.13s;
+  position: relative;
+  min-width: 2.7em;
+  min-height: 2.7em;
+
+  &:hover,
+  &:focus-visible {
+    background: #e0edff;
+  }
+}
+
+/* Bell icon */
+.notificationBell__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.66em;
+  color: #2563eb;
+}
+
+/* Badge for unread count */
+.notificationBell__badge {
+  position: absolute;
+  top: 0.35em;
+  right: 0.32em;
+  min-width: 1.39em;
+  height: 1.39em;
+  padding: 0 0.32em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ef4444;
+  color: #fff;
+  font-size: 0.92em;
+  font-weight: bold;
+  border-radius: 999px;
+  border: 2.5px solid #fff;
+  box-shadow: 0 1px 7px 0 rgba(239, 68, 68, 0.14);
+  z-index: 2;
+  pointer-events: none;
+  line-height: 1;
+}
+
+/* Dropdown panel for notifications */
+.notificationBell__panel {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.7em);
+  min-width: 19em;
+  max-width: 98vw;
+  background: #fff;
+  color: #273046;
+  border-radius: 0.85em;
+  box-shadow: 0 8px 36px 0 rgba(30, 34, 89, 0.16);
+  border: 1.5px solid #e5e7eb;
+  padding: 0.7em 0.1em;
+  z-index: 1600;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1em;
+  animation: notificationBell-fade 0.19s;
+}
+
+@keyframes notificationBell-fade {
+  from { opacity: 0; transform: translateY(-8px) scale(0.98);}
+  to   { opacity: 1; transform: translateY(0) scale(1);}
+}
+
+/* Empty message */
+.notificationBell__empty {
+  padding: 1em 1.4em;
+  text-align: center;
+  color: #64748b;
+  font-size: 1.06em;
+  opacity: 0.96;
+}
+
+/* Notification item */
+.notificationBell__item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.78em;
+  padding: 0.74em 1.35em 0.74em 1.15em;
+  border-radius: 0.5em;
+  transition: background 0.14s;
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    background: #e0edff;
+    outline: none;
+  }
+}
+
+/* Optional icon in notification */
+.notificationBell__itemIcon {
+  flex-shrink: 0;
+  color: #2563eb;
+  font-size: 1.16em;
+  display: flex;
+  align-items: center;
+  min-width: 1.38em;
+  min-height: 1.38em;
+}
+
+/* Notification text area */
+.notificationBell__itemText {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1em;
+}
+
+/* Title and content */
+.notificationBell__itemTitle {
+  font-weight: 600;
+  font-size: 1.04em;
+  color: #213050;
+  margin-bottom: 0.07em;
+  letter-spacing: 0.01em;
+}
+
+.notificationBell__itemDescription {
+  font-size: 0.99em;
+  color: #485471;
+  line-height: 1.52;
+}
+
+.notificationBell__itemTime {
+  color: #64748b;
+  font-size: 0.93em;
+  margin-top: 0.11em;
+  font-weight: 400;
+}

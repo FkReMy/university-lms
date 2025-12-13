@@ -1,0 +1,224 @@
+/*
+ * SubmissionReviewPage.module.scss
+ * ----------------------------------------------------------
+ * Styles for the SubmissionReviewPage (instructor grading view).
+ * Card layout, file chip, blue-accented controls, responsive, alert UI.
+ */
+
+/* Root card/page shell */
+.submissionReviewPage {
+  width: 100%;
+  max-width: 660px;
+  margin: 0 auto;
+  padding: 2em 1.2em 3em 1.2em;
+  min-height: 95vh;
+  background: #f8fafc;
+  display: flex;
+  flex-direction: column;
+}
+
+.submissionReviewPage__mainBox {
+  background: #fff;
+  border-radius: 1.05em;
+  box-shadow: 0 4px 22px 0 rgba(30,34,89,0.11);
+  border: 1.1px solid #e5e7eb;
+  padding: 2em 1.3em 2.4em 1.3em;
+  margin-bottom: 1em;
+  flex: 1 1 auto;
+}
+
+/* Headline and meta */
+.submissionReviewPage__title {
+  font-size: 2em;
+  font-weight: 800;
+  color: #213050;
+  margin-bottom: 0.51em;
+}
+.submissionReviewPage__metaArea {
+  display: flex;
+  flex-direction: column;
+  gap: 0.22em;
+  color: #233151;
+  font-size: 1.07em;
+  font-weight: 500;
+  margin-bottom: 0.77em;
+}
+
+.submissionReviewPage__desc {
+  font-size: 1.05em;
+  background: #f4f6fa;
+  color: #233151;
+  border-radius: 0.6em;
+  padding: 1.07em 1.3em;
+  margin-bottom: 1.18em;
+  line-height: 1.7;
+  font-weight: 500;
+  font-style: normal;
+}
+
+/* File chip, download */
+.submissionReviewPage__fileArea {
+  margin-bottom: 1.2em;
+}
+
+.submissionReviewPage__fileName {
+  background: #e0edff;
+  color: #2563eb;
+  border-radius: 1.3em;
+  font-weight: 600;
+  padding: 0.28em 1.17em 0.28em 1em;
+  font-size: 0.97em;
+}
+
+.submissionReviewPage__downloadBtn {
+  border-radius: 0.62em;
+  background: #2563eb;
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.97em;
+  border: none;
+  padding: 0.37em 1.12em;
+  text-decoration: none;
+  box-shadow: 0 1.8px 7px #2563eb1a;
+  transition: background 0.14s;
+  cursor: pointer;
+  outline: none;
+  margin-left: 0.54em;
+  &:hover,
+  &:focus-visible {
+    background: #174ca6;
+    color: #fff;
+    outline: none;
+    text-decoration: underline;
+  }
+}
+
+/* Form section */
+.submissionReviewPage__form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.13em;
+}
+
+.submissionReviewPage__gradeRow,
+.submissionReviewPage__fieldRow {
+  display: flex;
+  flex-direction: column;
+  gap: 0.28em;
+  margin-bottom: 0.07em;
+}
+
+.submissionReviewPage__label {
+  font-weight: 700;
+  color: #233151;
+  font-size: 1em;
+}
+.submissionReviewPage__input {
+  border-radius: 0.7em;
+  border: 1.5px solid #d1d5db;
+  background: #fff;
+  padding: 0.73em 1.04em;
+  font-size: 1em;
+  font-weight: 500;
+  color: #233151;
+  outline: none;
+  margin-top: 0.09em;
+  width: 100%;
+  max-width: 112px;
+  transition: border-color 0.14s, background 0.11s;
+  &:focus {
+    border-color: #2563eb;
+    background: #eaf3ff;
+    box-shadow: 0 1.4px 12px #2563eb12;
+  }
+}
+
+.submissionReviewPage__textarea {
+  border-radius: 0.7em;
+  border: 1.2px solid #d1d5db;
+  background: #fafdff;
+  padding: 0.61em 1.09em;
+  font-size: 1em;
+  font-weight: 500;
+  color: #233151;
+  outline: none;
+  margin-top: 0.08em;
+  width: 100%;
+  min-width: 220px;
+  max-width: 410px;
+  min-height: 80px;
+  resize: vertical;
+  transition: border-color 0.13s, background 0.13s;
+  &:focus {
+    border-color: #2563eb;
+    background: #eaf3ff;
+    box-shadow: 0 1.2px 12px #2563eb10;
+  }
+}
+
+.submissionReviewPage__actions {
+  display: flex;
+  align-items: center;
+  gap: 1.2em;
+  margin-top: 1.16em;
+}
+
+/* Save button and alert */
+.submissionReviewPage__saveBtn {
+  border-radius: 0.74em;
+  background: #2563eb;
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.09em;
+  border: none;
+  padding: 0.79em 2.13em;
+  box-shadow: 0 2.8px 13px #2563eb12;
+  cursor: pointer;
+  outline: none;
+  transition: background 0.14s;
+  &:hover,
+  &:focus-visible {
+    background: #174ca6;
+    outline: none;
+  }
+  &:disabled {
+    background: #c7d5fa;
+    color: #fff;
+    cursor: not-allowed;
+  }
+}
+
+.submissionReviewPage__savedMsg {
+  font-size: 1.07em;
+  font-weight: 700;
+  color: #179a4e;
+  background: #e5ffe9;
+  border-radius: 0.74em;
+  padding: 0.7em 1.5em;
+  text-align: center;
+}
+
+/* Loading and error states */
+.submissionReviewPage__loading,
+.submissionReviewPage__error {
+  font-size: 1.12em;
+  color: #64748b;
+  margin: 2.2em 0;
+  text-align: center;
+  font-weight: 500;
+}
+
+/* Responsive for mobile */
+@media (max-width: 700px) {
+  .submissionReviewPage {
+    padding: 1.37em 0.13em 2em 0.13em;
+    font-size: 0.98em;
+  }
+  .submissionReviewPage__mainBox {
+    padding: 1.09em 0.2em 1.5em 0.2em;
+  }
+  .submissionReviewPage__desc {
+    padding-left: 0.7em;
+    padding-right: 0.7em;
+  }
+}

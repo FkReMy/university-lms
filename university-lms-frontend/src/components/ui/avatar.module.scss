@@ -1,0 +1,88 @@
+/*
+ * avatar.module.scss
+ * ----------------------------------------------------------
+ * Styles for the Avatar UI component using CSS Modules.
+ * Handles size variants, image, fallback initials/icon, and base style.
+ */
+
+/*
+ * Base avatar style (circle, background, centered, etc.)
+ */
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #f3f4f6;
+  color: #475569; // slate-600
+  border-radius: 50%;
+  font-weight: 600;
+  overflow: hidden;
+  line-height: 1;
+  text-align: center;
+  vertical-align: middle;
+  user-select: none;
+  box-shadow: 0 1.5px 5px 0 rgba(30,34,89,0.08);
+  position: relative;
+}
+
+/*
+ * Size variants: sm, md, lg, xl
+ */
+.avatar__sm {
+  width: 2rem;
+  height: 2rem;
+  font-size: 1rem;
+}
+
+.avatar__md {
+  width: 2.8rem;
+  height: 2.8rem;
+  font-size: 1.27rem;
+}
+
+.avatar__lg {
+  width: 3.6rem;
+  height: 3.6rem;
+  font-size: 1.65rem;
+}
+
+.avatar__xl {
+  width: 5rem;
+  height: 5rem;
+  font-size: 2.2rem;
+}
+
+/*
+ * Image styles (circular and covers area)
+ */
+.avatar__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/*
+ * Fallback initials or icon (centered)
+ */
+.avatar__fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: inherit;
+}
+
+/*
+ * Optional: user icon SVG for fallback
+ */
+.avatar__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 70%;
+  height: 70%;
+  color: #c1c7d0;
+  opacity: 0.6;
+}

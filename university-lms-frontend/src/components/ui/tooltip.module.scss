@@ -1,0 +1,121 @@
+/*
+ * tooltip.module.scss
+ * ----------------------------------------------------------
+ * Styles for the Tooltip UI component using CSS Modules.
+ * Handles wrapper, popover, arrow, and position variants.
+ */
+
+/*
+ * Wrapper for positioning context
+ */
+.tooltip__wrapper {
+  display: inline-block;
+  position: relative;
+}
+
+/*
+ * Tooltip popover itself (the bubble)
+ */
+.tooltip {
+  position: absolute;
+  z-index: 1000;
+  min-width: 2.2em;
+  max-width: 18em;
+  padding: 0.42em 0.95em;
+  border-radius: 0.36em;
+  background: #1e293b; // dark slate
+  color: #f1f5f9;
+  font-size: 0.97em;
+  font-weight: 500;
+  line-height: 1.42;
+  box-shadow: 0 2px 12px 0 rgba(30,34,89,0.16);
+  white-space: pre-line;
+  pointer-events: none;
+  opacity: 0.97;
+  transition: opacity 0.12s;
+  user-select: none;
+  animation: tooltip-fadein 0.18s;
+  word-break: break-word;
+}
+
+/*
+ * Arrow (created with a rotated square)
+ */
+.tooltip__arrow {
+  position: absolute;
+  width: 0.7em;
+  height: 0.7em;
+  background: #1e293b;
+  transform: rotate(45deg);
+  z-index: 1001;
+}
+
+/*
+ * Positioning: top (default)
+ */
+.tooltip--top {
+  left: 50%;
+  bottom: calc(100% + 0.36em);
+  transform: translateX(-50%);
+  .tooltip__arrow {
+    top: 100%;
+    left: 50%;
+    transform: translate(-50%, 0) rotate(45deg);
+  }
+}
+
+/*
+ * Positioning: right
+ */
+.tooltip--right {
+  left: calc(100% + 0.36em);
+  top: 50%;
+  transform: translateY(-50%);
+  .tooltip__arrow {
+    left: -0.325em;
+    top: 50%;
+    transform: translateY(-50%) rotate(45deg);
+  }
+}
+
+/*
+ * Positioning: bottom
+ */
+.tooltip--bottom {
+  left: 50%;
+  top: calc(100% + 0.36em);
+  transform: translateX(-50%);
+  .tooltip__arrow {
+    bottom: 100%;
+    left: 50%;
+    transform: translate(-50%, 0) rotate(45deg);
+  }
+}
+
+/*
+ * Positioning: left
+ */
+.tooltip--left {
+  right: calc(100% + 0.36em);
+  top: 50%;
+  transform: translateY(-50%);
+  .tooltip__arrow {
+    right: -0.325em;
+    top: 50%;
+    transform: translateY(-50%) rotate(45deg);
+  }
+}
+
+/*
+ * Simple fade-in animation for popover
+ */
+@keyframes tooltip-fadein {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+  to {
+    opacity: 0.97;
+    transform: scale(1);
+  }
+}

@@ -1,0 +1,245 @@
+/*
+ * LoginPage.module.scss
+ * ----------------------------------------------------------
+ * Styles for the LoginPage authentication screen.
+ * Card-style layout, responsive, blue accents.
+ */
+
+/* Root background */
+.loginPage {
+  min-height: 100vh;
+  background: linear-gradient(125deg, #f8fafc 65%, #e0edff 95%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 1.07em;
+}
+
+/* Main card */
+.loginPage__box {
+  background: #fff;
+  border-radius: 1.06em;
+  box-shadow: 0 5.3px 32px 0 rgba(30,34,89,0.13);
+  border: 1.2px solid #e5e7eb;
+  width: 100%;
+  max-width: 24em;
+  padding: 2em 2.2em 1.9em 2.2em;
+  margin-top: 2.6em;
+  margin-bottom: 1.3em;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 1.3em;
+}
+
+.loginPage__title {
+  font-size: 1.36em;
+  font-weight: 800;
+  color: #213050;
+  margin-bottom: 0.7em;
+  text-align: center;
+  letter-spacing: 0.015em;
+}
+
+/* Form fields */
+.loginPage__form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.03em;
+}
+
+.loginPage__label {
+  color: #374151;
+  font-weight: 600;
+  font-size: 1em;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0.02em;
+  gap: 0.37em;
+}
+
+.loginPage__input {
+  border-radius: 0.7em;
+  border: 1.5px solid #d1d5db;
+  background: #f8fafc;
+  padding: 0.72em 1.13em;
+  font-size: 1em;
+  font-weight: 500;
+  color: #213050;
+  margin-top: 0.13em;
+  transition: border-color 0.12s, box-shadow 0.13s;
+  outline: none;
+  width: 100%;
+
+  &:focus {
+    border-color: #2563eb;
+    background: #eaf3ff;
+    box-shadow: 0 1.8px 11px 0 #2563eb13;
+  }
+  &:disabled {
+    background: #f1f5f9;
+    color: #bdbdbd;
+    cursor: not-allowed;
+  }
+}
+
+/* Top row: remember/forgot */
+.loginPage__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.98em;
+  margin-top: -0.45em;
+  margin-bottom: 0.6em;
+}
+
+.loginPage__checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.51em;
+  font-weight: 500;
+  color: #374151;
+
+  input[type="checkbox"] {
+    accent-color: #2563eb;
+    width: 1.03em;
+    height: 1.03em;
+    margin-right: 0.16em;
+  }
+}
+
+/* Forgot password link */
+.loginPage__link {
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 1em;
+  cursor: pointer;
+  transition: color 0.13s;
+
+  &:hover,
+  &:focus-visible {
+    color: #174ca6;
+    text-decoration: underline;
+    outline: none;
+  }
+}
+
+.loginPage__submit {
+  border-radius: 0.74em;
+  background: #2563eb;
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.09em;
+  border: none;
+  padding: 0.97em 0;
+  margin-top: 0.42em;
+  box-shadow: 0 2.8px 18px 0 #2563eb12;
+  transition: background 0.14s;
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    background: #174ca6;
+    outline: none;
+  }
+  &:disabled {
+    background: #dbeafe;
+    color: #bdbdbd;
+    cursor: default;
+  }
+}
+
+/* Error and success messages */
+.loginPage__errorMsg {
+  color: #e62727;
+  background: #fbeaea;
+  border-radius: 0.7em;
+  font-size: 0.99em;
+  font-weight: 600;
+  text-align: center;
+  padding: 0.57em;
+  margin: 0.32em 0 0.11em 0;
+}
+
+.loginPage__successMsg {
+  color: #179a4e;
+  background: #e5ffe9;
+  border-radius: 0.7em;
+  font-size: 1em;
+  font-weight: 600;
+  text-align: center;
+  padding: 0.54em;
+  margin: 0.32em 0 0.11em 0;
+}
+
+/* Social sign in (optional, if enabled) */
+.loginPage__divider {
+  margin: 1.58em 0 0.55em 0;
+  text-align: center;
+  color: #64748b;
+  font-size: 0.98em;
+  opacity: 0.65;
+
+  span {
+    background: #fff;
+    padding: 0 1.7em;
+    position: relative;
+    z-index: 1;
+  }
+  &::before {
+    content: "";
+    position: absolute;
+    left: 2em;
+    right: 2em;
+    top: 0.5em;
+    height: 1px;
+    background: #ccd5ee;
+    z-index: 0;
+  }
+}
+
+.loginPage__social {
+  display: flex;
+  flex-direction: column;
+  gap: 0.72em;
+
+  button {
+    border-radius: 0.7em;
+    background: #f1f5f9;
+    color: #213050;
+    font-weight: 600;
+    border: 1px solid #dbeafe;
+    font-size: 1em;
+    padding: 0.7em 0;
+    cursor: pointer;
+    transition: background 0.13s;
+    text-align: center;
+
+    &:hover,
+    &:focus-visible {
+      background: #e0edff;
+      outline: none;
+    }
+  }
+}
+
+/* Footer text */
+.loginPage__footer {
+  text-align: center;
+  color: #b9b9be;
+  font-size: 0.96em;
+  margin: 1em 0 0.5em 0;
+}
+
+@media (max-width: 600px) {
+  .loginPage__box {
+    padding: 1.21em 0.6em 1.1em 0.6em;
+    max-width: 97vw;
+  }
+  .loginPage {
+    font-size: 0.99em;
+  }
+}

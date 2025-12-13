@@ -1,0 +1,102 @@
+/*
+ * table.module.scss
+ * ----------------------------------------------------------
+ * Styles for the Table UI component using CSS Modules.
+ * Applies styles to wrapper, table, header, cell, empty state, and footer.
+ */
+
+/*
+ * Wrapper ensures scrolling on small screens & separation
+ */
+.table__wrapper {
+  width: 100%;
+  overflow-x: auto;
+  background: transparent;
+  padding-bottom: 1.1rem;
+  margin: 1.2rem 0;
+  border-radius: 0.6rem;
+}
+
+/*
+ * Main table styling
+ */
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #fff;
+  font-size: 1rem;
+  color: #374151; // gray-700
+  border-radius: 0.6rem;
+  box-shadow: 0 1.5px 10px 0 rgba(30,34,89,0.13);
+  table-layout: auto;
+
+  th,
+  td {
+    padding: 0.6rem 1rem;
+    vertical-align: middle;
+    min-width: 2.5rem;
+  }
+}
+
+/*
+ * Header cell styles
+ */
+.table__header {
+  font-weight: 600;
+  background: #f6f7fa;
+  color: #253053;
+  letter-spacing: 0.01em;
+  border-bottom: 2.5px solid #e5e7eb;
+  border-top: none;
+  text-align: left;
+  &:first-child {
+    border-top-left-radius: 0.6rem;
+  }
+  &:last-child {
+    border-top-right-radius: 0.6rem;
+  }
+}
+
+/*
+ * Data cell styles
+ */
+.table__cell {
+  border-top: 1px solid #f1f5f9;
+  border-bottom: none;
+  background: #fff;
+  font-size: 1rem;
+}
+
+/*
+ * Empty state row/cell
+ */
+.table__empty {
+  color: #a1a1aa; // gray-400
+  font-style: italic;
+  font-size: 1rem;
+  padding: 1.1rem 0.7rem;
+  letter-spacing: 0.01em;
+  background: #fafafa;
+}
+
+/*
+ * Optional table footer (e.g., for summaries/actions)
+ */
+.table__footer {
+  margin-top: 0.35rem;
+  padding-top: 0.7rem;
+  border-top: 1px solid #f3f4f6;
+  font-size: 0.98rem;
+  color: #374151;
+  background: #f6f7fa;
+  border-radius: 0 0 0.6rem 0.6rem;
+}
+
+/*
+ * Row hover effect
+ */
+.table tr:hover td {
+  background: #f3f6ff;
+  transition: background 0.13s;
+}

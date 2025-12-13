@@ -1,0 +1,189 @@
+/*
+ * AssignmentCard.module.scss
+ * ----------------------------------------------------------
+ * Styles for the AssignmentCard component.
+ * Card layout, color-coded for status, chips for tags/status, compact grades/progress.
+ */
+
+/* Main card wrapper */
+.assignmentCard {
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-radius: 1em;
+  box-shadow: 0 4px 22px 0 rgba(30,34,89,0.11);
+  border: 1.3px solid #e5e7eb;
+  padding: 1.18em 1.2em 1.23em 1.16em;
+  margin-bottom: 1.7em;
+  font-size: 1.05em;
+  min-width: 11.5em;
+  max-width: 31em;
+  position: relative;
+  transition: box-shadow 0.13s, border-color 0.14s, background 0.13s;
+  outline: none;
+
+  &:hover,
+  &:focus-visible {
+    box-shadow: 0 9px 28px 0 rgba(30,34,89,0.17);
+    border-color: #2563eb;
+    background: #f8fafc;
+    cursor: pointer;
+  }
+}
+
+/* Header row: title, status */
+.assignmentCard__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.9em;
+}
+
+.assignmentCard__title {
+  font-size: 1.16em;
+  font-weight: 700;
+  color: #273046;
+  margin: 0 0 0.2em 0;
+  line-height: 1.16;
+  word-break: break-word;
+}
+
+.assignmentCard__statusChip {
+  font-size: 0.97em;
+  font-weight: 600;
+  border-radius: 0.7em;
+  padding: 0.23em 1em;
+  background: #e0edff;
+  color: #2563eb;
+  margin-left: 0.79em;
+  white-space: nowrap;
+  letter-spacing: 0.017em;
+  box-shadow: 0 1.3px 6px 0 rgba(37,99,235,0.07);
+}
+
+/* Status coloring */
+.assignmentCard__status--submitted .assignmentCard__statusChip {
+  background: #e5ffe9;
+  color: #179a4e;
+}
+.assignmentCard__status--late .assignmentCard__statusChip {
+  background: #fbeaea;
+  color: #e62727;
+}
+.assignmentCard__status--graded .assignmentCard__statusChip {
+  background: #fff6e6;
+  color: #b86d04;
+}
+.assignmentCard__status--pending .assignmentCard__statusChip {
+  background: #f1f5f9;
+  color: #485471;
+}
+
+/* Meta row: dueDate, tags */
+.assignmentCard__meta {
+  display: flex;
+  align-items: center;
+  gap: 0.9em;
+  margin-bottom: 0.46em;
+  flex-wrap: wrap;
+}
+.assignmentCard__dueDate {
+  font-size: 0.98em;
+  color: #485471;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* Tags row */
+.assignmentCard__tags {
+  display: flex;
+  gap: 0.55em;
+  flex-wrap: wrap;
+  margin-top: 0.1em;
+}
+.assignmentCard__tagChip {
+  font-size: 0.94em;
+  padding: 0.18em 0.87em 0.18em 0.87em;
+  background: #e0edff;
+  color: #2563eb;
+  border-radius: 0.69em;
+  font-weight: 500;
+  opacity: 0.95;
+  box-shadow: 0 0.5px 3px #2563eb0e;
+  white-space: nowrap;
+}
+
+/* Description area */
+.assignmentCard__description {
+  font-size: 1em;
+  color: #485471;
+  opacity: 0.96;
+  word-break: break-word;
+  line-height: 1.52;
+  margin-bottom: 0.7em;
+}
+
+/* Grade & progress row */
+.assignmentCard__gradeRow {
+  display: flex;
+  align-items: center;
+  gap: 1.2em;
+  margin-bottom: 0.7em;
+}
+.assignmentCard__grade {
+  font-size: 1em;
+  color: #2563eb;
+  font-weight: 600;
+}
+
+.assignmentCard__progress {
+  font-size: 1em;
+  color: #2563eb;
+  font-weight: 500;
+  margin-left: 0.4em;
+  display: flex;
+  align-items: center;
+  gap: 0.65em;
+}
+
+.assignmentCard__progressBarWrap {
+  background: #e5e7eb;
+  border-radius: 9em;
+  overflow: hidden;
+  width: 6em;
+  height: 0.44em;
+  margin-left: 0.33em;
+}
+
+.assignmentCard__progressBar {
+  background: #2563eb;
+  height: 100%;
+  border-radius: 9em 0 0 9em;
+  transition: width 0.17s cubic-bezier(0.34,1,0.68,1);
+}
+
+/* Actions area (bottom-right) */
+.assignmentCard__actions {
+  position: absolute;
+  right: 1.16em;
+  bottom: 1em;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  z-index: 2;
+  font-size: 1em;
+}
+
+/* Responsive for mobile */
+@media (max-width: 520px) {
+  .assignmentCard {
+    max-width: 99vw;
+    border-radius: 0.7em;
+    padding: 1em 0.59em 1.1em 0.55em;
+  }
+}
+
+/* Slight margin between cards if stacked */
+.assignmentCard:not(:last-child) {
+  margin-bottom: 1.7em;
+}

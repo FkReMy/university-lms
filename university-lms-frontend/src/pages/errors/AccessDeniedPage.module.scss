@@ -1,0 +1,96 @@
+/*
+ * AccessDeniedPage.module.scss
+ * ----------------------------------------------------------
+ * Styles for the AccessDeniedPage (403 error).
+ * Centered card, large number, blue accent, clear nav, responsive.
+ */
+
+/* Root positioner */
+.accessDeniedPage {
+  width: 100vw;
+  min-height: 98vh;
+  background: #f8fafc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Card */
+.accessDeniedPage__card {
+  background: #fff;
+  border-radius: 1.1em;
+  box-shadow: 0 6px 34px 0 rgba(30,34,89,0.13);
+  border: 1.25px solid #e5e7eb;
+  padding: 2.9em 2.5em 2.7em 2.5em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Large forbidden number */
+.accessDeniedPage__number {
+  font-size: 4.3em;
+  font-weight: 900;
+  color: #2563eb;
+  letter-spacing: 0.01em;
+  margin-bottom: 0.22em;
+}
+
+/* Title and label */
+.accessDeniedPage__title {
+  font-size: 2em;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 0.35em;
+}
+
+.accessDeniedPage__desc {
+  font-size: 1.21em;
+  color: #64748b;
+  margin-bottom: 1.8em;
+  font-weight: 500;
+  text-align: center;
+}
+
+/* Home button */
+.accessDeniedPage__actions {
+  display: flex;
+  gap: 0.9em;
+  justify-content: center;
+}
+
+.accessDeniedPage__homeBtn {
+  border-radius: 0.77em;
+  background: #2563eb;
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.09em;
+  border: none;
+  padding: 0.84em 2.09em;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.13s;
+  box-shadow: 0 2.5px 13px #2563eb1a;
+  &:hover, &:focus-visible {
+    background: #174ca6;
+    outline: none;
+  }
+}
+
+/* Responsive for mobile */
+@media (max-width: 520px) {
+  .accessDeniedPage__card {
+    padding: 1.15em 0.23em 1.7em 0.23em;
+    border-radius: 0.62em;
+    min-width: 0;
+  }
+  .accessDeniedPage__number {
+    font-size: 2.7em;
+  }
+  .accessDeniedPage__title {
+    font-size: 1.3em;
+  }
+  .accessDeniedPage__desc {
+    font-size: 1em;
+  }
+}
