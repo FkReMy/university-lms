@@ -13,37 +13,61 @@
  */
 
 import { lazy, Suspense } from 'react';
+import { Navigate } from 'react-router-dom';
 
 import App from '@/App';
 import { useAuth } from '@/hooks/useAuth';
 
+// -------------------------------
 // Lazy loaded pages for bundle splitting
-const LoginPage = lazy(() => import('@/pages/Login'));
-const RegisterPage = lazy(() => import('@/pages/Register'));
-const DashboardPage = lazy(() => import('@/pages/Dashboard'));
-const CoursesPage = lazy(() => import('@/pages/Courses'));
-const CourseDetailPage = lazy(() => import('@/pages/CourseDetail'));
-const AssignmentsPage = lazy(() => import('@/pages/Assignments'));
-const QuizzesPage = lazy(() => import('@/pages/Quizzes'));
-const GradesPage = lazy(() => import('@/pages/Grades'));
-const SettingsPage = lazy(() => import('@/pages/Settings'));
-const NotFoundPage = lazy(() => import('@/pages/NotFound'));
+// (Update paths to match src/pages file structure!)
+// -------------------------------
 
+// Auth pages
+const LoginPage = lazy(() => import('@/pages/auth/LoginPage'));
+const RegisterPage = lazy(() => import('@/pages/auth/RegisterPage'));
+
+// Dashboard pages (pick desired default)
+const StudentDashboardPage = lazy(() => import('@/pages/dashboards/StudentDashboard'));
+const ProfessorDashboardPage = lazy(() => import('@/pages/dashboards/ProfessorDashboard'));
+const AdminDashboardPage = lazy(() => import('@/pages/dashboards/AdminDashboard'));
+// Or use one dashboard as the default for /
+const DashboardPage = StudentDashboardPage; // Change as needed
+
+// Course pages (catalog and detail)
+const CoursesPage = lazy(() => import('@/pages/courses/CourseOfferingsPage'));
+const CourseDetailPage = lazy(() => import('@/pages/courses/CourseOfferingDetailPage'));
+
+// Assignments and quizzes pages
+const AssignmentsPage = lazy(() => import('@/pages/assignments/AssignmentListPage'));
+const QuizzesPage = lazy(() => import('@/pages/quizzes/QuizListPage'));
+
+// Grades and profile/settings
+const GradesPage = lazy(() => import('@/pages/grading/GradebookPage'));
+const SettingsPage = lazy(() => import('@/pages/profile/ProfileSettingsPage'));
+
+// Errors & fallback
+const NotFoundPage = lazy(() => import('@/pages/errors/NotFoundPage'));
+
+// -------------------------------
 // Helper component for protecting private routes
+// -------------------------------
 function RequireAuth({ children, redirectTo = '/login' }) {
   const { ready, isAuthenticated } = useAuth();
   if (!ready) return <div>Loading...</div>;
   return isAuthenticated ? children : <Navigate to={redirectTo} replace />;
 }
 
-import { Navigate } from 'react-router-dom';
-
+// -------------------------------
 // Routes definition
+// -------------------------------
 const routes = [
   {
     element: <App />, // App shell overlays notification center, nav, content, etc
     children: [
-      // Public
+      // -------------------------------------
+      // PUBLIC ROUTES
+      // -------------------------------------
       {
         path: '/login',
         element: (
@@ -60,8 +84,9 @@ const routes = [
           </Suspense>
         ),
       },
-
-      // Protected (requires authentication)
+      // -------------------------------------
+      // PROTECTED ROUTES (requires authentication)
+      // -------------------------------------
       {
         path: '/',
         element: (
@@ -142,8 +167,9 @@ const routes = [
           </RequireAuth>
         ),
       },
-
-      // Not found/fallback
+      // -------------------------------------
+      // NOT FOUND / FALLBACK
+      // -------------------------------------
       {
         path: '*',
         element: (

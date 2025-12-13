@@ -7,12 +7,18 @@
  * - Show all available quizzes, their status, and main info.
  * - Allows searching/filtering by title or status.
  * - Ready for expansion: add/edit/view/close quizzes.
+ * - Uses shared UI components (Input, Select, Button, Badge) for design consistency.
  *
  * Usage:
  *   <Route path="/quizzes" element={<QuizListPage />} />
  */
 
 import { useEffect, useState } from 'react';
+
+import Input from '../../components/ui/input';   // Consistent styled input
+import Select from '../../components/ui/select'; // Consistent styled select
+import Button from '../../components/ui/button'; // Consistent styled button
+import Badge from '../../components/ui/badge';   // Consistent styled badge
 
 import styles from './QuizListPage.module.scss';
 
@@ -60,10 +66,10 @@ export default function QuizListPage() {
     }, 900);
   }, []);
 
-  // Unique status options
+  // Unique status options (for filter dropdown)
   const statuses = [...new Set(quizzes.map(q => q.status))].sort();
 
-  // Filtered list
+  // Filter quizzes based on search and status
   const filteredQuizzes = quizzes.filter(q => {
     const matchesSearch =
       q.title.toLowerCase().includes(search.toLowerCase());
@@ -71,26 +77,12 @@ export default function QuizListPage() {
     return matchesSearch && matchesStatus;
   });
 
-  // Status badge
+  // Status badge (using shared Badge component)
   function statusBadge(s) {
-    let bg = "#dedede", color = "#213050";
-    if (!s) return null;
-    if (s === 'Open') { bg = "#e5ffe9"; color = "#179a4e"; }
-    if (s === 'Closed') { bg = "#fbeaea"; color = "#e62727"; }
-    return (
-      <span
-        style={{
-          background: bg,
-          color: color,
-          fontWeight: 600,
-          fontSize: "0.96em",
-          borderRadius: "1em",
-          padding: "0.13em 0.85em",
-        }}
-      >
-        {s}
-      </span>
-    );
+    let variant = "default";
+    if (s === 'Open') variant = "success";
+    if (s === 'Closed') variant = "danger";
+    return <Badge variant={variant}>{s}</Badge>;
   }
 
   // Format date/time for UI
@@ -109,30 +101,32 @@ export default function QuizListPage() {
     <div className={styles.quizListPage}>
       <h1 className={styles.quizListPage__title}>Quizzes</h1>
       <div className={styles.quizListPage__controls}>
-        <input
+        <Input
           className={styles.quizListPage__search}
           type="text"
           placeholder="Search title…"
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={e => setSearch(e.target.value)}
         />
-        <select
+        <Select
           className={styles.quizListPage__statusSelect}
           value={status}
-          onChange={(e) => setStatus(e.target.value)}
+          onChange={e => setStatus(e.target.value)}
         >
           <option value="all">All Statuses</option>
           {statuses.map(s => (
             <option value={s} key={s}>{s}</option>
           ))}
-        </select>
-        <button
+        </Select>
+        <Button
           className={styles.quizListPage__addBtn}
           type="button"
-          // onClick={() => ... future add dialog ...}
+          variant="primary"
+          onClick={() => {}}
+          // Future: open add quiz dialog
         >
           + Add Quiz
-        </button>
+        </Button>
       </div>
       <div className={styles.quizListPage__listArea}>
         {loading ? (
@@ -166,18 +160,24 @@ export default function QuizListPage() {
                   <td>{q.section}</td>
                   <td>{statusBadge(q.status)}</td>
                   <td>
-                    <button
+                    <Button
                       className={styles.quizListPage__actionBtn}
+                      size="sm"
+                      variant="outline"
+                      type="button"
                       // onClick={() => ... edit logic ...}
                     >
                       Edit
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       className={styles.quizListPage__actionBtn}
-                      // onClick={() => ... view/close logic ...}
+                      size="sm"
+                      variant="outline"
+                      type="button"
+                      // onClick={() => ... remove logic ...}
                     >
                       Remove
-                    </button>
+                    </Button>
                   </td>
                 </tr>
               ))}
@@ -188,3 +188,10 @@ export default function QuizListPage() {
     </div>
   );
 }
+
+/**
+ * Notes:
+ * - Uses shared Input, Select, Button, and Badge components from your UI library throughout for design system consistency.
+ * - Status badge is now styled via the Badge component, not inline styles.
+ * - Action buttons and controls are also consistent with your global app UI.
+ */

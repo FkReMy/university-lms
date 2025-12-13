@@ -5,16 +5,21 @@
  *
  * Responsibilities:
  * - Summarizes instructor-centered LMS stats (courses, students, assignments, submissions).
- * - Shows upcoming classes or deadlines, recent submissions, and quick links.
- * - Can show grade distribution or engagement chart for professor's courses.
+ * - Shows upcoming classes/deadlines, recent submissions, and quick links.
+ * - Uses design system components (Card, Table, Badge).
+ * - SPA navigation with <Link> from react-router-dom (not <a>).
  *
  * Usage:
  *   <Route path="/professor" element={<ProfessorDashboard />} />
  */
 
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 
-import GradeDistributionChart from '../../components/analytics/GradeDistributionChart';
+import GradeDistributionChart from '@/components/analytics/GradeDistributionChart';
+import Card from '@/components/ui/card';      // design-system Card
+import Table from '@/components/ui/table';    // design-system Table
+import Badge from '@/components/ui/badge';    // design-system Badge
 
 import styles from './ProfessorDashboard.module.scss';
 
@@ -26,12 +31,8 @@ export default function ProfessorDashboard() {
     assignments: 0,
     submissions: 0,
   });
-  const [upcoming, setUpcoming] = useState([
-    // { id, type: "class"|"deadline", title, dueAt }
-  ]);
-  const [recentSubmissions, setRecentSubmissions] = useState([
-    // { id, student, assignment, submittedAt, grade }
-  ]);
+  const [upcoming, setUpcoming] = useState([]);
+  const [recentSubmissions, setRecentSubmissions] = useState([]);
   const [gradeDist, setGradeDist] = useState([92, 85, 70, 98, 81, 75, 80, 91, 100, 95, 87, 73, 68]);
   const [loading, setLoading] = useState(true);
 
@@ -72,32 +73,31 @@ export default function ProfessorDashboard() {
 
   return (
     <div className={styles.professorDashboard}>
-      <h1 className={styles.professorDashboard__title}>
-        Professor Dashboard
-      </h1>
+      <h1 className={styles.professorDashboard__title}>Professor Dashboard</h1>
       {loading ? (
         <div className={styles.professorDashboard__loading}>Loading dashboard…</div>
       ) : (
         <div>
           {/* Stats grid */}
           <section className={styles.professorDashboard__statsGrid}>
-            <div className={styles.professorDashboard__statBox}>
+            <Card className={styles.professorDashboard__statBox}>
               <span className={styles.professorDashboard__statLabel}>Courses</span>
               <span className={styles.professorDashboard__statValue}>{stats.courses}</span>
-            </div>
-            <div className={styles.professorDashboard__statBox}>
+            </Card>
+            <Card className={styles.professorDashboard__statBox}>
               <span className={styles.professorDashboard__statLabel}>Students</span>
               <span className={styles.professorDashboard__statValue}>{stats.students}</span>
-            </div>
-            <div className={styles.professorDashboard__statBox}>
+            </Card>
+            <Card className={styles.professorDashboard__statBox}>
               <span className={styles.professorDashboard__statLabel}>Assignments</span>
               <span className={styles.professorDashboard__statValue}>{stats.assignments}</span>
-            </div>
-            <div className={styles.professorDashboard__statBox}>
+            </Card>
+            <Card className={styles.professorDashboard__statBox}>
               <span className={styles.professorDashboard__statLabel}>Submissions</span>
               <span className={styles.professorDashboard__statValue}>{stats.submissions}</span>
-            </div>
+            </Card>
           </section>
+
           {/* Upcoming classes/deadlines */}
           <section className={styles.professorDashboard__section}>
             <h2 className={styles.professorDashboard__sectionTitle}>Upcoming</h2>
@@ -113,10 +113,11 @@ export default function ProfessorDashboard() {
               ))}
             </ul>
           </section>
+
           {/* Recent submissions */}
           <section className={styles.professorDashboard__section}>
             <h2 className={styles.professorDashboard__sectionTitle}>Recent Submissions</h2>
-            <table className={styles.professorDashboard__submissionsTable}>
+            <Table className={styles.professorDashboard__submissionsTable}>
               <thead>
                 <tr>
                   <th>Student</th>
@@ -131,31 +132,47 @@ export default function ProfessorDashboard() {
                     <td>{sub.student}</td>
                     <td>{sub.assignment}</td>
                     <td>{formatDate(sub.submittedAt)}</td>
-                    <td>{sub.grade}</td>
+                    <td>
+                      {sub.grade === "N/A"
+                        ? <Badge variant="secondary">N/A</Badge>
+                        : <Badge variant="success">{sub.grade}</Badge>
+                      }
+                    </td>
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </Table>
           </section>
+
           {/* Grade distribution */}
           <section className={styles.professorDashboard__section}>
             <h2 className={styles.professorDashboard__sectionTitle}>Grade Distribution</h2>
-            <GradeDistributionChart grades={gradeDist} />
+            <Card style={{padding: "1.2em 1.8em"}}>
+              <GradeDistributionChart grades={gradeDist} />
+            </Card>
           </section>
-          {/* Quick links row */}
+
+          {/* Quick links row, must use SPA links */}
           <section className={styles.professorDashboard__quickLinks}>
-            <a className={styles.professorDashboard__quickLink} href="/professor/courses">
+            <Link className={styles.professorDashboard__quickLink} to="/courses">
               My Courses
-            </a>
-            <a className={styles.professorDashboard__quickLink} href="/professor/assignments">
+            </Link>
+            <Link className={styles.professorDashboard__quickLink} to="/assignments">
               Manage Assignments
-            </a>
-            <a className={styles.professorDashboard__quickLink} href="/professor/students">
+            </Link>
+            <Link className={styles.professorDashboard__quickLink} to="/students">
               Student List
-            </a>
+            </Link>
           </section>
         </div>
       )}
     </div>
   );
 }
+
+/**
+ * Key refactors:
+ * - All stat/data/quick-links use Card, Table, Badge from your design system.
+ * - Navigation is by SPA <Link> components.
+ * - The dashboard page structure, logic, and accessibility are preserved.
+ */

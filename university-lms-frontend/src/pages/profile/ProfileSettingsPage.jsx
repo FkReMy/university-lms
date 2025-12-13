@@ -6,13 +6,16 @@
  * Responsibilities:
  * - Show summary/profile info: name, email, role, avatar.
  * - Allow user to edit name or avatar (change password UX as a demo).
- * - Demo: handles form changes, mock save, loading and success states.
+ * - Handles cleanup of avatar blob URLs to avoid memory leaks.
+ * - Consistently uses Input and Button components from UI library.
  *
  * Usage:
  *   <Route path="/profile" element={<ProfileSettingsPage />} />
  */
 
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
+import Input from "../../components/ui/input";
+import Button from "../../components/ui/button";
 
 import styles from "./ProfileSettingsPage.module.scss";
 
@@ -36,6 +39,9 @@ export default function ProfileSettingsPage() {
   const [saved, setSaved] = useState(false);
   const avatarInputRef = useRef();
 
+  // To track previous blob for proper cleanup
+  const previousBlobUrl = useRef(null);
+
   // Simulate profile load (API)
   useEffect(() => {
     setLoading(true);
@@ -45,22 +51,42 @@ export default function ProfileSettingsPage() {
       setAvatarUrl(DEMO_PROFILE.avatar);
       setLoading(false);
     }, 700);
+    // Cleanup avatarUrl (just in case component is unmounted early)
+    return () => {
+      if (previousBlobUrl.current) {
+        URL.revokeObjectURL(previousBlobUrl.current);
+        previousBlobUrl.current = null;
+      }
+    };
   }, []);
 
-  // Avatar preview on file pick
+  // Avatar preview on file pick, with blobURL cleanup
   function handleAvatarChange(e) {
     const file = e.target.files[0];
     setAvatarFile(file || null);
+
+    // Clean up the previous created blob URL before making a new one
+    if (previousBlobUrl.current) {
+      URL.revokeObjectURL(previousBlobUrl.current);
+      previousBlobUrl.current = null;
+    }
+
     if (file) {
       const url = URL.createObjectURL(file);
+      previousBlobUrl.current = url;
       setAvatarUrl(url);
     } else {
       setAvatarUrl(profile.avatar);
     }
   }
 
+  // Clean up blob URL on avatar remove
   function handleRemoveAvatar() {
     setAvatarFile(null);
+    if (previousBlobUrl.current) {
+      URL.revokeObjectURL(previousBlobUrl.current);
+      previousBlobUrl.current = null;
+    }
     setAvatarUrl(null);
     if (avatarInputRef.current) avatarInputRef.current.value = "";
   }
@@ -130,29 +156,31 @@ export default function ProfileSettingsPage() {
                       {getInitials(name)}
                     </span>
                   )}
-                  <input
+                  <Input
                     className={styles.profileSettingsPage__avatarInput}
                     type="file"
                     accept="image/*"
                     ref={avatarInputRef}
                     onChange={handleAvatarChange}
+                    aria-label="Upload avatar"
                   />
                 </label>
                 {avatarUrl && (
-                  <button
+                  <Button
                     type="button"
+                    variant="outline"
                     className={styles.profileSettingsPage__avatarRemoveBtn}
                     onClick={handleRemoveAvatar}
                     aria-label="Remove avatar"
                   >
                     &#215;
-                  </button>
+                  </Button>
                 )}
               </div>
               <div className={styles.profileSettingsPage__fieldRow}>
                 <label>
                   Name
-                  <input
+                  <Input
                     className={styles.profileSettingsPage__input}
                     type="text"
                     value={name}
@@ -165,7 +193,7 @@ export default function ProfileSettingsPage() {
               <div className={styles.profileSettingsPage__fieldRow}>
                 <label>
                   Email
-                  <input
+                  <Input
                     className={styles.profileSettingsPage__input}
                     type="email"
                     value={profile.email || ""}
@@ -176,7 +204,7 @@ export default function ProfileSettingsPage() {
               <div className={styles.profileSettingsPage__fieldRow}>
                 <label>
                   Role
-                  <input
+                  <Input
                     className={styles.profileSettingsPage__input}
                     type="text"
                     value={profile.role || ""}
@@ -185,13 +213,14 @@ export default function ProfileSettingsPage() {
                 </label>
               </div>
               <div className={styles.profileSettingsPage__actions}>
-                <button
+                <Button
                   type="submit"
                   className={styles.profileSettingsPage__saveBtn}
                   disabled={saving}
+                  variant="primary"
                 >
                   {saving ? "Saving…" : "Save Profile"}
-                </button>
+                </Button>
                 {saved && (
                   <span className={styles.profileSettingsPage__savedMsg}>
                     Profile saved!
@@ -206,33 +235,35 @@ export default function ProfileSettingsPage() {
               autoComplete="off"
             >
               <div className={styles.profileSettingsPage__pwRow}>
-                <button
+                <Button
                   type="button"
+                  variant="outline"
                   className={styles.profileSettingsPage__pwShowBtn}
                   aria-label="Change password"
                   onClick={() => setShowPw((c) => !c)}
                 >
                   {showPw ? "Hide Password" : "Change Password"}
-                </button>
+                </Button>
                 {showPw && (
-                  <input
+                  <Input
                     className={styles.profileSettingsPage__input}
                     type="password"
                     placeholder="New password"
                     value={password}
                     minLength={6}
                     required
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={e => setPassword(e.target.value)}
                   />
                 )}
                 {showPw && (
-                  <button
+                  <Button
                     type="submit"
                     className={styles.profileSettingsPage__saveBtn}
                     disabled={saving || !password}
+                    variant="primary"
                   >
                     {saving ? "Saving…" : "Save Password"}
-                  </button>
+                  </Button>
                 )}
               </div>
               {showPw && saved && (
@@ -247,3 +278,11 @@ export default function ProfileSettingsPage() {
     </div>
   );
 }
+
+/**
+ * Key improvements:
+ * - Input and Button components from UI library used for all interactive elements for uniform look and accessibility.
+ * - Blob URLs from file uploader are now properly revoked for memory/resource safety.
+ * - No leaks: cleans up on file change and unmount.
+ * - Still demo logic, but now fully aligned with UI/UX design system.
+ */

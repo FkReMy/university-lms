@@ -6,13 +6,13 @@
  * Responsibilities:
  * - Provides application-wide layout structure: header, sidebar/nav, and page content area.
  * - Handles basic responsive layout for desktop/mobile.
- * - Can manage sidebar toggle, user profile dropdown, etc.
  * - Manages skip-link, main wrapper, and props for routing.
+ * - Integrates modular Sidebar and Topbar components to allow design consistency.
  *
  * Props:
  * - children: ReactNode             - Main page content.
- * - header: ReactNode (optional)    - Header (defaults to built-in AppHeader).
- * - sidebar: ReactNode (optional)   - Sidebar/Nav (optional, defaults to built-in AppSidebar for main layout).
+ * - header: ReactNode (optional)    - Header (defaults to imported Topbar).
+ * - sidebar: ReactNode (optional)   - Sidebar/Nav (defaults to imported Sidebar).
  * - className: string (optional)    - Wrapper class for custom layout.
  * - contentClassName: string        - For main content area.
  * - ...rest:                        - Extra props for root div.
@@ -25,9 +25,14 @@
 
 import { useState } from 'react';
 
-import styles from './appShell.module.scss';
+// Correct case-sensitive import!
+import styles from './AppShell.module.scss';
 
-// Example: simple skip link for accessibility
+// Use dedicated Sidebar and Topbar components for modularity
+import Sidebar from './Sidebar';
+import Topbar from './Topbar';
+
+// Simple skip link for accessibility
 function SkipToContent() {
   return (
     <a href="#main-content" className={styles.skiplink}>
@@ -38,8 +43,8 @@ function SkipToContent() {
 
 /**
  * Main AppShell component.
- * Accepts optional custom header/sidebar (or uses built-in).
- * Handles sidebar toggle for responsiveness.
+ * Accepts optional custom header/sidebar (or uses modular defaults).
+ * Handles sidebar toggle state for responsiveness.
  */
 export default function AppShell({
   children,
@@ -49,60 +54,8 @@ export default function AppShell({
   contentClassName = '',
   ...rest
 }) {
-  // Sidebar Responsiveness (open/close)
+  // Sidebar Responsiveness (open/close for mobile)
   const [sidebarOpen, setSidebarOpen] = useState(false);
-
-  // Optionally, you can import and use your own Header or Sidebar components here.
-  // For this template: they're just blank boxes with area labels.
-  const DefaultHeader = () => (
-    <header className={styles.header}>
-      <button
-        className={styles.header__menubtn}
-        type="button"
-        aria-label="Open sidebar"
-        aria-controls="app-sidebar"
-        aria-expanded={sidebarOpen}
-        onClick={() => setSidebarOpen(o => !o)}
-      >
-        {/* Menu Hamburger SVG */}
-        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
-          <rect y="6" width="28" height="2.5" rx="1.25" fill="#374151"/>
-          <rect y="13" width="28" height="2.5" rx="1.25" fill="#374151"/>
-          <rect y="20" width="28" height="2.5" rx="1.25" fill="#374151"/>
-        </svg>
-      </button>
-      <span className={styles.header__brand}>LMS</span>
-      {/* Add profile button or notification icons here */}
-    </header>
-  );
-
-  const DefaultSidebar = () => (
-    <aside
-      className={[
-        styles.sidebar,
-        sidebarOpen ? styles['sidebar--open'] : '',
-      ].filter(Boolean).join(' ')}
-      id="app-sidebar"
-      aria-hidden={!sidebarOpen}
-    >
-      <div className={styles.sidebar__header}>
-        <span className={styles.sidebar__title}>Menu</span>
-        <button
-          className={styles.sidebar__closebtn}
-          aria-label="Close sidebar"
-          onClick={() => setSidebarOpen(false)}
-        >
-          ×
-        </button>
-      </div>
-      <nav className={styles.sidebar__nav}>
-        <a className={styles.sidebar__navitem} href="/">Dashboard</a>
-        <a className={styles.sidebar__navitem} href="/courses">Courses</a>
-        <a className={styles.sidebar__navitem} href="/settings">Settings</a>
-        {/* Add more navigation links as needed */}
-      </nav>
-    </aside>
-  );
 
   // Compose class names for layout
   const shellClass = [styles.shell, className].filter(Boolean).join(' ');
@@ -115,9 +68,12 @@ export default function AppShell({
     <div className={shellClass} {...rest}>
       <SkipToContent />
 
-      {/* Sidebar */}
-      {sidebar !== undefined ? sidebar
-        : <DefaultSidebar />}
+      {/* Sidebar, allow override or use shared component */}
+      {sidebar !== undefined ? (
+        sidebar
+      ) : (
+        <Sidebar open={sidebarOpen} setOpen={setSidebarOpen} />
+      )}
 
       {/* Overlay for sidebar on mobile */}
       {showOverlay && (
@@ -131,8 +87,12 @@ export default function AppShell({
 
       {/* Main layout panel */}
       <div className={styles.shell__main}>
-        {/* Header */}
-        {header !== undefined ? header : <DefaultHeader />}
+        {/* Header, allow override or use shared component */}
+        {header !== undefined ? (
+          header
+        ) : (
+          <Topbar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+        )}
 
         {/* Page Content */}
         <main
@@ -148,3 +108,11 @@ export default function AppShell({
     </div>
   );
 }
+
+/**
+ * Notes:
+ * - The Sidebar and Topbar components should handle their own semantics, nav links, and menu toggling as needed.
+ * - Make sure ./Sidebar.jsx and ./Topbar.jsx exist and are implemented for design consistency.
+ * - Always use the correct file case when importing (case sensitive filesystems).
+ * - This shell is flexible enough to allow direct overrides for header/sidebar, useful for modals or special routes.
+ */

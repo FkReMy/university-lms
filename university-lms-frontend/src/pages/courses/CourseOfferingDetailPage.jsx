@@ -1,61 +1,103 @@
 /**
- * CourseOfferingDetailPage Component
+ * CourseOfferingsPage Component
  * ----------------------------------------------------------
- * View and manage a single course offering (section).
+ * Browse and filter all course offerings available for enrollment/viewing.
  *
  * Responsibilities:
- * - Displays offering: course info, schedule, roster, instructor, etc.
- * - Shows enrollment, term, status, and description/details.
- * - List enrolled students with basic info.
- * - Admin/faculty actions for future: edit, close enrollment.
+ * - Lists all course offerings with search and term/department filters.
+ * - Uses shared UI components (Input, Select, Button) for consistent look/feel.
+ * - Renders course cards with main attributes and a link/details action.
+ * - Prepared for connection to backend API and expansion.
  *
  * Usage:
- *   <Route path="/offerings/:id" element={<CourseOfferingDetailPage />} />
+ *   <Route path="/courses" element={<CourseOfferingsPage />} />
  */
 
 import { useEffect, useState } from 'react';
 
-import styles from './CourseOfferingDetailPage.module.scss';
+import Input from '../../components/ui/input';   // consistent styled input
+import Select from '../../components/ui/select'; // consistent styled select
+import Button from '../../components/ui/button'; // consistent styled button
 
-export default function CourseOfferingDetailPage({ offeringId /* from router params */ }) {
-  // State: simulated load for course offering details and roster
-  const [offering, setOffering] = useState(null);
-  const [students, setStudents] = useState([]);
+import styles from './CourseOfferingsPage.module.scss';
+
+export default function CourseOfferingsPage() {
+  // Demo: pretend course offering data
+  const [offerings, setOfferings] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Filters
+  const [search, setSearch] = useState('');
+  const [term, setTerm] = useState('all');
+  const [dept, setDept] = useState('all');
+
+  // Simulate load
   useEffect(() => {
     setLoading(true);
     setTimeout(() => {
-      setOffering({
-        id: offeringId ?? 9,
-        term: 'Spring 2025',
-        course: 'CSCI 101',
-        courseName: 'Introduction to Computer Science',
-        instructor: 'Dr. Smith',
-        schedule: 'Mon/Wed 10:30-12:00',
-        credits: 4,
-        status: 'Active',
-        enrollment: 32,
-        description:
-          'Learn foundational programming and problem-solving skills in Python. Major concepts: algorithms, variables, data types, control flow, and debugging.',
-      });
-      setStudents([
-        { id: 101, name: 'Jane Student', email: 'jane.smith@email.edu', status: 'enrolled' },
-        { id: 102, name: 'John Lee', email: 'john.lee@email.edu', status: 'enrolled' },
-        { id: 103, name: 'Olivia Brown', email: 'obrown@email.edu', status: 'waitlisted' },
+      setOfferings([
+        {
+          id: 11,
+          dept: 'CSCI',
+          course: 'CSCI 101',
+          courseName: 'Introduction to Computer Science',
+          instructor: 'Dr. Smith',
+          term: 'Spring 2025',
+          schedule: 'Mon/Wed 10:30-12:00',
+          credits: 4,
+          status: 'Active',
+          enrollment: 32
+        },
+        {
+          id: 12,
+          dept: 'MATH',
+          course: 'MATH 120',
+          courseName: 'Calculus I',
+          instructor: 'Prof. White',
+          term: 'Spring 2025',
+          schedule: 'Tue/Thu 09:30-11:00',
+          credits: 4,
+          status: 'Active',
+          enrollment: 41
+        },
+        {
+          id: 13,
+          dept: 'CSCI',
+          course: 'CSCI 201',
+          courseName: 'Algorithms',
+          instructor: 'Dr. Lee',
+          term: 'Fall 2024',
+          schedule: 'Tue/Thu 14:00-15:30',
+          credits: 3,
+          status: 'Closed',
+          enrollment: 50
+        },
       ]);
       setLoading(false);
-    }, 900);
-  }, [offeringId]);
+    }, 800);
+  }, []);
 
-  // Status chip color
+  // All available terms and departments in data, for select options
+  const terms = Array.from(new Set(['all', ...offerings.map(o => o.term)])).sort();
+  const depts = Array.from(new Set(['all', ...offerings.map(o => o.dept)])).sort();
+
+  // Basic filter logic: search by text, filter by term/department
+  const filtered = offerings.filter(o =>
+    (term === 'all' || o.term === term) &&
+    (dept === 'all' || o.dept === dept) &&
+    (
+      o.course.toLowerCase().includes(search.toLowerCase()) ||
+      o.courseName.toLowerCase().includes(search.toLowerCase())
+    )
+  );
+
+  // Status badge utility (see previous pattern)
   function statusBadge(status) {
     let bg = "#dedede", color = "#213050";
     if (!status) return null;
-    if (status.toLowerCase() === "active") { bg = "#e5ffe9"; color = "#179a4e"; }
-    if (status.toLowerCase() === "closed") { bg = "#fbeaea"; color = "#e62727"; }
-    if (status.toLowerCase() === "waitlisted") { bg = "#fff6e0"; color = "#e67e22"; }
-    if (status.toLowerCase() === "enrolled") { bg = "#e0edff"; color = "#2563eb"; }
+    if (status.toLowerCase() === "active")   { bg = "#e5ffe9"; color = "#179a4e"; }
+    if (status.toLowerCase() === "closed")   { bg = "#fbeaea"; color = "#e62727"; }
+    if (status.toLowerCase() === "waitlist") { bg = "#fff6e0"; color = "#e67e22"; }
     return (
       <span
         style={{
@@ -63,7 +105,7 @@ export default function CourseOfferingDetailPage({ offeringId /* from router par
           color: color,
           fontWeight: 600,
           borderRadius: "1em",
-          padding: "0.13em 0.9em",
+          padding: "0.11em 0.94em",
           fontSize: "0.98em",
           marginLeft: "0.34em"
         }}
@@ -74,77 +116,101 @@ export default function CourseOfferingDetailPage({ offeringId /* from router par
   }
 
   return (
-    <div className={styles.courseOfferingDetailPage}>
-      {loading ? (
-        <div className={styles.courseOfferingDetailPage__loading}>Loading offering…</div>
-      ) : !offering ? (
-        <div className={styles.courseOfferingDetailPage__empty}>Offering not found.</div>
-      ) : (
-        <div className={styles.courseOfferingDetailPage__card}>
-          {/* Course & offering info */}
-          <header className={styles.courseOfferingDetailPage__header}>
-            <h1 className={styles.courseOfferingDetailPage__title}>
-              {offering.courseName} <span className={styles.courseOfferingDetailPage__code}>[{offering.course}]</span>
-              {statusBadge(offering.status)}
-            </h1>
-            <div className={styles.courseOfferingDetailPage__infoRow}>
-              <span className={styles.courseOfferingDetailPage__label}>Term:</span> {offering.term}
-            </div>
-            <div className={styles.courseOfferingDetailPage__infoRow}>
-              <span className={styles.courseOfferingDetailPage__label}>Instructor:</span> {offering.instructor}
-            </div>
-            <div className={styles.courseOfferingDetailPage__infoRow}>
-              <span className={styles.courseOfferingDetailPage__label}>Schedule:</span> {offering.schedule}
-            </div>
-            <div className={styles.courseOfferingDetailPage__infoRow}>
-              <span className={styles.courseOfferingDetailPage__label}>Credits:</span> {offering.credits}
-            </div>
-            <div className={styles.courseOfferingDetailPage__infoRow}>
-              <span className={styles.courseOfferingDetailPage__label}>Enrolled:</span> {offering.enrollment}
-            </div>
-            <div className={styles.courseOfferingDetailPage__desc}>
-              {offering.description}
-            </div>
-          </header>
-          {/* Roster list */}
-          <section className={styles.courseOfferingDetailPage__section}>
-            <h2 className={styles.courseOfferingDetailPage__sectionTitle}>Enrolled Students</h2>
-            {students.length === 0 ? (
-              <div className={styles.courseOfferingDetailPage__empty}>No students enrolled.</div>
-            ) : (
-              <table className={styles.courseOfferingDetailPage__table}>
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {students.map((s) => (
-                    <tr key={s.id}>
-                      <td>{s.name}</td>
-                      <td>{s.email}</td>
-                      <td>{statusBadge(s.status)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </section>
-          {/* Admin/instructor actions */}
-          <section className={styles.courseOfferingDetailPage__actions}>
-            <button
-              className={styles.courseOfferingDetailPage__actionBtn}
-              // onClick={() => ... future edit dialog ...}
-            >Edit Info</button>
-            <button
-              className={styles.courseOfferingDetailPage__actionBtn}
-              // onClick={() => ... change status logic ...}
-            >Close Enrollment</button>
-          </section>
-        </div>
-      )}
+    <div className={styles.courseOfferingsPage}>
+      <h1 className={styles.courseOfferingsPage__title}>Course Offerings</h1>
+      {/* Filters row - use UI kit components */}
+      <form
+        className={styles.courseOfferingsPage__filters}
+        tabIndex={0}
+        aria-label="Course offering filters"
+        onSubmit={e => e.preventDefault()}
+      >
+        <Input
+          className={styles.courseOfferingsPage__filterInput}
+          placeholder="Search course or title…"
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          autoComplete="off"
+          aria-label="Search for course"
+        />
+        <Select
+          className={styles.courseOfferingsPage__filterSelect}
+          value={term}
+          onChange={e => setTerm(e.target.value)}
+          aria-label="Filter by term"
+        >
+          {terms.map(t => (
+            <option value={t} key={t}>{t === "all" ? "All Terms" : t}</option>
+          ))}
+        </Select>
+        <Select
+          className={styles.courseOfferingsPage__filterSelect}
+          value={dept}
+          onChange={e => setDept(e.target.value)}
+          aria-label="Filter by department"
+        >
+          {depts.map(d => (
+            <option value={d} key={d}>{d === "all" ? "All Departments" : d}</option>
+          ))}
+        </Select>
+        <Button
+          className={styles.courseOfferingsPage__filterBtn}
+          type="button"
+          variant="primary"
+          onClick={() => {/* Could trigger search/filter, not needed for local state */}}
+        >
+          Apply
+        </Button>
+      </form>
+      {/* Main course offerings list */}
+      <div className={styles.courseOfferingsPage__listArea}>
+        {loading ? (
+          <div className={styles.courseOfferingsPage__loading}>Loading offerings…</div>
+        ) : filtered.length === 0 ? (
+          <div className={styles.courseOfferingsPage__empty}>No offerings found.</div>
+        ) : (
+          <div className={styles.courseOfferingsPage__cardsGrid}>
+            {filtered.map(offering => (
+              <div className={styles.courseOfferingsPage__card} key={offering.id}>
+                <div className={styles.courseOfferingsPage__codeRow}>
+                  <span className={styles.courseOfferingsPage__code}>{offering.course}</span>
+                  {statusBadge(offering.status)}
+                </div>
+                <div className={styles.courseOfferingsPage__name}>{offering.courseName}</div>
+                <div className={styles.courseOfferingsPage__meta}>
+                  <span>Term: <b>{offering.term}</b></span>
+                  <span>Dept: <b>{offering.dept}</b></span>
+                </div>
+                <div className={styles.courseOfferingsPage__meta}>
+                  <span>Instructor: <b>{offering.instructor}</b></span>
+                  <span>Enrolled: <b>{offering.enrollment}</b></span>
+                </div>
+                <div className={styles.courseOfferingsPage__meta}>
+                  <span>Credits: <b>{offering.credits}</b></span>
+                  <span>Schedule: <b>{offering.schedule}</b></span>
+                </div>
+                <Button
+                  className={styles.courseOfferingsPage__detailsBtn}
+                  type="button"
+                  variant="outline"
+                  onClick={() => window.location.href = `/courses/${offering.id}`}
+                  aria-label={`View details for ${offering.courseName}`}
+                >
+                  View Details
+                </Button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
+
+/**
+ * Notes:
+ * - Uses Input, Select, Button components from your shared UI kit for all search/filter/form controls.
+ * - Course cards include a strongly-typed path for details (`/courses/${offering.id}`) matching route layout.
+ * - Status badge logic is consistent and can be moved to a utility/helper if reused elsewhere.
+ * - Replace window.location.href with navigate(...) from react-router if SPA navigation is needed.
+ */

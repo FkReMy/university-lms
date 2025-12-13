@@ -7,12 +7,18 @@
  * - Lists assignments with due date, title, and status (open/closed).
  * - Allows searching/filtering by title or status.
  * - Ready for expansion: add/edit/view/remove actions.
+ * - Uses Badge, Button, Input, and Select components for UI consistency.
  *
  * Usage:
  *   <Route path="/assignments" element={<AssignmentListPage />} />
  */
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+
+import Input from '../../components/ui/input';   // Design system input
+import Select from '../../components/ui/select'; // Design system select
+import Button from '../../components/ui/button'; // Design system button
+import Badge from '../../components/ui/badge';   // Design system badge
 
 import styles from './AssignmentListPage.module.scss';
 
@@ -51,37 +57,22 @@ export default function AssignmentListPage() {
     }, 900);
   }, []);
 
-  // Unique status values
+  // Unique status values for dropdown
   const statuses = [...new Set(assignments.map(a => a.status))].sort();
 
   // Filtered assignments
   const filteredAssignments = assignments.filter(a => {
-    const matchesSearch =
-      a.title.toLowerCase().includes(search.toLowerCase());
+    const matchesSearch = a.title.toLowerCase().includes(search.toLowerCase());
     const matchesStatus = status === 'all' || a.status === status;
     return matchesSearch && matchesStatus;
   });
 
-  // Status badge
+  // Status badge (with shared Badge component)
   function statusBadge(s) {
-    let bg = "#dedede", color = "#213050";
-    if (!s) return null;
-    if (s === 'Open') { bg = "#e5ffe9"; color = "#179a4e"; }
-    if (s === 'Closed') { bg = "#fbeaea"; color = "#e62727"; }
-    return (
-      <span
-        style={{
-          background: bg,
-          color: color,
-          fontWeight: 600,
-          fontSize: "0.96em",
-          borderRadius: "1em",
-          padding: "0.13em 0.85em",
-        }}
-      >
-        {s}
-      </span>
-    );
+    let variant = "default";
+    if (s === 'Open') variant = "success";
+    if (s === 'Closed') variant = "danger";
+    return <Badge variant={variant}>{s}</Badge>;
   }
 
   // Format UI date/time
@@ -100,14 +91,14 @@ export default function AssignmentListPage() {
     <div className={styles.assignmentListPage}>
       <h1 className={styles.assignmentListPage__title}>Assignments</h1>
       <div className={styles.assignmentListPage__controls}>
-        <input
+        <Input
           className={styles.assignmentListPage__search}
           type="text"
           placeholder="Search by title…"
           value={search}
           onChange={e => setSearch(e.target.value)}
         />
-        <select
+        <Select
           className={styles.assignmentListPage__statusSelect}
           value={status}
           onChange={e => setStatus(e.target.value)}
@@ -116,14 +107,15 @@ export default function AssignmentListPage() {
           {statuses.map(s => (
             <option value={s} key={s}>{s}</option>
           ))}
-        </select>
-        <button
+        </Select>
+        <Button
           className={styles.assignmentListPage__addBtn}
           type="button"
+          variant="primary"
           // onClick={() => ... future add assignment ...}
         >
           + Add Assignment
-        </button>
+        </Button>
       </div>
       <div className={styles.assignmentListPage__listArea}>
         {loading ? (
@@ -151,18 +143,24 @@ export default function AssignmentListPage() {
                   <td>{fmt(a.due)}</td>
                   <td>{statusBadge(a.status)}</td>
                   <td>
-                    <button
+                    <Button
                       className={styles.assignmentListPage__actionBtn}
+                      size="sm"
+                      variant="outline"
+                      type="button"
                       // onClick={() => ... edit/view logic ...}
                     >
                       Edit
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       className={styles.assignmentListPage__actionBtn}
+                      size="sm"
+                      variant="outline"
+                      type="button"
                       // onClick={() => ... remove logic ...}
                     >
                       Remove
-                    </button>
+                    </Button>
                   </td>
                 </tr>
               ))}
@@ -173,3 +171,10 @@ export default function AssignmentListPage() {
     </div>
   );
 }
+
+/**
+ * Notes:
+ * - All form and action controls now use UI kit components for styling and accessibility.
+ * - Status badge uses Badge component for consistent chip/badge style.
+ * - Actions ready to wire up for modals, dialogs, or API requests.
+ */

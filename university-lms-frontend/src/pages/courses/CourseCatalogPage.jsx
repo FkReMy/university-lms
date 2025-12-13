@@ -5,14 +5,21 @@
  *
  * Responsibilities:
  * - Lists available courses in a responsive card/list view.
+ * - Uses CourseCard component for every course (not manual markup!).
  * - Allows searching/filtering by keyword, department, instructor, and credits.
  * - Ready for expansion: enroll/view details actions.
+ * - All controls are design-system Input/Select components for consistency.
  *
  * Usage:
  *   <Route path="/courses" element={<CourseCatalogPage />} />
  */
 
 import { useEffect, useState } from 'react';
+
+import Input from '../../components/ui/input';      // design-system input
+import Select from '../../components/ui/select';    // design-system select
+import Button from '../../components/ui/button';    // design-system button, if needed
+import CourseCard from '../../components/courses/CourseCard'; // reusable course card
 
 import styles from './CourseCatalogPage.module.scss';
 
@@ -96,37 +103,33 @@ export default function CourseCatalogPage() {
     <div className={styles.courseCatalogPage}>
       <h1 className={styles.courseCatalogPage__title}>Course Catalog</h1>
       <div className={styles.courseCatalogPage__controls}>
-        <input
+        <Input
           className={styles.courseCatalogPage__search}
           type="text"
           placeholder="Search course name, code, or instructor…"
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={e => setSearch(e.target.value)}
         />
-        <select
+        <Select
           className={styles.courseCatalogPage__departmentSelect}
           value={department}
-          onChange={(e) => setDepartment(e.target.value)}
+          onChange={e => setDepartment(e.target.value)}
         >
           <option value="all">All Departments</option>
-          {departments.map((dep) => (
-            <option value={dep} key={dep}>
-              {dep}
-            </option>
+          {departments.map(dep => (
+            <option value={dep} key={dep}>{dep}</option>
           ))}
-        </select>
-        <select
+        </Select>
+        <Select
           className={styles.courseCatalogPage__creditsSelect}
           value={credits}
-          onChange={(e) => setCredits(e.target.value)}
+          onChange={e => setCredits(e.target.value)}
         >
           <option value="all">All Credits</option>
-          {creditOptions.map((cr) => (
-            <option value={cr} key={cr}>
-              {cr} credits
-            </option>
+          {creditOptions.map(cr => (
+            <option value={cr} key={cr}>{cr} credits</option>
           ))}
-        </select>
+        </Select>
       </div>
       <div className={styles.courseCatalogPage__listArea}>
         {loading ? (
@@ -139,43 +142,15 @@ export default function CourseCatalogPage() {
           </div>
         ) : (
           <div className={styles.courseCatalogPage__cardsWrap}>
-            {filteredCourses.map((course) => (
-              <div className={styles.courseCatalogPage__card} key={course.id}>
-                <div className={styles.courseCatalogPage__cardHead}>
-                  <span className={styles.courseCatalogPage__cardCode}>
-                    {course.code}
-                  </span>
-                  <span className={styles.courseCatalogPage__cardDept}>
-                    {course.department}
-                  </span>
-                  <span className={styles.courseCatalogPage__cardCredits}>
-                    {course.credits} cr
-                  </span>
-                </div>
-                <div className={styles.courseCatalogPage__cardTitle}>
-                  {course.name}
-                </div>
-                <div className={styles.courseCatalogPage__cardInstructor}>
-                  <b>Instructor:</b> {course.instructor}
-                </div>
-                <div className={styles.courseCatalogPage__cardDesc}>
-                  {course.description}
-                </div>
-                <div className={styles.courseCatalogPage__cardActions}>
-                  <button
-                    className={styles.courseCatalogPage__actionBtn}
-                    // onClick={() => ... future enroll or preview ...}
-                  >
-                    View Details
-                  </button>
-                  <button
-                    className={styles.courseCatalogPage__actionBtn}
-                    // onClick={() => ... enroll logic ...}
-                  >
-                    Enroll
-                  </button>
-                </div>
-              </div>
+            {filteredCourses.map(course => (
+              <CourseCard
+                key={course.id}
+                course={course}
+                // You can pass additional props for onView, onEnroll, etc.
+                // Example:
+                // onView={() => ...}
+                // onEnroll={() => ...}
+              />
             ))}
           </div>
         )}
@@ -183,3 +158,10 @@ export default function CourseCatalogPage() {
     </div>
   );
 }
+
+/**
+ * Improvements:
+ * - Uses CourseCard for every item (no duplicated card markup).
+ * - All filter/search controls use Input/Select for design consistency.
+ * - Expansion (enroll/view/preview actions) goes in CourseCard; no duplication needed here.
+ */

@@ -7,12 +7,16 @@
  * - List all students, all grade columns (assignments/quizzes/etc)
  * - Allows grade entry/edit (future), computes total/average.
  * - Filter/search by student.
+ * - Uses shared Table component for structure.
+ * - Style isolation for empty grades.
  *
  * Usage:
  *   <Route path="/gradebook" element={<GradebookPage />} />
  */
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import Table from '../../components/ui/table';    // Design system Table
+import Input from '../../components/ui/input';    // Design system Input
 
 import styles from './GradebookPage.module.scss';
 
@@ -88,11 +92,9 @@ export default function GradebookPage() {
 
   return (
     <div className={styles.gradebookPage}>
-      <h1 className={styles.gradebookPage__title}>
-        Gradebook
-      </h1>
+      <h1 className={styles.gradebookPage__title}>Gradebook</h1>
       <div className={styles.gradebookPage__controls}>
-        <input
+        <Input
           className={styles.gradebookPage__search}
           type="text"
           placeholder="Search by student name…"
@@ -107,14 +109,22 @@ export default function GradebookPage() {
         ) : filteredStudents.length === 0 ? (
           <div className={styles.gradebookPage__empty}>No students found.</div>
         ) : (
-          <table className={styles.gradebookPage__table}>
+          <Table className={styles.gradebookPage__table} striped>
             <thead>
               <tr>
                 <th>Student</th>
                 {gradeCols.map(col => (
-                  <th key={col.key}>{col.label}<br /><span className={styles.gradebookPage__colMax}>/ {col.max}</span></th>
+                  <th key={col.key}>
+                    {col.label}
+                    <br />
+                    <span className={styles.gradebookPage__colMax}>/ {col.max}</span>
+                  </th>
                 ))}
-                <th>Total<br /><span className={styles.gradebookPage__colMax}>/ {getMaxTotal()}</span></th>
+                <th>
+                  Total
+                  <br />
+                  <span className={styles.gradebookPage__colMax}>/ {getMaxTotal()}</span>
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -125,7 +135,7 @@ export default function GradebookPage() {
                     <td key={col.key}>
                       {grades[s.id] && typeof grades[s.id][col.key] === 'number'
                         ? grades[s.id][col.key]
-                        : <span style={{ color: '#caa' }}>–</span>
+                        : <span className={styles.gradebookPage__emptyGrade}>–</span>
                       }
                     </td>
                   ))}
@@ -146,9 +156,17 @@ export default function GradebookPage() {
                 <td />
               </tr>
             </tfoot>
-          </table>
+          </Table>
         )}
       </div>
     </div>
   );
 }
+
+/**
+ * Notes:
+ * - Table now uses the design system's <Table> for uniform styling and accessibility.
+ * - <Input> is used for the search field.
+ * - Empty grades use a dedicated .gradebookPage__emptyGrade class for style isolation; no inline styles.
+ * - Table supports a striped prop for improved readability (if your Table supports that).
+ */

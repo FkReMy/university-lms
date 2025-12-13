@@ -6,7 +6,8 @@
  * Responsibilities:
  * - Summarizes high-level LMS stats (users, courses, assignments, submissions)
  * - Shows most-popular courses and recent activity.
- * - Links to user/course/assignment management sections.
+ * - Links to user/course/assignment management sections with SPA navigation.
+ * - Uses design system components (Badge, Card, Table) for a consistent UI.
  * - May show visualizations (grade chart, recent submissions, etc).
  *
  * Usage:
@@ -14,8 +15,13 @@
  */
 
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 
-import GradeDistributionChart from '../../components/analytics/GradeDistributionChart';
+import GradeDistributionChart from '@/components/analytics/GradeDistributionChart';
+import Card from '@/components/ui/card';      // design-system Card
+import Table from '@/components/ui/table';    // design-system Table
+import Badge from '@/components/ui/badge';    // design-system Badge
+// You may need to provide simple Card and Table wrappers if not present.
 
 import styles from './AdminDashboard.module.scss';
 
@@ -28,12 +34,8 @@ export default function AdminDashboard() {
     assignments: 0,
     submissions: 0,
   });
-  const [topCourses, setTopCourses] = useState([
-    // Example: {id, title, enrolled, instructor}
-  ]);
-  const [recentSubmissions, setRecentSubmissions] = useState([
-    // Example: {id, student, assignment, submittedAt, grade}
-  ]);
+  const [topCourses, setTopCourses] = useState([]);
+  const [recentSubmissions, setRecentSubmissions] = useState([]);
   const [gradeDist, setGradeDist] = useState([95, 88, 80, 71, 91, 78, 100, 89, 85, 73, 65, 77, 88]);
   const [loading, setLoading] = useState(true);
 
@@ -75,40 +77,41 @@ export default function AdminDashboard() {
 
   return (
     <div className={styles.adminDashboard}>
-      <h1 className={styles.adminDashboard__title}>
-        Admin Dashboard
-      </h1>
+      <h1 className={styles.adminDashboard__title}>Admin Dashboard</h1>
       {loading ? (
         <div className={styles.adminDashboard__loading}>Loading LMS stats…</div>
       ) : (
         <div>
-          {/* Stats grid */}
+          {/* Top stats grid */}
           <section className={styles.adminDashboard__statsGrid}>
-            <div className={styles.adminDashboard__statBox}>
+            <Card className={styles.adminDashboard__statBox}>
               <span className={styles.adminDashboard__statLabel}>Users</span>
-              <span className={styles.adminDashboard__statValue}>{stats.users}</span>
-            </div>
-            <div className={styles.adminDashboard__statBox}>
+              <span className={styles.adminDashboard__statValue}>
+                {stats.users}
+              </span>
+            </Card>
+            <Card className={styles.adminDashboard__statBox}>
               <span className={styles.adminDashboard__statLabel}>Instructors</span>
               <span className={styles.adminDashboard__statValue}>{stats.instructors}</span>
-            </div>
-            <div className={styles.adminDashboard__statBox}>
+            </Card>
+            <Card className={styles.adminDashboard__statBox}>
               <span className={styles.adminDashboard__statLabel}>Courses</span>
               <span className={styles.adminDashboard__statValue}>{stats.courses}</span>
-            </div>
-            <div className={styles.adminDashboard__statBox}>
+            </Card>
+            <Card className={styles.adminDashboard__statBox}>
               <span className={styles.adminDashboard__statLabel}>Assignments</span>
               <span className={styles.adminDashboard__statValue}>{stats.assignments}</span>
-            </div>
-            <div className={styles.adminDashboard__statBox}>
+            </Card>
+            <Card className={styles.adminDashboard__statBox}>
               <span className={styles.adminDashboard__statLabel}>Submissions</span>
               <span className={styles.adminDashboard__statValue}>{stats.submissions}</span>
-            </div>
+            </Card>
           </section>
-          {/* Top courses */}
+
+          {/* Most popular/top courses */}
           <section className={styles.adminDashboard__section}>
             <h2 className={styles.adminDashboard__sectionTitle}>Top Courses</h2>
-            <table className={styles.adminDashboard__coursesTable}>
+            <Table className={styles.adminDashboard__coursesTable}>
               <thead>
                 <tr>
                   <th>Course</th>
@@ -120,17 +123,20 @@ export default function AdminDashboard() {
                 {topCourses.map((c) => (
                   <tr key={c.id}>
                     <td>{c.title}</td>
-                    <td>{c.enrolled}</td>
+                    <td>
+                      <Badge variant="primary">{c.enrolled}</Badge>
+                    </td>
                     <td>{c.instructor}</td>
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </Table>
           </section>
+
           {/* Recent submissions */}
           <section className={styles.adminDashboard__section}>
             <h2 className={styles.adminDashboard__sectionTitle}>Recent Submissions</h2>
-            <table className={styles.adminDashboard__submissionsTable}>
+            <Table className={styles.adminDashboard__submissionsTable}>
               <thead>
                 <tr>
                   <th>Student</th>
@@ -145,31 +151,45 @@ export default function AdminDashboard() {
                     <td>{sub.student}</td>
                     <td>{sub.assignment}</td>
                     <td>{formatDate(sub.submittedAt)}</td>
-                    <td>{sub.grade}</td>
+                    <td>
+                      <Badge variant="success">{sub.grade}</Badge>
+                    </td>
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </Table>
           </section>
-          {/* Grade distribution chart */}
+
+          {/* Overall grade distribution */}
           <section className={styles.adminDashboard__section}>
             <h2 className={styles.adminDashboard__sectionTitle}>Overall Grade Distribution</h2>
-            <GradeDistributionChart grades={gradeDist} />
+            <Card style={{padding: "1.2em 1.8em"}}>
+              <GradeDistributionChart grades={gradeDist} />
+            </Card>
           </section>
+
           {/* Quick links row */}
           <section className={styles.adminDashboard__quickLinks}>
-            <a className={styles.adminDashboard__quickLink} href="/admin/users">
+            <Link className={styles.adminDashboard__quickLink} to="/admin/users">
               Manage Users
-            </a>
-            <a className={styles.adminDashboard__quickLink} href="/admin/courses">
+            </Link>
+            <Link className={styles.adminDashboard__quickLink} to="/admin/courses">
               Manage Courses
-            </a>
-            <a className={styles.adminDashboard__quickLink} href="/admin/assignments">
+            </Link>
+            <Link className={styles.adminDashboard__quickLink} to="/admin/assignments">
               Manage Assignments
-            </a>
+            </Link>
           </section>
         </div>
       )}
     </div>
   );
 }
+
+/**
+ * Notes:
+ * - Card, Table, and Badge are shared UI components and should be implemented if not present (replace with <div>, <table>, <span> if needed).
+ * - Navigation to `/admin/users`, etc., uses SPA-friendly <Link> for smooth transitions and state preservation.
+ * - All statistics and small data/labels use design system components for visual harmony.
+ * - Uses the @ alias for shared components.
+ */

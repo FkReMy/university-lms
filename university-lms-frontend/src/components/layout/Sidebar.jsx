@@ -29,9 +29,8 @@
  *   />
  */
 
-import { useLocation } from 'react-router-dom'; // Remove or replace if not using react-router
-
-import styles from './AppShell.module.scss';
+import { useLocation } from 'react-router-dom';
+import styles from './Sidebar.module.scss'; // Correct import for sidebar-specific styles
 
 export default function Sidebar({
   nav = [],
@@ -42,17 +41,15 @@ export default function Sidebar({
   className = '',
   ...rest
 }) {
-  // Get current path for "active" highlighting.
-  // If not using react-router, pass current path as prop or use window.location
+  // Get current path for "active" highlighting
   let location = { pathname: "/" };
   try {
     location = useLocation();
   } catch {
-    // No router context; fallback.
     location.pathname = window.location?.pathname || "/";
   }
 
-  // Wrapper sidebar classes (open on small screens)
+  // Sidebar class: includes open state for mobile
   const sidebarClass = [
     styles.sidebar,
     open ? styles['sidebar--open'] : '',
@@ -67,10 +64,11 @@ export default function Sidebar({
       aria-hidden={!open}
       {...rest}
     >
+      {/* Optional branding/logo/header area */}
       {brand && (
         <div className={styles.sidebar__header}>
           {brand}
-          {/* Optional close button for mobile UX */}
+          {/* Optional close button for mobile sidebar */}
           {onClose && (
             <button
               className={styles.sidebar__closebtn}
@@ -118,3 +116,11 @@ export default function Sidebar({
     </aside>
   );
 }
+
+/**
+ * Notes:
+ * - Fixed styles import to Sidebar.module.scss for correct sidebar class names and theming.
+ * - Ensures correct .sidebar--open responsive class and .sidebar__navitem highlighting.
+ * - onClose is optional; only rendered if provided (for mobile/tablet toggle UX).
+ * - If no brand/footer given, only nav menu will show.
+ */

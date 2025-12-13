@@ -10,13 +10,12 @@
  * - Responsive and ready for future expansion.
  *
  * Usage:
- *   <Route path="/student" element={<StudentDashboard />} />
+ *   <Route path="/" element={<StudentDashboard />} />
+ *   <Route path="/dashboard" element={<StudentDashboard />} />
  */
 
 import { useEffect, useState } from 'react';
-
 import GradeDistributionChart from '../../components/analytics/GradeDistributionChart';
-
 import styles from './StudentDashboard.module.scss';
 
 export default function StudentDashboard() {
@@ -27,12 +26,8 @@ export default function StudentDashboard() {
     completed: 0,
     avgGrade: null,
   });
-  const [upcoming, setUpcoming] = useState([
-    // { id, type: "class"|"deadline", title, dueAt }
-  ]);
-  const [recent, setRecent] = useState([
-    // { id, course, activity, date }
-  ]);
+  const [upcoming, setUpcoming] = useState([]);
+  const [recent, setRecent] = useState([]);
   const [gradeDist, setGradeDist] = useState([90, 82, 70, 88, 85, 75, 79, 100, 97, 92, 81]);
   const [loading, setLoading] = useState(true);
 
@@ -43,7 +38,7 @@ export default function StudentDashboard() {
         courses: 6,
         assignments: 19,
         completed: 13,
-        avgGrade: 86
+        avgGrade: 86,
       });
       setUpcoming([
         { id: 51, type: "class", title: "Modern Art - Lecture", dueAt: "2025-04-01T11:00" },
@@ -60,20 +55,23 @@ export default function StudentDashboard() {
     }, 1100);
   }, []);
 
+  // Format a date string for display
   function formatDate(dt) {
     if (!dt) return '';
     const d = new Date(dt);
     return d.toLocaleString(undefined, {
-      year: '2-digit', month: 'short', day: 'numeric',
-      hour: 'numeric', minute: '2-digit', hour12: true
+      year: '2-digit',
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
     });
   }
 
   return (
     <div className={styles.studentDashboard}>
-      <h1 className={styles.studentDashboard__title}>
-        My Dashboard
-      </h1>
+      <h1 className={styles.studentDashboard__title}>My Dashboard</h1>
       {loading ? (
         <div className={styles.studentDashboard__loading}>Loading dashboard…</div>
       ) : (
@@ -134,13 +132,14 @@ export default function StudentDashboard() {
           </section>
           {/* Quick links row */}
           <section className={styles.studentDashboard__quickLinks}>
-            <a className={styles.studentDashboard__quickLink} href="/student/courses">
+            {/* Quick links should match the actual route definitions! */}
+            <a className={styles.studentDashboard__quickLink} href="/courses">
               My Courses
             </a>
-            <a className={styles.studentDashboard__quickLink} href="/student/assignments">
+            <a className={styles.studentDashboard__quickLink} href="/assignments">
               Assignments
             </a>
-            <a className={styles.studentDashboard__quickLink} href="/student/grades">
+            <a className={styles.studentDashboard__quickLink} href="/grades">
               Grades & Progress
             </a>
           </section>
@@ -149,3 +148,9 @@ export default function StudentDashboard() {
     </div>
   );
 }
+
+/**
+ * Key Fixes:
+ * - Updated "Quick links" href to /courses, /assignments, /grades so they remain in sync with your <Route> paths in routes.jsx.
+ * - All major dashboard UI logic and presentation follows your modular LMS structure.
+ */

@@ -6,6 +6,7 @@
  * Responsibilities:
  * - Renders login form for email/username and password.
  * - Handles form state, errors, loading, and submission.
+ * - On success, updates auth state and redirects the user.
  * - Can display error/success messages (e.g., invalid, password reset link sent, etc).
  * - Optionally supports "Remember me", forgot password, and social logins.
  *
@@ -13,7 +14,9 @@
  *   <Route path="/login" element={<LoginPage />} />
  */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuthStore } from '@/store/authStore'; // <-- Replace with the actual path to your auth store
 
 import styles from './LoginPage.module.scss';
 
@@ -26,20 +29,38 @@ export default function LoginPage() {
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
 
+  const navigate = useNavigate();
+
+  // Auth store: set authenticated user, typically has setUser, setAuth, or similar function
+  const { login } = useAuthStore(); // <-- Adjust the hook API to your store (commonly setAuth or login)
+
   // Handler for form submit
   async function handleSubmit(e) {
     e.preventDefault();
     setErrorMsg('');
     setSuccessMsg('');
     setLoading(true);
-    // Simulate API for demo; replace with real auth call
+
+    // Simulated API for demo; replace with real auth call
     setTimeout(() => {
-      setLoading(false);
-      if ((username === "student" && password === "studentpass") ||
-          (username === "admin" && password === "adminpass")) {
+      if (
+        (username === 'student' && password === 'studentpass') ||
+        (username === 'admin' && password === 'adminpass')
+      ) {
+        // Update global auth state
+        login({
+          username,
+          role: username === 'admin' ? 'Admin' : 'Student',
+          remember,
+        });
         setSuccessMsg('Login successful! Redirecting…');
-        // Put navigation here (history.push or navigate('...'))
+        setLoading(false);
+        // Redirect user to dashboard or desired page
+        setTimeout(() => {
+          navigate('/');
+        }, 600);
       } else {
+        setLoading(false);
         setErrorMsg('Invalid username or password.');
       }
     }, 1100);
@@ -56,14 +77,13 @@ export default function LoginPage() {
     <div className={styles.loginPage}>
       <div className={styles.loginPage__box}>
         <h1 className={styles.loginPage__title}>Sign in to LMS</h1>
-        <form className={styles.loginPage__form} onSubmit={handleSubmit}>
+        <form className={styles.loginPage__form} onSubmit={handleSubmit} autoComplete="on">
           {/* Username/email */}
           <label className={styles.loginPage__label}>
             Email or Username
             <input
               className={styles.loginPage__input}
               type="text"
-              autoFocus
               autoComplete="username"
               placeholder="jane@student.edu"
               value={username}
@@ -97,14 +117,15 @@ export default function LoginPage() {
               />
               Remember me
             </label>
-            <a
-              href="#"
+            <button
+              type="button"
               className={styles.loginPage__link}
               tabIndex={loading ? -1 : 0}
               onClick={handleForgot}
+              disabled={loading}
             >
               Forgot password?
-            </a>
+            </button>
           </div>
           {/* Error/message */}
           {errorMsg && <div className={styles.loginPage__errorMsg}>{errorMsg}</div>}
@@ -115,7 +136,7 @@ export default function LoginPage() {
             type="submit"
             disabled={loading}
           >
-            {loading ? "Signing in…" : "Sign in"}
+            {loading ? 'Signing in…' : 'Sign in'}
           </button>
         </form>
 
@@ -133,3 +154,12 @@ export default function LoginPage() {
     </div>
   );
 }
+
+/**
+ * Notes:
+ * - The useAuthStore hook should expose a login or setAuth type of function/object for global state.
+ * - Actual login logic should use the real API; redirect path can be changed as per your routing.
+ * - Replaced <a> with <button type="button"> for "Forgot password" to satisfy a11y/lint rules.
+ * - Removed autoFocus for a11y compliance.
+ * - You may want to tweak what is stored in the auth state (token, user, etc) based on your actual authStore.
+ */
