@@ -13,7 +13,7 @@
  *   <Route path="/assignments/new" element={<AssignmentBuilderPage />} />
  */
 
-import React, { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 import styles from './AssignmentBuilderPage.module.scss';
 

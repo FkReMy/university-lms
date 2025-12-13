@@ -12,7 +12,7 @@
  *   <Route path="/assignments/:id/submit" element={<AssignmentSubmissionPage />} />
  */
 
-import React, { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 import styles from './AssignmentSubmissionPage.module.scss';
 

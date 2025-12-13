@@ -28,7 +28,7 @@
  *   />
  */
 
-import React from 'react';
+import { useId } from 'react';
 
 import styles from './checkbox.module.scss';
 
@@ -42,7 +42,8 @@ export default function Checkbox({
   ...rest
 }) {
   // Unique fallback id for accessibility if not specified
-  const checkboxId = id || React.useId();
+  const generatedId = useId();
+  const checkboxId = id || generatedId;
 
   // Compose wrapper and checkbox field classes
   const wrapperClass = [styles.checkbox__wrapper, className].filter(Boolean).join(' ');

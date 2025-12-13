@@ -13,7 +13,7 @@
  *   <Route path="/grading/submission/:id" element={<SubmissionReviewPage />} />
  */
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import styles from './SubmissionReviewPage.module.scss';
 

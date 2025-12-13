@@ -13,7 +13,7 @@
  *   <Route path="/files" element={<FileLibraryPage />} />
  */
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import styles from './FileLibraryPage.module.scss';
 

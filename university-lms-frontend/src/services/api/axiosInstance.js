@@ -8,6 +8,7 @@
  */
 
 import axios from 'axios';
+import { useAuthStore } from '@/store/authStore';
 
 // -----------------------------------------------------------------------------
 // Config
@@ -54,11 +55,12 @@ const axiosInstance = axios.create({
 });
 
 // -----------------------------------------------------------------------------
-// Request interceptor: attach Authorization if present
+// Request interceptor: attach Authorization from authStore if present
 // -----------------------------------------------------------------------------
 axiosInstance.interceptors.request.use(
   (config) => {
-    const token = getAuthToken();
+    // Get token from auth store instead of localStorage directly
+    const token = useAuthStore.getState().token;
     if (token && !config.headers.Authorization) {
       config.headers.Authorization = `Bearer ${token}`;
     }

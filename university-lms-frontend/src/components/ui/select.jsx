@@ -36,7 +36,7 @@
  *   />
  */
 
-import React from 'react';
+import { useId } from 'react';
 
 import styles from './select.module.scss';
 
@@ -52,7 +52,8 @@ export default function Select({
   ...rest
 }) {
   // Unique fallback id (for associating label) if not provided
-  const selectId = id || React.useId();
+  const generatedId = useId();
+  const selectId = id || generatedId;
 
   // CSS modules: combine classes for wrapper and <select>
   const wrapperClass = [styles.select__wrapper, className].filter(Boolean).join(' ');
