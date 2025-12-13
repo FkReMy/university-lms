@@ -15,6 +15,7 @@
  */
 
 import { useEffect, useState } from 'react';
+
 import styles from './UserDetailPage.module.scss';
 
 export default function UserDetailPage({ userId /* from router params */ }) {

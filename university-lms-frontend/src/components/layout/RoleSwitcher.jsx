@@ -29,6 +29,7 @@
  */
 
 import React, { useState, useRef } from 'react';
+
 import styles from './RoleSwitcher.module.scss';
 
 export default function RoleSwitcher({

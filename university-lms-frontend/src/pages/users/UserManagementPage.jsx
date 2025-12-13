@@ -14,6 +14,7 @@
  */
 
 import { useEffect, useState } from 'react';
+
 import styles from './UserManagementPage.module.scss';
 
 export default function UserManagementPage() {

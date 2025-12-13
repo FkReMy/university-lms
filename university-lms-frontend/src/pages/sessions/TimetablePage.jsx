@@ -14,6 +14,7 @@
  */
 
 import { useEffect, useState } from 'react';
+
 import styles from './TimetablePage.module.scss';
 
 const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];

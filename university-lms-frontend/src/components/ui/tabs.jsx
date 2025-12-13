@@ -33,6 +33,7 @@
  */
 
 import React, { useState, useMemo, Children, cloneElement } from 'react';
+
 import styles from './tabs.module.scss';
 
 /**

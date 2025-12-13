@@ -30,6 +30,7 @@
  */
 
 import { useState, useRef, useEffect } from 'react';
+
 import styles from './NotificationBell.module.scss';
 
 // Default bell SVG icon

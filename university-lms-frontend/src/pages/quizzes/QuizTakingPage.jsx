@@ -14,6 +14,7 @@
  */
 
 import { useEffect, useState } from 'react';
+
 import styles from './QuizTakingPage.module.scss';
 
 // Demo: default quiz data

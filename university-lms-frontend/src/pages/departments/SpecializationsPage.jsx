@@ -13,6 +13,7 @@
  */
 
 import { useEffect, useState } from 'react';
+
 import styles from './SpecializationsPage.module.scss';
 
 export default function SpecializationsPage() {

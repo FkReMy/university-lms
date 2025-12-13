@@ -12,6 +12,7 @@
  */
 
 import React from "react";
+
 import styles from "./AccessDeniedPage.module.scss";
 
 export default function AccessDeniedPage() {

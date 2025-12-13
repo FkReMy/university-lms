@@ -13,6 +13,7 @@
  */
 
 import React, { useEffect, useState, useRef } from "react";
+
 import styles from "./ProfileSettingsPage.module.scss";
 
 // Demo: initial profile

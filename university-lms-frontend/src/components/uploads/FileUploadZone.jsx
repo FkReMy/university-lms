@@ -30,6 +30,7 @@
  */
 
 import { useCallback, useRef, useState } from 'react';
+
 import styles from './FileUploadZone.module.scss';
 
 export default function FileUploadZone({

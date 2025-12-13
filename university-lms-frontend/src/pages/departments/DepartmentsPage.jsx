@@ -13,6 +13,7 @@
  */
 
 import { useEffect, useState } from 'react';
+
 import styles from './DepartmentsPage.module.scss';
 
 export default function DepartmentsPage() {

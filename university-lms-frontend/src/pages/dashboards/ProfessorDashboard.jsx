@@ -13,8 +13,10 @@
  */
 
 import { useEffect, useState } from 'react';
-import styles from './ProfessorDashboard.module.scss';
+
 import GradeDistributionChart from '../../components/analytics/GradeDistributionChart';
+
+import styles from './ProfessorDashboard.module.scss';
 
 export default function ProfessorDashboard() {
   // Example dashboard state (replace with real API fetches)

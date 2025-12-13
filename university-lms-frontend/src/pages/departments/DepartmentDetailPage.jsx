@@ -14,6 +14,7 @@
  */
 
 import { useEffect, useState } from 'react';
+
 import styles from './DepartmentDetailPage.module.scss';
 
 export default function DepartmentDetailPage({ deptId /* from router params */ }) {

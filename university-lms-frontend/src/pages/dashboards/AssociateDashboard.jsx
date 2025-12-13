@@ -13,8 +13,10 @@
  */
 
 import { useEffect, useState } from 'react';
-import styles from './AssociateDashboard.module.scss';
+
 import GradeDistributionChart from '../../components/analytics/GradeDistributionChart';
+
+import styles from './AssociateDashboard.module.scss';
 
 export default function AssociateDashboard() {
   // Example dashboard state (replace with real API fetches)

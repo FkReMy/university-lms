@@ -13,6 +13,7 @@
  */
 
 import { useEffect, useState } from 'react';
+
 import styles from './CourseCatalogPage.module.scss';
 
 export default function CourseCatalogPage() {

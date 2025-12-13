@@ -13,6 +13,7 @@
  */
 
 import { lazy, Suspense } from 'react';
+
 import App from '@/App';
 import { useAuth } from '@/hooks/useAuth';
 

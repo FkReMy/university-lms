@@ -24,6 +24,7 @@
  */
 
 import React from 'react';
+
 import styles from './progress.module.scss';
 
 // Supported color variants (primary is default)

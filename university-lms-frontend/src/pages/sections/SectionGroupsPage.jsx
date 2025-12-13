@@ -13,6 +13,7 @@
  */
 
 import { useEffect, useState } from 'react';
+
 import styles from './SectionGroupsPage.module.scss';
 
 export default function SectionGroupsPage({ sectionId /* from router params */ }) {

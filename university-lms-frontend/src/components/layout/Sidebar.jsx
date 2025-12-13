@@ -30,6 +30,7 @@
  */
 
 import { useLocation } from 'react-router-dom'; // Remove or replace if not using react-router
+
 import styles from './AppShell.module.scss';
 
 export default function Sidebar({

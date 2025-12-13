@@ -23,6 +23,7 @@
  */
 
 import { useMemo } from 'react';
+
 import styles from './GradeDistributionChart.module.scss';
 
 function computeBins(grades, binSize, maxGrade) {

@@ -14,8 +14,10 @@
  */
 
 import { useEffect, useState } from 'react';
-import styles from './AdminDashboard.module.scss';
+
 import GradeDistributionChart from '../../components/analytics/GradeDistributionChart';
+
+import styles from './AdminDashboard.module.scss';
 
 export default function AdminDashboard() {
   // Example dashboard state (replace with real data fetching)

@@ -24,6 +24,7 @@
  */
 
 import { useState, useEffect, useRef } from 'react';
+
 import styles from './QuizTimer.module.scss';
 
 function formatTime(sec) {

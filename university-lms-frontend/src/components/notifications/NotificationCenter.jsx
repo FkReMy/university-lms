@@ -30,6 +30,7 @@
  */
 
 import React from 'react';
+
 import styles from './NotificationCenter.module.scss';
 
 export default function NotificationCenter({

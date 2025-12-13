@@ -14,8 +14,10 @@
  */
 
 import { useEffect, useState } from 'react';
-import styles from './StudentDashboard.module.scss';
+
 import GradeDistributionChart from '../../components/analytics/GradeDistributionChart';
+
+import styles from './StudentDashboard.module.scss';
 
 export default function StudentDashboard() {
   // Student dashboard state (replace with real API in production)

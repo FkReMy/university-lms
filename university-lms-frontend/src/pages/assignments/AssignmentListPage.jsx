@@ -13,6 +13,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
+
 import styles from './AssignmentListPage.module.scss';
 
 export default function AssignmentListPage() {

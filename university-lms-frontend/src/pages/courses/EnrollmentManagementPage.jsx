@@ -13,6 +13,7 @@
  */
 
 import { useEffect, useState } from 'react';
+
 import styles from './EnrollmentManagementPage.module.scss';
 
 export default function EnrollmentManagementPage() {

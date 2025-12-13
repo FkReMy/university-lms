@@ -13,6 +13,7 @@
  */
 
 import React, { useEffect, useState, useRef } from 'react';
+
 import styles from './AssignmentSubmissionPage.module.scss';
 
 // Demo assignment info (replace with API in prod)

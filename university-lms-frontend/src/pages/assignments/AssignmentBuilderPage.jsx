@@ -14,6 +14,7 @@
  */
 
 import React, { useEffect, useState, useRef } from 'react';
+
 import styles from './AssignmentBuilderPage.module.scss';
 
 // --- Demo default assignment ---

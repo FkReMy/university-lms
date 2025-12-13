@@ -14,6 +14,7 @@
  */
 
 import { useEffect, useState } from 'react';
+
 import styles from './CourseOfferingDetailPage.module.scss';
 
 export default function CourseOfferingDetailPage({ offeringId /* from router params */ }) {

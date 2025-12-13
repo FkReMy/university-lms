@@ -24,6 +24,7 @@
  */
 
 import { useState } from 'react';
+
 import styles from './appShell.module.scss';
 
 // Example: simple skip link for accessibility
