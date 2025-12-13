@@ -31,8 +31,9 @@ export default function LoginPage() {
 
   const navigate = useNavigate();
 
-  // Auth store: set authenticated user, typically has setUser, setAuth, or similar function
-  const { login } = useAuthStore(); // <-- Adjust the hook API to your store (commonly setAuth or login)
+  // Auth store actions
+  const loginSuccess = useAuthStore(state => state.loginSuccess);
+  const loginFailure = useAuthStore(state => state.loginFailure);
 
   // Handler for form submit
   async function handleSubmit(e) {
@@ -47,19 +48,26 @@ export default function LoginPage() {
         (username === 'student' && password === 'studentpass') ||
         (username === 'admin' && password === 'adminpass')
       ) {
-        // Update global auth state
-        login({
+        // Update global auth state with proper structure
+        const user = {
+          id: username === 'admin' ? 1 : 2,
           username,
+          email: `${username}@university.edu`,
+          name: username === 'admin' ? 'Admin User' : 'Student User',
           role: username === 'admin' ? 'Admin' : 'Student',
-          remember,
-        });
+        };
+        const token = `mock-jwt-token-${username}-${Date.now()}`;
+        
+        loginSuccess({ user, token });
         setSuccessMsg('Login successful! Redirecting…');
         setLoading(false);
+        
         // Redirect user to dashboard or desired page
         setTimeout(() => {
           navigate('/');
         }, 600);
       } else {
+        loginFailure('Invalid username or password.');
         setLoading(false);
         setErrorMsg('Invalid username or password.');
       }

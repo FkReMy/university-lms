@@ -13,10 +13,7 @@
  */
 
 import { lazy, Suspense } from 'react';
-import { Navigate } from 'react-router-dom';
-
-import App from '@/App';
-import { useAuth } from '@/hooks/useAuth';
+import { Navigate, Outlet } from 'react-router-dom';
 
 // -------------------------------
 // Lazy loaded pages for bundle splitting
@@ -51,134 +48,137 @@ const NotFoundPage = lazy(() => import('@/pages/errors/NotFoundPage'));
 
 // -------------------------------
 // Helper component for protecting private routes
+// Uses authStore for centralized authentication state
 // -------------------------------
 function RequireAuth({ children, redirectTo = '/login' }) {
-  const { ready, isAuthenticated } = useAuth();
-  if (!ready) return <div>Loading...</div>;
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const loading = useAuthStore((state) => state.loading);
+  
+  // Show loading state while auth is being checked
+  if (loading) return <div>Loading...</div>;
+  
   return isAuthenticated ? children : <Navigate to={redirectTo} replace />;
 }
+
+// Import the auth store
+import { useAuthStore } from '@/store/authStore';
 
 // -------------------------------
 // Routes definition
 // -------------------------------
 const routes = [
+  // -------------------------------------
+  // PUBLIC ROUTES
+  // -------------------------------------
   {
-    element: <App />, // App shell overlays notification center, nav, content, etc
-    children: [
-      // -------------------------------------
-      // PUBLIC ROUTES
-      // -------------------------------------
-      {
-        path: '/login',
-        element: (
-          <Suspense fallback={<div>Loading login…</div>}>
-            <LoginPage />
-          </Suspense>
-        ),
-      },
-      {
-        path: '/register',
-        element: (
-          <Suspense fallback={<div>Loading registration…</div>}>
-            <RegisterPage />
-          </Suspense>
-        ),
-      },
-      // -------------------------------------
-      // PROTECTED ROUTES (requires authentication)
-      // -------------------------------------
-      {
-        path: '/',
-        element: (
-          <RequireAuth>
-            <Suspense fallback={<div>Loading dashboard…</div>}>
-              <DashboardPage />
-            </Suspense>
-          </RequireAuth>
-        ),
-      },
-      {
-        path: '/dashboard',
-        element: (
-          <RequireAuth>
-            <Suspense fallback={<div>Loading dashboard…</div>}>
-              <DashboardPage />
-            </Suspense>
-          </RequireAuth>
-        ),
-      },
-      {
-        path: '/courses',
-        element: (
-          <RequireAuth>
-            <Suspense fallback={<div>Loading courses…</div>}>
-              <CoursesPage />
-            </Suspense>
-          </RequireAuth>
-        ),
-      },
-      {
-        path: '/courses/:courseId',
-        element: (
-          <RequireAuth>
-            <Suspense fallback={<div>Loading course…</div>}>
-              <CourseDetailPage />
-            </Suspense>
-          </RequireAuth>
-        ),
-      },
-      {
-        path: '/assignments',
-        element: (
-          <RequireAuth>
-            <Suspense fallback={<div>Loading assignments…</div>}>
-              <AssignmentsPage />
-            </Suspense>
-          </RequireAuth>
-        ),
-      },
-      {
-        path: '/quizzes',
-        element: (
-          <RequireAuth>
-            <Suspense fallback={<div>Loading quizzes…</div>}>
-              <QuizzesPage />
-            </Suspense>
-          </RequireAuth>
-        ),
-      },
-      {
-        path: '/grades',
-        element: (
-          <RequireAuth>
-            <Suspense fallback={<div>Loading grades…</div>}>
-              <GradesPage />
-            </Suspense>
-          </RequireAuth>
-        ),
-      },
-      {
-        path: '/settings',
-        element: (
-          <RequireAuth>
-            <Suspense fallback={<div>Loading settings…</div>}>
-              <SettingsPage />
-            </Suspense>
-          </RequireAuth>
-        ),
-      },
-      // -------------------------------------
-      // NOT FOUND / FALLBACK
-      // -------------------------------------
-      {
-        path: '*',
-        element: (
-          <Suspense fallback={<div>Page not found…</div>}>
-            <NotFoundPage />
-          </Suspense>
-        ),
-      },
-    ],
+    path: '/login',
+    element: (
+      <Suspense fallback={<div>Loading login…</div>}>
+        <LoginPage />
+      </Suspense>
+    ),
+  },
+  {
+    path: '/register',
+    element: (
+      <Suspense fallback={<div>Loading registration…</div>}>
+        <RegisterPage />
+      </Suspense>
+    ),
+  },
+  // -------------------------------------
+  // PROTECTED ROUTES (requires authentication)
+  // -------------------------------------
+  {
+    path: '/',
+    element: (
+      <RequireAuth>
+        <Suspense fallback={<div>Loading dashboard…</div>}>
+          <DashboardPage />
+        </Suspense>
+      </RequireAuth>
+    ),
+  },
+  {
+    path: '/dashboard',
+    element: (
+      <RequireAuth>
+        <Suspense fallback={<div>Loading dashboard…</div>}>
+          <DashboardPage />
+        </Suspense>
+      </RequireAuth>
+    ),
+  },
+  {
+    path: '/courses',
+    element: (
+      <RequireAuth>
+        <Suspense fallback={<div>Loading courses…</div>}>
+          <CoursesPage />
+        </Suspense>
+      </RequireAuth>
+    ),
+  },
+  {
+    path: '/courses/:courseId',
+    element: (
+      <RequireAuth>
+        <Suspense fallback={<div>Loading course…</div>}>
+          <CourseDetailPage />
+        </Suspense>
+      </RequireAuth>
+    ),
+  },
+  {
+    path: '/assignments',
+    element: (
+      <RequireAuth>
+        <Suspense fallback={<div>Loading assignments…</div>}>
+          <AssignmentsPage />
+        </Suspense>
+      </RequireAuth>
+    ),
+  },
+  {
+    path: '/quizzes',
+    element: (
+      <RequireAuth>
+        <Suspense fallback={<div>Loading quizzes…</div>}>
+          <QuizzesPage />
+        </Suspense>
+      </RequireAuth>
+    ),
+  },
+  {
+    path: '/grades',
+    element: (
+      <RequireAuth>
+        <Suspense fallback={<div>Loading grades…</div>}>
+          <GradesPage />
+        </Suspense>
+      </RequireAuth>
+    ),
+  },
+  {
+    path: '/settings',
+    element: (
+      <RequireAuth>
+        <Suspense fallback={<div>Loading settings…</div>}>
+          <SettingsPage />
+        </Suspense>
+      </RequireAuth>
+    ),
+  },
+  // -------------------------------------
+  // NOT FOUND / FALLBACK
+  // -------------------------------------
+  {
+    path: '*',
+    element: (
+      <Suspense fallback={<div>Page not found…</div>}>
+        <NotFoundPage />
+      </Suspense>
+    ),
   },
 ];
 

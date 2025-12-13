@@ -15,6 +15,7 @@ export default defineConfig({
   // Resolve aliases to avoid long relative paths (e.g., "../../../components")
   resolve: {
     alias: {
+      '@': '/src',
       '@/assets': '/src/assets',
       '@/styles': '/src/styles',
       '@/lib': '/src/lib',

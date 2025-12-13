@@ -8,6 +8,10 @@ import { create } from 'zustand';
 const STORAGE_KEY = 'authState';
 
 const loadPersistedState = () => {
+  // Only access localStorage in browser environment
+  if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
+    return undefined;
+  }
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return undefined;
@@ -19,6 +23,10 @@ const loadPersistedState = () => {
 };
 
 const savePersistedState = (state) => {
+  // Only access localStorage in browser environment
+  if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
+    return;
+  }
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   } catch (err) {
