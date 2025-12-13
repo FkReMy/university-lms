@@ -29,7 +29,8 @@
  *   />
  */
 
-import { useLocation } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
+
 import styles from './Sidebar.module.scss'; // Correct import for sidebar-specific styles
 
 export default function Sidebar({
@@ -42,12 +43,7 @@ export default function Sidebar({
   ...rest
 }) {
   // Get current path for "active" highlighting
-  let location = { pathname: "/" };
-  try {
-    location = useLocation();
-  } catch {
-    location.pathname = window.location?.pathname || "/";
-  }
+  const location = useLocation();
 
   // Sidebar class: includes open state for mobile
   const sidebarClass = [
@@ -84,9 +80,9 @@ export default function Sidebar({
       {/* Navigation menu */}
       <nav className={styles.sidebar__nav}>
         {nav.map(item => (
-          <a
+          <Link
             key={item.href}
-            href={item.href}
+            to={item.href}
             className={[
               styles.sidebar__navitem,
               location.pathname === item.href ? styles['sidebar__navitem--active'] : '',
@@ -103,7 +99,7 @@ export default function Sidebar({
               </span>
             )}
             {item.label}
-          </a>
+          </Link>
         ))}
       </nav>
 

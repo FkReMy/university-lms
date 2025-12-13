@@ -15,7 +15,10 @@
  */
 
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+
 import GradeDistributionChart from '../../components/analytics/GradeDistributionChart';
+import { ROUTES } from '@/lib/constants';
 import styles from './StudentDashboard.module.scss';
 
 export default function StudentDashboard() {
@@ -132,16 +135,15 @@ export default function StudentDashboard() {
           </section>
           {/* Quick links row */}
           <section className={styles.studentDashboard__quickLinks}>
-            {/* Quick links should match the actual route definitions! */}
-            <a className={styles.studentDashboard__quickLink} href="/courses">
+            <Link className={styles.studentDashboard__quickLink} to={ROUTES.COURSES}>
               My Courses
-            </a>
-            <a className={styles.studentDashboard__quickLink} href="/assignments">
+            </Link>
+            <Link className={styles.studentDashboard__quickLink} to={ROUTES.ASSIGNMENTS}>
               Assignments
-            </a>
-            <a className={styles.studentDashboard__quickLink} href="/grades">
+            </Link>
+            <Link className={styles.studentDashboard__quickLink} to={ROUTES.GRADES}>
               Grades & Progress
-            </a>
+            </Link>
           </section>
         </div>
       )}

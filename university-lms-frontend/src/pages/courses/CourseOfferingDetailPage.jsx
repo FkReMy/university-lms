@@ -1,216 +1,171 @@
 /**
- * CourseOfferingsPage Component
+ * CourseOfferingDetailPage Component
  * ----------------------------------------------------------
- * Browse and filter all course offerings available for enrollment/viewing.
+ * Detail view for a specific course offering.
  *
  * Responsibilities:
- * - Lists all course offerings with search and term/department filters.
- * - Uses shared UI components (Input, Select, Button) for consistent look/feel.
- * - Renders course cards with main attributes and a link/details action.
- * - Prepared for connection to backend API and expansion.
+ * - Displays full information about a course offering
+ * - Shows enrollment status, schedule, assignments, etc.
+ * - Allows students to enroll or view course materials
+ * - Uses route parameter to fetch course data
  *
  * Usage:
- *   <Route path="/courses" element={<CourseOfferingsPage />} />
+ *   <Route path="/courses/:courseId" element={<CourseOfferingDetailPage />} />
  */
 
 import { useEffect, useState } from 'react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 
-import Input from '../../components/ui/input';   // consistent styled input
-import Select from '../../components/ui/select'; // consistent styled select
-import Button from '../../components/ui/button'; // consistent styled button
+import Button from '../../components/ui/button';
+import { ROUTES } from '@/lib/constants';
+import styles from './CourseOfferingDetailPage.module.scss';
 
-import styles from './CourseOfferingsPage.module.scss';
-
-export default function CourseOfferingsPage() {
-  // Demo: pretend course offering data
-  const [offerings, setOfferings] = useState([]);
+export default function CourseOfferingDetailPage() {
+  const { courseId } = useParams();
+  const navigate = useNavigate();
+  
+  const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Filters
-  const [search, setSearch] = useState('');
-  const [term, setTerm] = useState('all');
-  const [dept, setDept] = useState('all');
-
-  // Simulate load
   useEffect(() => {
     setLoading(true);
+    setError(null);
+    
+    // Simulate API call to fetch course details
     setTimeout(() => {
-      setOfferings([
-        {
-          id: 11,
-          dept: 'CSCI',
-          course: 'CSCI 101',
-          courseName: 'Introduction to Computer Science',
-          instructor: 'Dr. Smith',
-          term: 'Spring 2025',
-          schedule: 'Mon/Wed 10:30-12:00',
-          credits: 4,
-          status: 'Active',
-          enrollment: 32
-        },
-        {
-          id: 12,
-          dept: 'MATH',
-          course: 'MATH 120',
-          courseName: 'Calculus I',
-          instructor: 'Prof. White',
-          term: 'Spring 2025',
-          schedule: 'Tue/Thu 09:30-11:00',
-          credits: 4,
-          status: 'Active',
-          enrollment: 41
-        },
-        {
-          id: 13,
-          dept: 'CSCI',
-          course: 'CSCI 201',
-          courseName: 'Algorithms',
-          instructor: 'Dr. Lee',
-          term: 'Fall 2024',
-          schedule: 'Tue/Thu 14:00-15:30',
-          credits: 3,
-          status: 'Closed',
-          enrollment: 50
-        },
-      ]);
+      // Mock course data
+      const mockCourse = {
+        id: courseId,
+        code: 'CSCI 101',
+        name: 'Introduction to Computer Science',
+        dept: 'CSCI',
+        instructor: 'Dr. Smith',
+        instructorEmail: 'smith@university.edu',
+        term: 'Spring 2025',
+        schedule: 'Mon/Wed 10:30-12:00',
+        location: 'Science Building, Room 201',
+        credits: 4,
+        status: 'Active',
+        enrollment: 32,
+        capacity: 50,
+        description: 'An introduction to computer science covering fundamental programming concepts, data structures, and problem-solving techniques.',
+        syllabus: '/files/csci101-syllabus.pdf',
+        prerequisites: 'None',
+      };
+      
+      setCourse(mockCourse);
       setLoading(false);
-    }, 800);
-  }, []);
+    }, 600);
+  }, [courseId]);
 
-  // All available terms and departments in data, for select options
-  const terms = Array.from(new Set(['all', ...offerings.map(o => o.term)])).sort();
-  const depts = Array.from(new Set(['all', ...offerings.map(o => o.dept)])).sort();
-
-  // Basic filter logic: search by text, filter by term/department
-  const filtered = offerings.filter(o =>
-    (term === 'all' || o.term === term) &&
-    (dept === 'all' || o.dept === dept) &&
-    (
-      o.course.toLowerCase().includes(search.toLowerCase()) ||
-      o.courseName.toLowerCase().includes(search.toLowerCase())
-    )
-  );
-
-  // Status badge utility (see previous pattern)
-  function statusBadge(status) {
-    let bg = "#dedede", color = "#213050";
-    if (!status) return null;
-    if (status.toLowerCase() === "active")   { bg = "#e5ffe9"; color = "#179a4e"; }
-    if (status.toLowerCase() === "closed")   { bg = "#fbeaea"; color = "#e62727"; }
-    if (status.toLowerCase() === "waitlist") { bg = "#fff6e0"; color = "#e67e22"; }
+  if (loading) {
     return (
-      <span
-        style={{
-          background: bg,
-          color: color,
-          fontWeight: 600,
-          borderRadius: "1em",
-          padding: "0.11em 0.94em",
-          fontSize: "0.98em",
-          marginLeft: "0.34em"
-        }}
-      >
-        {status.charAt(0).toUpperCase() + status.slice(1)}
-      </span>
+      <div className={styles.detailPage}>
+        <div className={styles.detailPage__loading}>Loading course details...</div>
+      </div>
+    );
+  }
+
+  if (error || !course) {
+    return (
+      <div className={styles.detailPage}>
+        <div className={styles.detailPage__error}>
+          <h2>Course Not Found</h2>
+          <p>The course you're looking for could not be found.</p>
+          <Button onClick={() => navigate(ROUTES.COURSES)}>Back to Courses</Button>
+        </div>
+      </div>
     );
   }
 
   return (
-    <div className={styles.courseOfferingsPage}>
-      <h1 className={styles.courseOfferingsPage__title}>Course Offerings</h1>
-      {/* Filters row - use UI kit components */}
-      <form
-        className={styles.courseOfferingsPage__filters}
-        tabIndex={0}
-        aria-label="Course offering filters"
-        onSubmit={e => e.preventDefault()}
-      >
-        <Input
-          className={styles.courseOfferingsPage__filterInput}
-          placeholder="Search course or title…"
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          autoComplete="off"
-          aria-label="Search for course"
-        />
-        <Select
-          className={styles.courseOfferingsPage__filterSelect}
-          value={term}
-          onChange={e => setTerm(e.target.value)}
-          aria-label="Filter by term"
-        >
-          {terms.map(t => (
-            <option value={t} key={t}>{t === "all" ? "All Terms" : t}</option>
-          ))}
-        </Select>
-        <Select
-          className={styles.courseOfferingsPage__filterSelect}
-          value={dept}
-          onChange={e => setDept(e.target.value)}
-          aria-label="Filter by department"
-        >
-          {depts.map(d => (
-            <option value={d} key={d}>{d === "all" ? "All Departments" : d}</option>
-          ))}
-        </Select>
-        <Button
-          className={styles.courseOfferingsPage__filterBtn}
-          type="button"
-          variant="primary"
-          onClick={() => {/* Could trigger search/filter, not needed for local state */}}
-        >
-          Apply
-        </Button>
-      </form>
-      {/* Main course offerings list */}
-      <div className={styles.courseOfferingsPage__listArea}>
-        {loading ? (
-          <div className={styles.courseOfferingsPage__loading}>Loading offerings…</div>
-        ) : filtered.length === 0 ? (
-          <div className={styles.courseOfferingsPage__empty}>No offerings found.</div>
-        ) : (
-          <div className={styles.courseOfferingsPage__cardsGrid}>
-            {filtered.map(offering => (
-              <div className={styles.courseOfferingsPage__card} key={offering.id}>
-                <div className={styles.courseOfferingsPage__codeRow}>
-                  <span className={styles.courseOfferingsPage__code}>{offering.course}</span>
-                  {statusBadge(offering.status)}
-                </div>
-                <div className={styles.courseOfferingsPage__name}>{offering.courseName}</div>
-                <div className={styles.courseOfferingsPage__meta}>
-                  <span>Term: <b>{offering.term}</b></span>
-                  <span>Dept: <b>{offering.dept}</b></span>
-                </div>
-                <div className={styles.courseOfferingsPage__meta}>
-                  <span>Instructor: <b>{offering.instructor}</b></span>
-                  <span>Enrolled: <b>{offering.enrollment}</b></span>
-                </div>
-                <div className={styles.courseOfferingsPage__meta}>
-                  <span>Credits: <b>{offering.credits}</b></span>
-                  <span>Schedule: <b>{offering.schedule}</b></span>
-                </div>
-                <Button
-                  className={styles.courseOfferingsPage__detailsBtn}
-                  type="button"
-                  variant="outline"
-                  onClick={() => window.location.href = `/courses/${offering.id}`}
-                  aria-label={`View details for ${offering.courseName}`}
-                >
-                  View Details
-                </Button>
-              </div>
-            ))}
+    <div className={styles.detailPage}>
+      {/* Header with course info */}
+      <div className={styles.detailPage__header}>
+        <div className={styles.detailPage__breadcrumb}>
+          <Link to={ROUTES.COURSES}>Courses</Link>
+          <span> / </span>
+          <span>{course.code}</span>
+        </div>
+        
+        <h1 className={styles.detailPage__title}>
+          {course.code}: {course.name}
+        </h1>
+        
+        <div className={styles.detailPage__meta}>
+          <span className={styles.detailPage__metaItem}>
+            <strong>Instructor:</strong> {course.instructor}
+          </span>
+          <span className={styles.detailPage__metaItem}>
+            <strong>Term:</strong> {course.term}
+          </span>
+          <span className={styles.detailPage__metaItem}>
+            <strong>Credits:</strong> {course.credits}
+          </span>
+          <span className={styles.detailPage__metaItem}>
+            <strong>Status:</strong> {course.status}
+          </span>
+        </div>
+      </div>
+
+      {/* Course details */}
+      <div className={styles.detailPage__content}>
+        <section className={styles.detailPage__section}>
+          <h2>Course Description</h2>
+          <p>{course.description}</p>
+        </section>
+
+        <section className={styles.detailPage__section}>
+          <h2>Schedule & Location</h2>
+          <div className={styles.detailPage__scheduleGrid}>
+            <div>
+              <strong>Meeting Times:</strong>
+              <p>{course.schedule}</p>
+            </div>
+            <div>
+              <strong>Location:</strong>
+              <p>{course.location}</p>
+            </div>
           </div>
+        </section>
+
+        <section className={styles.detailPage__section}>
+          <h2>Enrollment</h2>
+          <div className={styles.detailPage__enrollment}>
+            <div className={styles.detailPage__enrollmentBar}>
+              <div 
+                className={styles.detailPage__enrollmentFill}
+                style={{ width: `${(course.enrollment / course.capacity) * 100}%` }}
+              />
+            </div>
+            <p>{course.enrollment} / {course.capacity} students enrolled</p>
+          </div>
+        </section>
+
+        {course.prerequisites && (
+          <section className={styles.detailPage__section}>
+            <h2>Prerequisites</h2>
+            <p>{course.prerequisites}</p>
+          </section>
         )}
+
+        {course.syllabus && (
+          <section className={styles.detailPage__section}>
+            <h2>Course Materials</h2>
+            <a href={course.syllabus} className={styles.detailPage__link}>
+              Download Syllabus
+            </a>
+          </section>
+        )}
+
+        <div className={styles.detailPage__actions}>
+          <Button variant="primary">Enroll in Course</Button>
+          <Button variant="secondary" onClick={() => navigate(ROUTES.COURSES)}>
+            Back to Courses
+          </Button>
+        </div>
       </div>
     </div>
   );
 }
-
-/**
- * Notes:
- * - Uses Input, Select, Button components from your shared UI kit for all search/filter/form controls.
- * - Course cards include a strongly-typed path for details (`/courses/${offering.id}`) matching route layout.
- * - Status badge logic is consistent and can be moved to a utility/helper if reused elsewhere.
- * - Replace window.location.href with navigate(...) from react-router if SPA navigation is needed.
- */
