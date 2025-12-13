@@ -15,8 +15,18 @@ export const ROUTES = {
   COURSE_DETAIL: (courseId = ':courseId') => `/courses/${courseId}`,
   GRADES: '/grades',
   ASSIGNMENTS: '/assignments',
+  ASSIGNMENT_SUBMIT: (assignmentId = ':assignmentId') => `/assignments/${assignmentId}/submit`,
   QUIZZES: '/quizzes',
+  QUIZ_TAKE: (quizId = ':quizId') => `/quizzes/${quizId}/take`,
   SETTINGS: '/settings',
+  FILE_LIBRARY: '/files',
+  USERS: '/users',
+  USER_DETAIL: (userId = ':userId') => `/users/${userId}`,
+  DEPARTMENTS: '/departments',
+  DEPARTMENT_DETAIL: (deptId = ':deptId') => `/departments/${deptId}`,
+  SECTIONS: '/sections',
+  SECTION_GROUPS: (sectionId = ':sectionId') => `/sections/${sectionId}/groups`,
+  ACCESS_DENIED: '/access-denied',
 };
 
 // Export a frozen copy for safer imports (optional usage).

@@ -14,8 +14,10 @@
  */
 
 import { useEffect, useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
 
 import styles from './QuizTakingPage.module.scss';
+import { ROUTES } from '@/lib/constants';
 
 // Demo: default quiz data
 const DEMO_QUESTIONS = [
@@ -29,6 +31,7 @@ const DEMO_QUESTIONS = [
 ];
 
 export default function QuizTakingPage() {
+  const { quizId } = useParams();
   const [quiz, setQuiz] = useState(null);
   const [answers, setAnswers] = useState({});
   const [loading, setLoading] = useState(true);
@@ -39,15 +42,15 @@ export default function QuizTakingPage() {
     setLoading(true);
     setTimeout(() => {
       setQuiz({
-        id: 7,
-        title: 'Python Fundamentals Quiz',
+        id: quizId || 7,
+        title: `Quiz ${quizId || 7}: Python Fundamentals`,
         open: '2025-02-10T10:00',
         close: '2025-02-12T18:30',
         questions: DEMO_QUESTIONS,
       });
       setLoading(false);
     }, 700);
-  }, []);
+  }, [quizId]);
 
   // Handle answer change
   function handleAnswerChange(id, value) {
@@ -98,10 +101,13 @@ export default function QuizTakingPage() {
               Open: <b>{fmt(quiz.open)}</b> &mdash; Close: <b>{fmt(quiz.close)}</b>
             </div>
             {submitted ? (
-              <div className={styles.quizTakingPage__submitted}>
-                Quiz Submitted! Thank you.
+            <div className={styles.quizTakingPage__submitted}>
+              Quiz Submitted! Thank you.
+              <div className={styles.quizTakingPage__backLink}>
+                <Link to={ROUTES.QUIZZES}>Back to quizzes</Link>
               </div>
-            ) : (
+            </div>
+          ) : (
               <form
                 className={styles.quizTakingPage__form}
                 onSubmit={handleSubmit}

@@ -12,9 +12,11 @@
  *   <Route path="/assignments/:id/submit" element={<AssignmentSubmissionPage />} />
  */
 
-import React, { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
+import { Link, useParams } from 'react-router-dom';
 
 import styles from './AssignmentSubmissionPage.module.scss';
+import { ROUTES } from '@/lib/constants';
 
 // Demo assignment info (replace with API in prod)
 const DEMO_ASSIGNMENT = {
@@ -26,6 +28,7 @@ Upload your .py file below.`,
 };
 
 export default function AssignmentSubmissionPage() {
+  const { assignmentId } = useParams();
   const [assignment, setAssignment] = useState(null);
   const [loading, setLoading] = useState(true);
   const [file, setFile] = useState(null);
@@ -37,10 +40,10 @@ export default function AssignmentSubmissionPage() {
   useEffect(() => {
     setLoading(true);
     setTimeout(() => {
-      setAssignment(DEMO_ASSIGNMENT);
+      setAssignment({ ...DEMO_ASSIGNMENT, id: assignmentId || DEMO_ASSIGNMENT.id });
       setLoading(false);
     }, 600);
-  }, []);
+  }, [assignmentId]);
 
   // Handle file upload
   function handleFileChange(e) {
@@ -89,7 +92,7 @@ export default function AssignmentSubmissionPage() {
         <div className={styles.assignmentSubmissionPage__mainBox}>
           <h1 className={styles.assignmentSubmissionPage__title}>{assignment.title}</h1>
           <div className={styles.assignmentSubmissionPage__due}>
-            Due: <b>{fmt(assignment.due)}</b>
+            Assignment #{assignmentId || assignment.id} — Due: <b>{fmt(assignment.due)}</b>
           </div>
           <div className={styles.assignmentSubmissionPage__desc}>
             {assignment.description}
@@ -97,6 +100,9 @@ export default function AssignmentSubmissionPage() {
           {submitted ? (
             <div className={styles.assignmentSubmissionPage__submitted}>
               Assignment Submitted! Thank you.
+              <div className={styles.assignmentSubmissionPage__backLink}>
+                <Link to={ROUTES.ASSIGNMENTS}>Back to assignments</Link>
+              </div>
             </div>
           ) : (
             <form

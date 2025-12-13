@@ -17,6 +17,7 @@ import { Navigate } from 'react-router-dom';
 
 import App from '@/App';
 import { useAuth } from '@/hooks/useAuth';
+import { ROUTES } from '@/lib/constants';
 
 // -------------------------------
 // Lazy loaded pages for bundle splitting
@@ -40,19 +41,28 @@ const CourseDetailPage = lazy(() => import('@/pages/courses/CourseOfferingDetail
 
 // Assignments and quizzes pages
 const AssignmentsPage = lazy(() => import('@/pages/assignments/AssignmentListPage'));
+const AssignmentSubmissionPage = lazy(() => import('@/pages/assignments/AssignmentSubmissionPage'));
 const QuizzesPage = lazy(() => import('@/pages/quizzes/QuizListPage'));
+const QuizTakingPage = lazy(() => import('@/pages/quizzes/QuizTakingPage'));
 
 // Grades and profile/settings
 const GradesPage = lazy(() => import('@/pages/grading/GradebookPage'));
 const SettingsPage = lazy(() => import('@/pages/profile/ProfileSettingsPage'));
+const FileLibraryPage = lazy(() => import('@/pages/files/FileLibraryPage'));
+const UserManagementPage = lazy(() => import('@/pages/users/UserManagementPage'));
+const UserDetailPage = lazy(() => import('@/pages/users/UserDetailPage'));
+const DepartmentsPage = lazy(() => import('@/pages/departments/DepartmentsPage'));
+const DepartmentDetailPage = lazy(() => import('@/pages/departments/DepartmentDetailPage'));
+const SectionGroupsPage = lazy(() => import('@/pages/sections/SectionGroupsPage'));
 
 // Errors & fallback
 const NotFoundPage = lazy(() => import('@/pages/errors/NotFoundPage'));
+const AccessDeniedPage = lazy(() => import('@/pages/errors/AccessDeniedPage'));
 
 // -------------------------------
 // Helper component for protecting private routes
 // -------------------------------
-function RequireAuth({ children, redirectTo = '/login' }) {
+function RequireAuth({ children, redirectTo = ROUTES.LOGIN }) {
   const { ready, isAuthenticated } = useAuth();
   if (!ready) return <div>Loading...</div>;
   return isAuthenticated ? children : <Navigate to={redirectTo} replace />;
@@ -69,7 +79,7 @@ const routes = [
       // PUBLIC ROUTES
       // -------------------------------------
       {
-        path: '/login',
+        path: ROUTES.LOGIN,
         element: (
           <Suspense fallback={<div>Loading login…</div>}>
             <LoginPage />
@@ -77,10 +87,18 @@ const routes = [
         ),
       },
       {
-        path: '/register',
+        path: ROUTES.REGISTER,
         element: (
           <Suspense fallback={<div>Loading registration…</div>}>
             <RegisterPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: ROUTES.ACCESS_DENIED,
+        element: (
+          <Suspense fallback={<div>Loading…</div>}>
+            <AccessDeniedPage />
           </Suspense>
         ),
       },
@@ -88,7 +106,7 @@ const routes = [
       // PROTECTED ROUTES (requires authentication)
       // -------------------------------------
       {
-        path: '/',
+        index: true,
         element: (
           <RequireAuth>
             <Suspense fallback={<div>Loading dashboard…</div>}>
@@ -98,7 +116,7 @@ const routes = [
         ),
       },
       {
-        path: '/dashboard',
+        path: ROUTES.DASHBOARD,
         element: (
           <RequireAuth>
             <Suspense fallback={<div>Loading dashboard…</div>}>
@@ -108,7 +126,27 @@ const routes = [
         ),
       },
       {
-        path: '/courses',
+        path: '/dashboard/professor',
+        element: (
+          <RequireAuth>
+            <Suspense fallback={<div>Loading dashboard…</div>}>
+              <ProfessorDashboardPage />
+            </Suspense>
+          </RequireAuth>
+        ),
+      },
+      {
+        path: '/dashboard/admin',
+        element: (
+          <RequireAuth>
+            <Suspense fallback={<div>Loading dashboard…</div>}>
+              <AdminDashboardPage />
+            </Suspense>
+          </RequireAuth>
+        ),
+      },
+      {
+        path: ROUTES.COURSES,
         element: (
           <RequireAuth>
             <Suspense fallback={<div>Loading courses…</div>}>
@@ -118,7 +156,7 @@ const routes = [
         ),
       },
       {
-        path: '/courses/:courseId',
+        path: ROUTES.COURSE_DETAIL(),
         element: (
           <RequireAuth>
             <Suspense fallback={<div>Loading course…</div>}>
@@ -128,7 +166,7 @@ const routes = [
         ),
       },
       {
-        path: '/assignments',
+        path: ROUTES.ASSIGNMENTS,
         element: (
           <RequireAuth>
             <Suspense fallback={<div>Loading assignments…</div>}>
@@ -138,7 +176,17 @@ const routes = [
         ),
       },
       {
-        path: '/quizzes',
+        path: ROUTES.ASSIGNMENT_SUBMIT(),
+        element: (
+          <RequireAuth>
+            <Suspense fallback={<div>Loading submission…</div>}>
+              <AssignmentSubmissionPage />
+            </Suspense>
+          </RequireAuth>
+        ),
+      },
+      {
+        path: ROUTES.QUIZZES,
         element: (
           <RequireAuth>
             <Suspense fallback={<div>Loading quizzes…</div>}>
@@ -148,7 +196,17 @@ const routes = [
         ),
       },
       {
-        path: '/grades',
+        path: ROUTES.QUIZ_TAKE(),
+        element: (
+          <RequireAuth>
+            <Suspense fallback={<div>Loading quiz…</div>}>
+              <QuizTakingPage />
+            </Suspense>
+          </RequireAuth>
+        ),
+      },
+      {
+        path: ROUTES.GRADES,
         element: (
           <RequireAuth>
             <Suspense fallback={<div>Loading grades…</div>}>
@@ -158,11 +216,81 @@ const routes = [
         ),
       },
       {
-        path: '/settings',
+        path: ROUTES.SETTINGS,
         element: (
           <RequireAuth>
             <Suspense fallback={<div>Loading settings…</div>}>
               <SettingsPage />
+            </Suspense>
+          </RequireAuth>
+        ),
+      },
+      {
+        path: ROUTES.FILE_LIBRARY,
+        element: (
+          <RequireAuth>
+            <Suspense fallback={<div>Loading files…</div>}>
+              <FileLibraryPage />
+            </Suspense>
+          </RequireAuth>
+        ),
+      },
+      {
+        path: ROUTES.USERS,
+        element: (
+          <RequireAuth>
+            <Suspense fallback={<div>Loading users…</div>}>
+              <UserManagementPage />
+            </Suspense>
+          </RequireAuth>
+        ),
+      },
+      {
+        path: ROUTES.USER_DETAIL(),
+        element: (
+          <RequireAuth>
+            <Suspense fallback={<div>Loading user…</div>}>
+              <UserDetailPage />
+            </Suspense>
+          </RequireAuth>
+        ),
+      },
+      {
+        path: ROUTES.DEPARTMENTS,
+        element: (
+          <RequireAuth>
+            <Suspense fallback={<div>Loading departments…</div>}>
+              <DepartmentsPage />
+            </Suspense>
+          </RequireAuth>
+        ),
+      },
+      {
+        path: ROUTES.DEPARTMENT_DETAIL(),
+        element: (
+          <RequireAuth>
+            <Suspense fallback={<div>Loading department…</div>}>
+              <DepartmentDetailPage />
+            </Suspense>
+          </RequireAuth>
+        ),
+      },
+      {
+        path: ROUTES.SECTIONS,
+        element: (
+          <RequireAuth>
+            <Suspense fallback={<div>Loading sections…</div>}>
+              <SectionGroupsPage />
+            </Suspense>
+          </RequireAuth>
+        ),
+      },
+      {
+        path: ROUTES.SECTION_GROUPS(),
+        element: (
+          <RequireAuth>
+            <Suspense fallback={<div>Loading section…</div>}>
+              <SectionGroupsPage />
             </Suspense>
           </RequireAuth>
         ),

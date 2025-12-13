@@ -11,9 +11,9 @@
  *   <Route path="*" element={<NotFoundPage />} />
  */
 
-import React from "react";
-
+import { Link } from 'react-router-dom';
 import styles from "./NotFoundPage.module.scss";
+import { ROUTES } from '@/lib/constants';
 
 export default function NotFoundPage() {
   return (
@@ -25,9 +25,9 @@ export default function NotFoundPage() {
           Sorry, the page you requested could not be found.
         </div>
         <div className={styles.notFoundPage__actions}>
-          <a href="/" className={styles.notFoundPage__homeBtn}>
+          <Link to={ROUTES.HOME} className={styles.notFoundPage__homeBtn}>
             Go to Home
-          </a>
+          </Link>
         </div>
       </div>
     </div>
