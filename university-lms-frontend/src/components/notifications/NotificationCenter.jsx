@@ -50,7 +50,6 @@ export default function NotificationCenter({
           styles.notificationCenter__item,
           n.read ? styles['notificationCenter__item--read'] : ''
         ].filter(Boolean).join(' ')}
-        tabIndex={0}
       >
         {n.icon && (
           <span className={styles.notificationCenter__itemIcon}>{n.icon}</span>

@@ -102,9 +102,9 @@ export default function QuestionRenderer({
       </div>
 
       {/* Multiple Choice or True/False */}
-      {(isMC || isTF) && (
-        <ul className={styles.questionRenderer__options} role="radiogroup" aria-labelledby={`q-${id}`}>
-          {options.map((opt, i) => (
+          {(isMC || isTF) && (
+            <ul className={styles.questionRenderer__options} role="radiogroup" aria-labelledby={`q-${id}`}>
+              {options.map((opt) => (
             <li
               key={opt}
               className={[

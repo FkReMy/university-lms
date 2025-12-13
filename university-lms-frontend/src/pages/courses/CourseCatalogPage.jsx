@@ -18,7 +18,6 @@ import { useEffect, useState } from 'react';
 
 import Input from '../../components/ui/input';      // design-system input
 import Select from '../../components/ui/select';    // design-system select
-import Button from '../../components/ui/button';    // design-system button, if needed
 import CourseCard from '../../components/courses/CourseCard'; // reusable course card
 
 import styles from './CourseCatalogPage.module.scss';

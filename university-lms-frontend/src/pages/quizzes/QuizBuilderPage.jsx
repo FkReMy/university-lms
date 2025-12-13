@@ -173,7 +173,7 @@ export default function QuizBuilderPage() {
                 ))}
                 {questions.length === 0 && (
                   <li className={styles.quizBuilderPage__questionItemEmpty}>
-                    No questions yet. Click "Add Question" to begin.
+                    No questions yet. Click &quot;Add Question&quot; to begin.
                   </li>
                 )}
               </ol>

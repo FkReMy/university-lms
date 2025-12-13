@@ -116,16 +116,14 @@ export default function SubmissionReviewPage() {
                 {submission.fileName}
               </span>
               {/* Download link would use backend file API */}
-              <a
-                href="#"
+              <button
+                type="button"
                 className={styles.submissionReviewPage__downloadBtn}
                 style={{ marginLeft: 20 }}
-                download
-                tabIndex={-1}
                 onClick={e => e.preventDefault()} // Demo only
               >
                 Download
-              </a>
+              </button>
             </div>
           </div>
           <form
