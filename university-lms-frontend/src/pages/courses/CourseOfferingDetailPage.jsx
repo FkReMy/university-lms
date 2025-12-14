@@ -1,77 +1,29 @@
 /**
- * CourseOfferingDetailPage Component
- * ----------------------------------------------------------
+ * CourseOfferingDetailPage Component (Production)
+ * ----------------------------------------------------------------------------
  * Detail view for a specific course offering.
+ * - Uses only production APIs (no sample/demo data).
+ * - Related offerings and main view unified with global components/system.
+ * - Styles, UI, and navigation are consistent LMS-wide.
  */
 
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-
 import styles from './CourseOfferingDetailPage.module.scss';
 
 import Button from '@/components/ui/button';
 import { ROUTES } from '@/lib/constants';
-
-const DEMO_OFFERINGS = [
-  {
-    id: 11,
-    dept: 'CSCI',
-    course: 'CSCI 101',
-    courseName: 'Introduction to Computer Science',
-    instructor: 'Dr. Smith',
-    term: 'Spring 2025',
-    schedule: 'Mon/Wed 10:30-12:00',
-    credits: 4,
-    status: 'Active',
-    enrollment: 32,
-    capacity: 50,
-    description: 'Learn the foundations of computing, algorithms, and programming.',
-    location: 'Science Building, Room 201',
-  },
-  {
-    id: 12,
-    dept: 'MATH',
-    course: 'MATH 120',
-    courseName: 'Calculus I',
-    instructor: 'Prof. White',
-    term: 'Spring 2025',
-    schedule: 'Tue/Thu 09:30-11:00',
-    credits: 4,
-    status: 'Active',
-    enrollment: 41,
-    capacity: 50,
-    description: 'Limits, derivatives, and integrals with real-world applications.',
-    location: 'Math Hall, Room 204',
-  },
-  {
-    id: 13,
-    dept: 'CSCI',
-    course: 'CSCI 201',
-    courseName: 'Algorithms',
-    instructor: 'Dr. Lee',
-    term: 'Fall 2024',
-    schedule: 'Tue/Thu 14:00-15:30',
-    credits: 3,
-    status: 'Closed',
-    enrollment: 50,
-    capacity: 50,
-    description: 'Design and analysis of algorithms with complexity considerations.',
-    location: 'Science Building, Room 305',
-  },
-];
+import courseApi from '@/services/api/courseApi'; // Must provide .get(id), .list() etc.
 
 function StatusBadge({ status }) {
   if (!status) return null;
-  let bg = '#dedede';
-  let color = '#213050';
-  if (status.toLowerCase() === 'active') { bg = '#e5ffe9'; color = '#179a4e'; }
-  if (status.toLowerCase() === 'closed') { bg = '#fbeaea'; color = '#e62727'; }
-  if (status.toLowerCase() === 'waitlist') { bg = '#fff6e0'; color = '#e67e22'; }
+  let variant = 'default';
+  if (status.toLowerCase() === 'active') variant = 'success';
+  if (status.toLowerCase() === 'closed') variant = 'danger';
+  if (status.toLowerCase() === 'waitlist') variant = 'warning';
+  // Use a global Badge component if available for visual consistency
   return (
-    <span
-      className={styles.detailPage__status}
-      style={{ background: bg, color }}
-    >
+    <span className={styles.detailPage__status + ' status-' + status.toLowerCase()}>
       {status}
     </span>
   );
@@ -82,20 +34,37 @@ export default function CourseOfferingDetailPage() {
   const { courseId } = useParams();
   const [loading, setLoading] = useState(true);
   const [offering, setOffering] = useState(null);
+  const [allOfferings, setAllOfferings] = useState([]);
 
+  // Fetch main course offering and all for "related"
   useEffect(() => {
-    setLoading(true);
-    const timer = setTimeout(() => {
-      const match = DEMO_OFFERINGS.find((o) => String(o.id) === String(courseId));
-      setOffering(match || null);
-      setLoading(false);
-    }, 400);
-    return () => clearTimeout(timer);
+    let isActive = true;
+    async function fetchData() {
+      setLoading(true);
+      try {
+        const main = await courseApi.get(courseId);
+        const all = await courseApi.list();
+        if (isActive) {
+          setOffering(main || null);
+          setAllOfferings(Array.isArray(all) ? all : []);
+        }
+      } catch (err) {
+        setOffering(null);
+      } finally {
+        if (isActive) setLoading(false);
+      }
+    }
+    fetchData();
+    return () => { isActive = false; };
   }, [courseId]);
 
+  // Related: same dept, not this course
   const related = useMemo(
-    () => DEMO_OFFERINGS.filter((o) => String(o.id) !== String(courseId) && o.dept === offering?.dept),
-    [courseId, offering?.dept]
+    () =>
+      allOfferings.filter(
+        (o) => String(o.id) !== String(courseId) && o.dept === offering?.dept
+      ),
+    [allOfferings, courseId, offering?.dept]
   );
 
   if (loading) {
@@ -176,3 +145,11 @@ export default function CourseOfferingDetailPage() {
     </div>
   );
 }
+
+/**
+ * Production Notes:
+ * - No demo or sample data; loads data from global courseApi only.
+ * - Status badge uses centralized CSS classes; replace with global Badge if available.
+ * - Related offerings are dynamically computed and displayed (same dept, not current).
+ * - All navigation/actions ready for further expansion (e.g., enroll/join).
+ */

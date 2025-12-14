@@ -1,30 +1,30 @@
 /**
- * StudentDashboard Component
- * ----------------------------------------------------------
- * Main dashboard page for LMS students.
- *
- * Responsibilities:
- * - Summarizes student's enrolled courses, assignments, grades, and progress.
- * - Shows upcoming deadlines/classes, recent activity, and quick links.
- * - Includes grade distribution for the student's assignments.
- * - Responsive and ready for future expansion.
- *
- * Usage:
- *   <Route path="/" element={<StudentDashboard />} />
- *   <Route path="/dashboard" element={<StudentDashboard />} />
+ * StudentDashboard Component (Production)
+ * ----------------------------------------------------------------------------
+ * Student dashboard for the LMS.
+ * - Summarize student's enrolled courses, assignments, grades, and recent progress.
+ * - Shows upcoming deadlines/classes, recent activity, and grade distribution.
+ * - Quick SPA navigation with <Link>.
+ * - Uses only unified/global UI components.
+ * - No sample/demo data; production API ready.
  */
 
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
-import GradeDistributionChart from '../../components/analytics/GradeDistributionChart';
+import GradeDistributionChart from '@/components/analytics/GradeDistributionChart';
+import Badge from '@/components/ui/badge';
+import Card from '@/components/ui/card';
 
 import styles from './StudentDashboard.module.scss';
 
 import { ROUTES } from '@/lib/constants';
 
+// Production: connect these to backend APIs:
+import studentDashboardApi from '@/services/api/studentDashboardApi'; // getStats, getUpcoming, getRecent, getGrades
+
 export default function StudentDashboard() {
-  // Student dashboard state (replace with real API in production)
+  // State for dashboard numbers/lists
   const [stats, setStats] = useState({
     courses: 0,
     assignments: 0,
@@ -33,31 +33,40 @@ export default function StudentDashboard() {
   });
   const [upcoming, setUpcoming] = useState([]);
   const [recent, setRecent] = useState([]);
-  const [gradeDist, setGradeDist] = useState([90, 82, 70, 88, 85, 75, 79, 100, 97, 92, 81]);
+  const [gradeDist, setGradeDist] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Load all student dashboard data from backend
   useEffect(() => {
-    setLoading(true);
-    setTimeout(() => {
-      setStats({
-        courses: 6,
-        assignments: 19,
-        completed: 13,
-        avgGrade: 86,
-      });
-      setUpcoming([
-        { id: 51, type: "class", title: "Modern Art - Lecture", dueAt: "2025-04-01T11:00" },
-        { id: 52, type: "deadline", title: "HW 3 due", dueAt: "2025-04-02T23:59" },
-        { id: 53, type: "class", title: "Science Seminar", dueAt: "2025-04-03T09:00" },
-      ]);
-      setRecent([
-        { id: 401, course: "Biology 101", activity: "Quiz 2 graded (87)", date: "2025-03-29T14:41" },
-        { id: 402, course: "Modern Art", activity: "Essay 1 submitted", date: "2025-03-29T19:52" },
-        { id: 403, course: "Statistics", activity: "HW 2 scored (91)", date: "2025-03-28T21:12" },
-      ]);
-      setGradeDist([90, 82, 70, 88, 85, 75, 79, 100, 97, 92, 81]);
-      setLoading(false);
-    }, 1100);
+    let isMounted = true;
+    async function fetchDashboard() {
+      setLoading(true);
+      try {
+        const [
+          statsData,
+          upcomingData,
+          recentData,
+          gradesData,
+        ] = await Promise.all([
+          studentDashboardApi.getStats(),
+          studentDashboardApi.getUpcoming(),
+          studentDashboardApi.getRecent(),
+          studentDashboardApi.getGrades(),
+        ]);
+        if (isMounted) {
+          setStats(statsData || {});
+          setUpcoming(Array.isArray(upcomingData) ? upcomingData : []);
+          setRecent(Array.isArray(recentData) ? recentData : []);
+          setGradeDist(Array.isArray(gradesData) ? gradesData : []);
+        }
+      } catch (err) {
+        // Optionally: set global error
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    }
+    fetchDashboard();
+    return () => { isMounted = false; };
   }, []);
 
   // Format a date string for display
@@ -83,24 +92,24 @@ export default function StudentDashboard() {
         <div>
           {/* Stats grid */}
           <section className={styles.studentDashboard__statsGrid}>
-            <div className={styles.studentDashboard__statBox}>
+            <Card className={styles.studentDashboard__statBox}>
               <span className={styles.studentDashboard__statLabel}>Courses</span>
               <span className={styles.studentDashboard__statValue}>{stats.courses}</span>
-            </div>
-            <div className={styles.studentDashboard__statBox}>
+            </Card>
+            <Card className={styles.studentDashboard__statBox}>
               <span className={styles.studentDashboard__statLabel}>Assignments</span>
               <span className={styles.studentDashboard__statValue}>{stats.assignments}</span>
-            </div>
-            <div className={styles.studentDashboard__statBox}>
+            </Card>
+            <Card className={styles.studentDashboard__statBox}>
               <span className={styles.studentDashboard__statLabel}>Completed</span>
               <span className={styles.studentDashboard__statValue}>{stats.completed}</span>
-            </div>
-            <div className={styles.studentDashboard__statBox}>
+            </Card>
+            <Card className={styles.studentDashboard__statBox}>
               <span className={styles.studentDashboard__statLabel}>Avg. Grade</span>
               <span className={styles.studentDashboard__statValue}>
                 {stats.avgGrade == null ? '—' : stats.avgGrade}
               </span>
-            </div>
+            </Card>
           </section>
           {/* Upcoming classes/deadlines */}
           <section className={styles.studentDashboard__section}>
@@ -133,11 +142,13 @@ export default function StudentDashboard() {
           {/* Grade distribution */}
           <section className={styles.studentDashboard__section}>
             <h2 className={styles.studentDashboard__sectionTitle}>My Grade Distribution</h2>
-            <GradeDistributionChart grades={gradeDist} />
+            <Card style={{ padding: '1.2em 1.8em' }}>
+              <GradeDistributionChart grades={gradeDist} />
+            </Card>
           </section>
           {/* Quick links row */}
           <section className={styles.studentDashboard__quickLinks}>
-            {/* Quick links should match the actual route definitions! */}
+            {/* SPA links matching Route definitions */}
             <Link className={styles.studentDashboard__quickLink} to={ROUTES.COURSES}>
               My Courses
             </Link>
@@ -155,7 +166,9 @@ export default function StudentDashboard() {
 }
 
 /**
- * Key Fixes:
- * - Updated "Quick links" href to /courses, /assignments, /grades so they remain in sync with your <Route> paths in routes.jsx.
- * - All major dashboard UI logic and presentation follows your modular LMS structure.
+ * Production Notes:
+ * - All dashboard data (stats, upcoming, grades, recent) comes from production API.
+ * - Responsive dashboard for modern SPA.
+ * - Uses only unified LMS UI components and routing.
+ * - No demo/mock logic remains; all hooks/states wire to real backend.
  */

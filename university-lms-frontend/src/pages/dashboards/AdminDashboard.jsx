@@ -1,17 +1,11 @@
 /**
- * AdminDashboard Component
- * ----------------------------------------------------------
- * Main dashboard page for LMS administrators.
- *
- * Responsibilities:
- * - Summarizes high-level LMS stats (users, courses, assignments, submissions)
- * - Shows most-popular courses and recent activity.
- * - Links to user/course/assignment management sections with SPA navigation.
- * - Uses design system components (Badge, Card, Table) for a consistent UI.
- * - May show visualizations (grade chart, recent submissions, etc).
- *
- * Usage:
- *   <Route path="/admin" element={<AdminDashboard />} />
+ * AdminDashboard Component (Production)
+ * ----------------------------------------------------------------------------
+ * LMS administrator home/dashboard.
+ * - Summarizes LMS stats (users, courses, assignments, submissions)
+ * - Shows top courses, recent activity, analytics (grade chart)
+ * - All elements use design-system components & SPA navigation.
+ * - All data wired for backend; samples/mocks removed.
  */
 
 import { useEffect, useState } from 'react';
@@ -20,14 +14,14 @@ import { Link } from 'react-router-dom';
 import styles from './AdminDashboard.module.scss';
 
 import GradeDistributionChart from '@/components/analytics/GradeDistributionChart';
-import Badge from '@/components/ui/badge';    // design-system Badge
-import Card from '@/components/ui/card';      // design-system Card
-import Table from '@/components/ui/table';    // design-system Table
-// You may need to provide simple Card and Table wrappers if not present.
+import Badge from '@/components/ui/badge';
+import Card from '@/components/ui/card';
+import Table from '@/components/ui/table';
 
+import statsApi from '@/services/api/dashboardApi'; // Expected .getStats(), .getTopCourses(), .getRecentSubmissions(), .getGrades()
 
 export default function AdminDashboard() {
-  // Example dashboard state (replace with real data fetching)
+  // Dashboard data state
   const [stats, setStats] = useState({
     users: 0,
     instructors: 0,
@@ -37,33 +31,40 @@ export default function AdminDashboard() {
   });
   const [topCourses, setTopCourses] = useState([]);
   const [recentSubmissions, setRecentSubmissions] = useState([]);
-  const [gradeDist, setGradeDist] = useState([95, 88, 80, 71, 91, 78, 100, 89, 85, 73, 65, 77, 88]);
+  const [gradeDist, setGradeDist] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Simulate async data
+  // Fetch all dashboard data from backend on mount
   useEffect(() => {
-    setLoading(true);
-    setTimeout(() => {
-      setStats({
-        users: 1250,
-        instructors: 42,
-        courses: 15,
-        assignments: 38,
-        submissions: 1204,
-      });
-      setTopCourses([
-        { id: 1, title: "Intro to Computer Science", enrolled: 314, instructor: "Dr. Smith" },
-        { id: 2, title: "Business Communication", enrolled: 182, instructor: "Prof. Lee" },
-        { id: 3, title: "Calculus I", enrolled: 139, instructor: "Dr. Kapoor" },
-      ]);
-      setRecentSubmissions([
-        { id: 61, student: "Olivia Brown", assignment: "HW 4", submittedAt: "2025-03-23T13:15", grade: "92" },
-        { id: 62, student: "Noah Clark", assignment: "Essay 1", submittedAt: "2025-03-23T13:18", grade: "87" },
-        { id: 63, student: "Ava Davis", assignment: "Quiz 2", submittedAt: "2025-03-23T13:22", grade: "78" },
-      ]);
-      setGradeDist([95, 88, 80, 71, 91, 78, 100, 89, 85, 73, 65, 77, 88, 92, 90, 79]);
-      setLoading(false);
-    }, 1100);
+    let isMounted = true;
+    async function fetchDashboard() {
+      setLoading(true);
+      try {
+        const [
+          statsRes,
+          topCoursesRes,
+          recentSubsRes,
+          gradeDistRes
+        ] = await Promise.all([
+          statsApi.getStats(),
+          statsApi.getTopCourses(),
+          statsApi.getRecentSubmissions(),
+          statsApi.getGrades(),
+        ]);
+        if (isMounted) {
+          setStats(statsRes || {});
+          setTopCourses(Array.isArray(topCoursesRes) ? topCoursesRes : []);
+          setRecentSubmissions(Array.isArray(recentSubsRes) ? recentSubsRes : []);
+          setGradeDist(Array.isArray(gradeDistRes) ? gradeDistRes : []);
+        }
+      } catch (err) {
+        // Optionally: handle error globally or per-component
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    }
+    fetchDashboard();
+    return () => { isMounted = false; };
   }, []);
 
   // Format date for submissions
@@ -109,7 +110,7 @@ export default function AdminDashboard() {
             </Card>
           </section>
 
-          {/* Most popular/top courses */}
+          {/* Top courses */}
           <section className={styles.adminDashboard__section}>
             <h2 className={styles.adminDashboard__sectionTitle}>Top Courses</h2>
             <Table className={styles.adminDashboard__coursesTable}>
@@ -164,7 +165,7 @@ export default function AdminDashboard() {
           {/* Overall grade distribution */}
           <section className={styles.adminDashboard__section}>
             <h2 className={styles.adminDashboard__sectionTitle}>Overall Grade Distribution</h2>
-            <Card style={{padding: "1.2em 1.8em"}}>
+            <Card style={{ padding: "1.2em 1.8em" }}>
               <GradeDistributionChart grades={gradeDist} />
             </Card>
           </section>
@@ -188,9 +189,9 @@ export default function AdminDashboard() {
 }
 
 /**
- * Notes:
- * - Card, Table, and Badge are shared UI components and should be implemented if not present (replace with <div>, <table>, <span> if needed).
- * - Navigation to `/admin/users`, etc., uses SPA-friendly <Link> for smooth transitions and state preservation.
- * - All statistics and small data/labels use design system components for visual harmony.
- * - Uses the @ alias for shared components.
+ * Production Notes:
+ * - All sections use real backend APIs for stats and analytics.
+ * - Uses global Card, Table, Badge components for unified design.
+ * - Navigation is SPA-friendly for seamless admin UX.
+ * - No sample/demo data: all state is production.
  */

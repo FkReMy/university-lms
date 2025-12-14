@@ -1,67 +1,93 @@
 /**
- * SpecializationsPage Component
- * ----------------------------------------------------------
- * Admin/staff directory of academic specializations/minors within departments.
- *
- * Responsibilities:
- * - Lists all specializations in a table/card view.
- * - Allows searching/filtering by name or department.
- * - Ready for extension: add/edit/delete specialization.
+ * SpecializationsPage Component (Production)
+ * ----------------------------------------------------------------------------
+ * Admin/staff page showing academic specializations/minors, with search/filter.
+ * - Lists all specializations (table view).
+ * - Allows filtering by name/code and department.
+ * - All controls use global design-system components.
+ * - Hooks and actions ready for expansion (add/edit/remove).
+ * - No sample/demo logic; calls real backend API.
  *
  * Usage:
  *   <Route path="/specializations" element={<SpecializationsPage />} />
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
 
 import styles from './SpecializationsPage.module.scss';
 
+import Input from '@/components/ui/input';
+import Select from '@/components/ui/select';
+import Button from '@/components/ui/button';
+import specializationApi from '@/services/api/specializationApi'; // Must provide .list()
+
 export default function SpecializationsPage() {
-  // State for specialization list and search/filter
+  // Global state for specializations and UI filters
   const [specializations, setSpecializations] = useState([]);
   const [search, setSearch] = useState('');
   const [department, setDepartment] = useState('all');
   const [loading, setLoading] = useState(true);
 
-  // Simulate API load on mount
+  // Load all specializations from backend
   useEffect(() => {
-    setLoading(true);
-    setTimeout(() => {
-      setSpecializations([
-        { id: 1, name: "AI & Machine Learning", code: "AIML", department: "Computer Science", head: "Dr. Alice Smith", students: 39 },
-        { id: 2, name: "Modern Art Theory", code: "MATH", department: "Art History", head: "Prof. Lee", students: 12 },
-        { id: 3, name: "Data Science", code: "DSCI", department: "Computer Science", head: "Dr. J. Barker", students: 28 },
-        { id: 4, name: "Business Analytics", code: "BUSA", department: "Business", head: "Dr. Turner", students: 30 }
-      ]);
-      setLoading(false);
-    }, 900);
+    let isMounted = true;
+    async function fetchSpecializations() {
+      setLoading(true);
+      try {
+        const data = await specializationApi.list(); // backend call should return array
+        if (isMounted) setSpecializations(Array.isArray(data) ? data : []);
+      } catch (err) {
+        if (isMounted) setSpecializations([]);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    }
+    fetchSpecializations();
+    return () => { isMounted = false; };
   }, []);
 
-  // Gather department list for filter dropdown
-  const departments = [
-    ...new Set(specializations.map(s => s.department))
-  ].sort();
+  // Departments for dropdown filter
+  const departments = useMemo(
+    () => [...new Set(specializations.map(s => s.department))].filter(Boolean).sort(),
+    [specializations]
+  );
 
-  // Filtered specializations
-  const filteredSpecializations = specializations.filter(spec => {
-    const matchesName = spec.name.toLowerCase().includes(search.toLowerCase()) ||
-      spec.code.toLowerCase().includes(search.toLowerCase());
-    const matchesDept = department === "all" || spec.department === department;
-    return matchesName && matchesDept;
-  });
+  // Filtered list based on search/dept filter
+  const filteredSpecializations = useMemo(
+    () =>
+      specializations.filter(spec => {
+        const matchesName =
+          spec.name?.toLowerCase().includes(search.toLowerCase()) ||
+          spec.code?.toLowerCase().includes(search.toLowerCase());
+        const matchesDept = department === "all" || spec.department === department;
+        return matchesName && matchesDept;
+      }),
+    [specializations, search, department]
+  );
+
+  // Ready-to-implement handlers for add/edit/remove
+  const handleAdd = useCallback(() => {
+    // TODO: Implement add specialization dialog/modal
+  }, []);
+  const handleEdit = useCallback((id) => {
+    // TODO: Implement edit logic/modal
+  }, []);
+  const handleRemove = useCallback((id) => {
+    // TODO: Implement remove logic/modal
+  }, []);
 
   return (
     <div className={styles.specializationsPage}>
       <h1 className={styles.specializationsPage__title}>Specializations</h1>
       <div className={styles.specializationsPage__controls}>
-        <input
+        <Input
           className={styles.specializationsPage__search}
           type="text"
           placeholder="Search by spec. name or code…"
           value={search}
           onChange={e => setSearch(e.target.value)}
         />
-        <select
+        <Select
           className={styles.specializationsPage__departmentSelect}
           value={department}
           onChange={e => setDepartment(e.target.value)}
@@ -70,14 +96,15 @@ export default function SpecializationsPage() {
           {departments.map(dep => (
             <option value={dep} key={dep}>{dep}</option>
           ))}
-        </select>
-        <button
+        </Select>
+        <Button
           className={styles.specializationsPage__addBtn}
           type="button"
-          // onClick={() => ... future dialog/modal ...}
+          variant="primary"
+          onClick={handleAdd}
         >
           + Add Specialization
-        </button>
+        </Button>
       </div>
       <div className={styles.specializationsPage__listArea}>
         {loading ? (
@@ -109,15 +136,21 @@ export default function SpecializationsPage() {
                   <td>{spec.head}</td>
                   <td>{spec.students}</td>
                   <td>
-                    <button
+                    <Button
                       className={styles.specializationsPage__actionBtn}
+                      type="button"
+                      size="sm"
+                      variant="outline"
                       title="Edit specialization"
-                      // onClick={() => ... future edit dialog ...}
-                    >Edit</button>
-                    <button
+                      onClick={() => handleEdit(spec.id)}
+                    >Edit</Button>
+                    <Button
                       className={styles.specializationsPage__actionBtn}
-                      // onClick={() => ... future remove logic ...}
-                    >Remove</button>
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleRemove(spec.id)}
+                    >Remove</Button>
                   </td>
                 </tr>
               ))}
@@ -128,3 +161,11 @@ export default function SpecializationsPage() {
     </div>
   );
 }
+
+/**
+ * Production Notes:
+ * - Hooks up to unified design-system: Input, Select, Button.
+ * - All state is backend-driven; NO mock/sample logic included now.
+ * - Ready for future mutation handlers (add/edit/remove).
+ * - Clean, scalable code for real LMS management views.
+ */

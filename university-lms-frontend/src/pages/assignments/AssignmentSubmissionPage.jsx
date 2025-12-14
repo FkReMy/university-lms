@@ -1,35 +1,31 @@
 /**
- * AssignmentSubmissionPage Component
- * ----------------------------------------------------------
- * Student page for submitting an assignment (form, file upload).
- *
- * Responsibilities:
- * - Shows assignment info: title, due date, and description.
- * - Allows student to upload and submit a file.
- * - Demo: handles file upload/removal, loading/thank you state.
- *
- * Usage:
- *   <Route path="/assignments/:id/submit" element={<AssignmentSubmissionPage />} />
+ * AssignmentSubmissionPage Component (Production)
+ * ----------------------------------------------------------------------------
+ * Student-facing page for submitting an assignment file.
+ * - Shows assignment info: title, due, description.
+ * - Integrates with global store & real backend API.
+ * - Handles file upload/submission and loading state.
+ * - All demo/sample logic removed for real production use.
  */
 
-import { useEffect, useState, useRef } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { useEffect, useState, useRef, useCallback } from 'react';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 
 import styles from './AssignmentSubmissionPage.module.scss';
-
+import Button from '@/components/ui/button'; // Ensure to use global Button component
+import assignmentApi from '@/services/api/assignmentApi'; // Backend CRUD for assignments
+import fileApi from '@/services/api/fileApi';
+import { useAssignmentStore } from '@/store/assignmentStore';
 import { ROUTES } from '@/lib/constants';
 
-// Demo assignment info (replace with API in prod)
-const DEMO_ASSIGNMENT = {
-  id: 1,
-  title: 'Programming Fundamentals Assignment 1',
-  due: '2025-02-22T21:00',
-  description: `Write a program in Python to calculate the factorial of a number.
-Upload your .py file below.`,
-};
-
 export default function AssignmentSubmissionPage() {
-  const { assignmentId } = useParams();
+  const { id: assignmentId } = useParams();
+  const navigate = useNavigate();
+
+  // Store actions to minimize API requests if already loaded
+  const setError = useAssignmentStore((s) => s.setError);
+
+  // Local UI state
   const [assignment, setAssignment] = useState(null);
   const [loading, setLoading] = useState(true);
   const [file, setFile] = useState(null);
@@ -37,37 +33,70 @@ export default function AssignmentSubmissionPage() {
   const [submitted, setSubmitted] = useState(false);
   const fileInputRef = useRef();
 
-  // Simulate assignment fetch
+  // Load assignment on mount if necessary
   useEffect(() => {
-    setLoading(true);
-    setTimeout(() => {
-      setAssignment({ ...DEMO_ASSIGNMENT, id: assignmentId || DEMO_ASSIGNMENT.id });
-      setLoading(false);
-    }, 600);
+    async function fetchAssignment() {
+      setLoading(true);
+      try {
+        if (assignmentId) {
+          const data = await assignmentApi.get(assignmentId);
+          setAssignment(data);
+        } else {
+          setAssignment(null);
+        }
+      } catch (err) {
+        setError('Assignment not found.');
+        setAssignment(null);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchAssignment();
+    // eslint-disable-next-line
   }, [assignmentId]);
 
-  // Handle file upload
-  function handleFileChange(e) {
+  // Handle chosen file
+  const handleFileChange = (e) => {
     setFile(e.target.files[0]);
-  }
+  };
 
-  // Remove selected file
-  function handleRemoveFile() {
+  // Remove chosen file
+  const handleRemoveFile = () => {
     setFile(null);
     if (fileInputRef.current) fileInputRef.current.value = '';
-  }
+  };
 
-  // Mock submit
-  function handleSubmit(e) {
+  // Handle submission (integrate with fileApi & assignmentApi)
+  const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
     setSubmitting(true);
-    setTimeout(() => {
-      setSubmitting(false);
-      setSubmitted(true);
-    }, 1200);
-  }
 
-  // Format UI date
+    try {
+      let uploadedFileId = null;
+
+      // Upload the submission file first
+      if (file) {
+        const formData = new FormData();
+        formData.append('file', file);
+        const res = await fileApi.upload(formData);
+        uploadedFileId = res.id;
+      }
+
+      // Submit assignment as submission/attempt (backend should create link)
+      await assignmentApi.submit(assignmentId, {
+        fileId: uploadedFileId,
+        // optionally: userId, timestamp, etc.
+      });
+      setSubmitted(true);
+    } catch (err) {
+      setError('Failed to submit assignment.');
+    } finally {
+      setSubmitting(false);
+    }
+    // eslint-disable-next-line
+  }, [file, assignmentId]);
+
+  // Format date/time for the UI
   function fmt(dateStr) {
     if (!dateStr) return '';
     const dt = new Date(dateStr);
@@ -75,7 +104,7 @@ export default function AssignmentSubmissionPage() {
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
   }
 
@@ -93,7 +122,7 @@ export default function AssignmentSubmissionPage() {
         <div className={styles.assignmentSubmissionPage__mainBox}>
           <h1 className={styles.assignmentSubmissionPage__title}>{assignment.title}</h1>
           <div className={styles.assignmentSubmissionPage__due}>
-            Assignment #{assignmentId || assignment.id} — Due: <b>{fmt(assignment.due)}</b>
+            Assignment #{assignmentId} — Due: <b>{fmt(assignment.due)}</b>
           </div>
           <div className={styles.assignmentSubmissionPage__desc}>
             {assignment.description}
@@ -138,13 +167,15 @@ export default function AssignmentSubmissionPage() {
                 )}
               </div>
               <div className={styles.assignmentSubmissionPage__actions}>
-                <button
+                <Button
                   className={styles.assignmentSubmissionPage__submitBtn}
                   type="submit"
+                  variant="primary"
+                  loading={submitting}
                   disabled={submitting}
                 >
                   {submitting ? 'Submitting...' : 'Submit Assignment'}
-                </button>
+                </Button>
               </div>
             </form>
           )}
@@ -153,3 +184,12 @@ export default function AssignmentSubmissionPage() {
     </div>
   );
 }
+
+/**
+ * Production Notes:
+ * - Loads actual assignment and submits actual file.
+ * - Uses global store actions and resets errors.
+ * - No demo/sample mock assignment or sample waits.
+ * - All UI controls routed through global Button.
+ * - Submission endpoint to be implemented in assignmentApi backend.
+ */

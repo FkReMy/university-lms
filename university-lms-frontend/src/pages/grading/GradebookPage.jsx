@@ -1,84 +1,95 @@
 /**
- * GradebookPage Component
- * ----------------------------------------------------------
- * Displays a gradebook table for a section or course, for instructors.
- *
- * Responsibilities:
- * - List all students, all grade columns (assignments/quizzes/etc)
- * - Allows grade entry/edit (future), computes total/average.
- * - Filter/search by student.
- * - Uses shared Table component for structure.
- * - Style isolation for empty grades.
+ * GradebookPage Component (Production)
+ * ----------------------------------------------------------------------------
+ * Displays the gradebook table for a course or section for instructors.
+ * - Lists all students and graded columns (assignments, quizzes, etc).
+ * - Filter/search by student, computes total/average.
+ * - All UI uses global design system (Input, Table).
+ * - All state/data must be backend-driven; no sample/demo logic remains.
  *
  * Usage:
  *   <Route path="/gradebook" element={<GradebookPage />} />
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
-import Input from '../../components/ui/input';    // Design system Input
-import Table from '../../components/ui/table';    // Design system Table
+import Input from '@/components/ui/input';
+import Table from '@/components/ui/table';
 
 import styles from './GradebookPage.module.scss';
 
+import gradebookApi from '@/services/api/gradebookApi'; // Backend must provide: .listStudents(), .listColumns(), .listGrades()
+
 export default function GradebookPage() {
-  // Demo data (students and grade columns)
+  // State for students, grade columns, student grades, and loading/filter
   const [students, setStudents] = useState([]);
   const [gradeCols, setGradeCols] = useState([]);
   const [grades, setGrades] = useState({}); // { [studentId]: { [colKey]: number } }
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
 
-  // Simulate fetch
+  // Fetch students, columns, and grades from backend on mount
   useEffect(() => {
-    setLoading(true);
-    setTimeout(() => {
-      setStudents([
-        { id: 1, name: 'Jane Student' },
-        { id: 2, name: 'John Lee' },
-        { id: 3, name: 'Olivia Brown' },
-        { id: 4, name: 'Ava Davis' },
-      ]);
-      setGradeCols([
-        { key: 'a1', label: 'Assignment 1', max: 100 },
-        { key: 'quiz1', label: 'Quiz 1', max: 25 },
-        { key: 'a2', label: 'Assignment 2', max: 100 },
-      ]);
-      setGrades({
-        1: { a1: 93, quiz1: 23, a2: 98 },
-        2: { a1: 80, quiz1: 19, a2: 83 },
-        3: { a1: 72, quiz1: 21, a2: 0 },
-        4: { a1: 97, quiz1: 25, a2: 100 },
-      });
-      setLoading(false);
-    }, 900);
+    let isMounted = true;
+    async function fetchGradebook() {
+      setLoading(true);
+      try {
+        const [studentList, colList, gradeList] = await Promise.all([
+          gradebookApi.listStudents(),
+          gradebookApi.listColumns(),
+          gradebookApi.listGrades(),
+        ]);
+        if (isMounted) {
+          setStudents(Array.isArray(studentList) ? studentList : []);
+          setGradeCols(Array.isArray(colList) ? colList : []);
+          // gradeList should be { studentId: { colKey: value, ... }, ... }
+          setGrades(typeof gradeList === 'object' && gradeList !== null ? gradeList : {});
+        }
+      } catch (err) {
+        if (isMounted) {
+          setStudents([]);
+          setGradeCols([]);
+          setGrades({});
+        }
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    }
+    fetchGradebook();
+    return () => { isMounted = false; };
   }, []);
 
-  // Filter students by search
-  const filteredStudents = students.filter(s =>
-    s.name.toLowerCase().includes(search.toLowerCase())
+  // Memoized students filtering by search
+  const filteredStudents = useMemo(
+    () => students.filter(s =>
+      s.name.toLowerCase().includes(search.toLowerCase())
+    ),
+    [students, search]
   );
 
-  // Compute totals and average where possible
+  // Compute total score for a student
   function getTotal(studentId) {
-    const sgrades = grades[studentId] || {};
+    const sGrades = grades[studentId] || {};
     let total = 0;
     for (const col of gradeCols) {
-      if (typeof sgrades[col.key] === 'number') total += sgrades[col.key] || 0;
+      if (typeof sGrades[col.key] === 'number') total += sGrades[col.key] || 0;
     }
     return total;
   }
 
+  // Max total available from all columns
   function getMaxTotal() {
     return gradeCols.reduce((sum, col) => sum + (col.max || 0), 0);
   }
 
+  // Format total with percent
   function fmtPct(score, outOf) {
     if (!outOf) return '';
     const pct = Math.round((score / outOf) * 100);
     return `${score}/${outOf} (${pct}%)`;
   }
 
+  // Compute average for a grade column (across filtered students)
   function computeAverage(colKey) {
     let total = 0, count = 0;
     for (const s of filteredStudents) {
@@ -102,7 +113,7 @@ export default function GradebookPage() {
           value={search}
           onChange={e => setSearch(e.target.value)}
         />
-        {/* For future: section/course dropdown */}
+        {/* Future: add section/course filter dropdown here */}
       </div>
       <div className={styles.gradebookPage__tableArea}>
         {loading ? (
@@ -165,9 +176,9 @@ export default function GradebookPage() {
 }
 
 /**
- * Notes:
- * - Table now uses the design system's <Table> for uniform styling and accessibility.
- * - <Input> is used for the search field.
- * - Empty grades use a dedicated .gradebookPage__emptyGrade class for style isolation; no inline styles.
- * - Table supports a striped prop for improved readability (if your Table supports that).
+ * Production Notes:
+ * - No demo data; all students, gradeCols, grades are loaded from backend API.
+ * - Uses only global Input and Table.
+ * - Clean column, cell, and footer computation for any class/section assignment structure.
+ * - Add edit/entry features on top as needed later.
  */

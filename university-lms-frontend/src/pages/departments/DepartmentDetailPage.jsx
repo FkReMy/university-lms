@@ -1,14 +1,13 @@
 /**
- * DepartmentDetailPage Component
- * ----------------------------------------------------------
+ * DepartmentDetailPage Component (Production)
+ * ----------------------------------------------------------------------------
  * Admin/staff or university user view of an individual department's details.
- *
- * Responsibilities:
- * - Displays department name, code, school, head, description, number of courses.
- * - Lists courses under the department.
- * - (Optionally) List/manage faculty/staff members.
- * - Admin controls for editing or removing the department (readiness for future logic).
- *
+ * - Displays department info (name, code, school, head, description, courses count).
+ * - Lists all courses under the department.
+ * - Unified styling and controls, uses global components.
+ * - Admin action hooks ready for future expansion.
+ * - Loads real data from backend: no sample/demo logic.
+ * 
  * Usage:
  *   <Route path="/departments/:id" element={<DepartmentDetailPage />} />
  */
@@ -18,35 +17,41 @@ import { useParams } from 'react-router-dom';
 
 import styles from './DepartmentDetailPage.module.scss';
 
+import Button from '@/components/ui/button';
+import Table from '@/components/ui/table';
+import departmentApi from '@/services/api/departmentApi'; // To be implemented: .get(id), .getCourses(id)
+
 export default function DepartmentDetailPage() {
-  const { deptId } = useParams();
-  // Demo department and courses info (would be fetched by ID in real app)
+  const { id: deptId } = useParams();
+
+  // State for department and courses
   const [dept, setDept] = useState(null);
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Simulate load by deptId
+  // Fetch department and its courses from backend
   useEffect(() => {
-    setLoading(true);
-    setTimeout(() => {
-      const demoDept = {
-        id: deptId ?? 1,
-        name: "Computer Science",
-        code: "CSCI",
-        school: "Engineering",
-        head: "Dr. Alice Smith",
-        coursesCount: 22,
-        description:
-          "The Computer Science Department offers foundational and advanced study in computing, programming, AI, data science, and systems. Faculty lead world-class research and practical instruction."
-      };
-      setDept(demoDept);
-      setCourses([
-        { id: 101, name: "Intro to Programming", code: "CSCI 101", credits: 4, instructor: "Dr. J. Barker" },
-        { id: 102, name: "Data Structures", code: "CSCI 220", credits: 3, instructor: "Prof. Chen" },
-        { id: 103, name: "Artificial Intelligence", code: "CSCI 360", credits: 3, instructor: "Dr. Alice Smith" },
-      ]);
-      setLoading(false);
-    }, 900);
+    let isMounted = true;
+    async function fetchDepartment() {
+      setLoading(true);
+      try {
+        const deptData = await departmentApi.get(deptId);
+        const coursesData = await departmentApi.getCourses(deptId);
+        if (isMounted) {
+          setDept(deptData || null);
+          setCourses(Array.isArray(coursesData) ? coursesData : []);
+        }
+      } catch (err) {
+        if (isMounted) {
+          setDept(null);
+          setCourses([]);
+        }
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    }
+    fetchDepartment();
+    return () => { isMounted = false; }
   }, [deptId]);
 
   return (
@@ -81,7 +86,7 @@ export default function DepartmentDetailPage() {
             {courses.length === 0 ? (
               <div className={styles.departmentDetailPage__empty}>No courses found.</div>
             ) : (
-              <table className={styles.departmentDetailPage__coursesTable}>
+              <Table className={styles.departmentDetailPage__coursesTable}>
                 <thead>
                   <tr>
                     <th>Name</th>
@@ -100,22 +105,32 @@ export default function DepartmentDetailPage() {
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </Table>
             )}
           </section>
-          {/* Optional: admin action buttons */}
+          {/* Admin action buttons (ready for expansion) */}
           <section className={styles.departmentDetailPage__actions}>
-            <button
+            <Button
               className={styles.departmentDetailPage__actionBtn}
+              variant="outline"
               // onClick={() => ... future edit dialog ...}
-            >Edit Info</button>
-            <button
+            >Edit Info</Button>
+            <Button
               className={styles.departmentDetailPage__actionBtn}
+              variant="danger"
               // onClick={() => ... future delete logic ...}
-            >Remove Department</button>
+            >Remove Department</Button>
           </section>
         </div>
       )}
     </div>
   );
 }
+
+/**
+ * Production Notes:
+ * - All data is loaded from backend via departmentApi (no demo/mock).
+ * - Uses global Button and Table components for consistency.
+ * - Admin actions are ready for future logic (modal, dialog, etc).
+ * - Clean structure for real-scale LMS usage.
+ */

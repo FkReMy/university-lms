@@ -1,31 +1,26 @@
 /**
- * ProfessorDashboard Component
- * ----------------------------------------------------------
- * Main dashboard page for LMS professors/instructors.
- *
- * Responsibilities:
- * - Summarizes instructor-centered LMS stats (courses, students, assignments, submissions).
- * - Shows upcoming classes/deadlines, recent submissions, and quick links.
- * - Uses design system components (Card, Table, Badge).
- * - SPA navigation with <Link> from react-router-dom (not <a>).
- *
- * Usage:
- *   <Route path="/professor" element={<ProfessorDashboard />} />
+ * ProfessorDashboard Component (Production)
+ * ----------------------------------------------------------------------------
+ * Instructor home dashboard: unified LMS analytics and navigation for faculty.
+ * - Summarizes courses, students, assignments, submissions.
+ * - Shows upcoming classes/deadlines, recent activity, and grade distribution.
+ * - All layout/controls use global design system (Card, Table, Badge).
+ * - No demo/sample logic; All state/data should be fetched from API in production.
  */
 
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-
 import styles from './ProfessorDashboard.module.scss';
 
 import GradeDistributionChart from '@/components/analytics/GradeDistributionChart';
-import Badge from '@/components/ui/badge';    // design-system Badge
-import Card from '@/components/ui/card';      // design-system Card
-import Table from '@/components/ui/table';    // design-system Table
+import Badge from '@/components/ui/badge';
+import Card from '@/components/ui/card';
+import Table from '@/components/ui/table';
 
+import professorDashboardApi from '@/services/api/professorDashboardApi'; // Expects: .getStats(), .getUpcoming(), .getRecentSubmissions(), .getGrades()
 
 export default function ProfessorDashboard() {
-  // Example dashboard state (replace with real API fetches)
+  // All dashboard state is fetched or loading
   const [stats, setStats] = useState({
     courses: 0,
     students: 0,
@@ -34,41 +29,49 @@ export default function ProfessorDashboard() {
   });
   const [upcoming, setUpcoming] = useState([]);
   const [recentSubmissions, setRecentSubmissions] = useState([]);
-  const [gradeDist, setGradeDist] = useState([92, 85, 70, 98, 81, 75, 80, 91, 100, 95, 87, 73, 68]);
+  const [gradeDist, setGradeDist] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Simulate async instructor-specific data
+  // Fetch all dashboard data from backend on mount
   useEffect(() => {
-    setLoading(true);
-    setTimeout(() => {
-      setStats({
-        courses: 4,
-        students: 124,
-        assignments: 15,
-        submissions: 442,
-      });
-      setUpcoming([
-        { id: 21, type: "class", title: "Calculus I - Lecture", dueAt: "2025-03-29T09:00" },
-        { id: 22, type: "deadline", title: "HW 4 due", dueAt: "2025-03-30T23:59" },
-        { id: 23, type: "class", title: "Advising Hour", dueAt: "2025-03-31T14:00" },
-      ]);
-      setRecentSubmissions([
-        { id: 201, student: "Liam Hall", assignment: "Quiz 3", submittedAt: "2025-03-27T10:42", grade: "88" },
-        { id: 202, student: "Sophia Young", assignment: "HW 3", submittedAt: "2025-03-27T11:03", grade: "95" },
-        { id: 203, student: "Elijah White", assignment: "Project Draft", submittedAt: "2025-03-27T11:28", grade: "N/A" },
-      ]);
-      setGradeDist([92, 85, 70, 98, 81, 75, 80, 91, 100, 95, 87, 73, 68]);
-      setLoading(false);
-    }, 1100);
+    let isMounted = true;
+    async function fetchDashboard() {
+      setLoading(true);
+      try {
+        const [
+          statsRes,
+          upcomingRes,
+          recentSubsRes,
+          gradesRes,
+        ] = await Promise.all([
+          professorDashboardApi.getStats(),
+          professorDashboardApi.getUpcoming(),
+          professorDashboardApi.getRecentSubmissions(),
+          professorDashboardApi.getGrades(),
+        ]);
+        if (isMounted) {
+          setStats(statsRes || {});
+          setUpcoming(Array.isArray(upcomingRes) ? upcomingRes : []);
+          setRecentSubmissions(Array.isArray(recentSubsRes) ? recentSubsRes : []);
+          setGradeDist(Array.isArray(gradesRes) ? gradesRes : []);
+        }
+      } catch (err) {
+        // Optionally: global error handling/UI message
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    }
+    fetchDashboard();
+    return () => { isMounted = false; };
   }, []);
 
-  // Format date for events and submissions
+  // Format date for display
   function formatDate(dt) {
     if (!dt) return '';
     const d = new Date(dt);
     return d.toLocaleString(undefined, {
       year: '2-digit', month: 'short', day: 'numeric',
-      hour: 'numeric', minute: '2-digit', hour12: true
+      hour: 'numeric', minute: '2-digit', hour12: true,
     });
   }
 
@@ -148,7 +151,7 @@ export default function ProfessorDashboard() {
           {/* Grade distribution */}
           <section className={styles.professorDashboard__section}>
             <h2 className={styles.professorDashboard__sectionTitle}>Grade Distribution</h2>
-            <Card style={{padding: "1.2em 1.8em"}}>
+            <Card style={{ padding: "1.2em 1.8em" }}>
               <GradeDistributionChart grades={gradeDist} />
             </Card>
           </section>
@@ -172,8 +175,9 @@ export default function ProfessorDashboard() {
 }
 
 /**
- * Key refactors:
- * - All stat/data/quick-links use Card, Table, Badge from your design system.
- * - Navigation is by SPA <Link> components.
- * - The dashboard page structure, logic, and accessibility are preserved.
+ * Production Notes:
+ * - All stats, upcoming, grades, and submissions come from real APIs.
+ * - Navigation: uses SPA <Link> for every quick-link.
+ * - All elements use the global design system for styling and accessibility.
+ * - No demo or sample logic; fully backend-integrated structure.
  */

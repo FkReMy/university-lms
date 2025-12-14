@@ -1,81 +1,85 @@
 /**
- * AssignmentListPage Component
- * ----------------------------------------------------------
- * Lists assignments for a course, section, or department.
- *
- * Responsibilities:
- * - Lists assignments with due date, title, and status (open/closed).
- * - Allows searching/filtering by title or status.
- * - Ready for expansion: add/edit/view/remove actions.
- * - Uses Badge, Button, Input, and Select components for UI consistency.
- *
- * Usage:
- *   <Route path="/assignments" element={<AssignmentListPage />} />
+ * AssignmentListPage Component (Production)
+ * ----------------------------------------------------------------------------
+ * Lists all assignments for a course, section, or department.
+ * - Loads from global assignments store.
+ * - Supports search and status filtering.
+ * - Uses global UI components and styles.
+ * - Ready for production (no sample/mock data).
+ * - Add/edit/view/remove stubs ready for integration.
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-import Badge from '../../components/ui/badge';   // Design system badge
-import Button from '../../components/ui/button'; // Design system button
-import Input from '../../components/ui/input';   // Design system input
-import Select from '../../components/ui/select'; // Design system select
+import Badge from '@/components/ui/badge';
+import Button from '@/components/ui/button';
+import Input from '@/components/ui/input';
+import Select from '@/components/ui/select';
 
 import styles from './AssignmentListPage.module.scss';
 
+// Global assignment store/actions
+import { useAssignmentStore, selectAssignments, selectAssignmentLoading } from '@/store/assignmentStore';
+import assignmentApi from '@/services/api/assignmentApi'; // Must be implemented: real API client
+
 export default function AssignmentListPage() {
-  // State for assignments and search/filter
-  const [assignments, setAssignments] = useState([]);
+  // Global store selectors and actions
+  const assignments = useAssignmentStore(selectAssignments);
+  const loading = useAssignmentStore(selectAssignmentLoading);
+  const setAssignments = useAssignmentStore((s) => s.setAssignments);
+  const startLoading = useAssignmentStore((s) => s.startLoading);
+  const stopLoading = useAssignmentStore((s) => s.stopLoading);
+  const setError = useAssignmentStore((s) => s.setError);
+
+  // Local filter/search states
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState('all');
-  const [loading, setLoading] = useState(true);
 
-  // Simulate API load
+  const navigate = useNavigate();
+
+  // Load assignments from API/store on mount
   useEffect(() => {
-    setLoading(true);
-    setTimeout(() => {
-      setAssignments([
-        {
-          id: 1,
-          title: 'Programming Fundamentals Assignment 1',
-          due: '2025-02-22T21:00',
-          status: 'Open',
-        },
-        {
-          id: 2,
-          title: 'Calculus Homework Set 3',
-          due: '2025-03-10T23:59',
-          status: 'Closed',
-        },
-        {
-          id: 3,
-          title: 'Business Report',
-          due: '2025-02-28T17:40',
-          status: 'Open',
-        },
-      ]);
-      setLoading(false);
-    }, 900);
+    async function fetchAssignments() {
+      try {
+        startLoading();
+        const result = await assignmentApi.list(); // expects an array from backend
+        setAssignments(result || []);
+      } catch (err) {
+        setError('Failed to load assignments.');
+      } finally {
+        stopLoading();
+      }
+    }
+    fetchAssignments();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Unique status values for dropdown
-  const statuses = [...new Set(assignments.map(a => a.status))].sort();
+  // Extract all unique statuses for filter
+  const statuses = useMemo(
+    () => Array.from(new Set(assignments.map(a => a.status))).filter(Boolean).sort(),
+    [assignments]
+  );
 
-  // Filtered assignments
-  const filteredAssignments = assignments.filter(a => {
-    const matchesSearch = a.title.toLowerCase().includes(search.toLowerCase());
-    const matchesStatus = status === 'all' || a.status === status;
-    return matchesSearch && matchesStatus;
-  });
+  // Efficient filter
+  const filteredAssignments = useMemo(
+    () => assignments.filter(a => {
+      const matchesSearch = a.title?.toLowerCase().includes(search.toLowerCase());
+      const matchesStatus = status === 'all' || a.status === status;
+      return matchesSearch && matchesStatus;
+    }),
+    [assignments, search, status]
+  );
 
-  // Status badge (with shared Badge component)
-  function statusBadge(s) {
-    let variant = "default";
-    if (s === 'Open') variant = "success";
-    if (s === 'Closed') variant = "danger";
+  // Status badge using global Badge component
+  function StatusBadge(s) {
+    let variant = 'default';
+    if (s === 'Open') variant = 'success';
+    if (s === 'Closed') variant = 'danger';
     return <Badge variant={variant}>{s}</Badge>;
   }
 
-  // Format UI date/time
+  // Date formatting helper
   function fmt(dateStr) {
     if (!dateStr) return '';
     const dt = new Date(dateStr);
@@ -83,9 +87,29 @@ export default function AssignmentListPage() {
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
   }
+
+  // Navigation handlers (to be completed)
+  const handleAdd = useCallback(() => {
+    navigate('/assignments/new');
+  }, [navigate]);
+  const handleEdit = useCallback((id) => {
+    navigate(`/assignments/${id}/edit`);
+  }, [navigate]);
+  const handleRemove = useCallback(async (id) => {
+    if (!window.confirm('Are you sure you want to remove this assignment?')) return;
+    try {
+      startLoading();
+      await assignmentApi.remove(id);
+      setAssignments(assignments.filter((a) => a.id !== id));
+    } catch (err) {
+      setError('Failed to remove assignment.');
+    } finally {
+      stopLoading();
+    }
+  }, [assignments, setAssignments, startLoading, stopLoading, setError]);
 
   return (
     <div className={styles.assignmentListPage}>
@@ -112,7 +136,7 @@ export default function AssignmentListPage() {
           className={styles.assignmentListPage__addBtn}
           type="button"
           variant="primary"
-          // onClick={() => ... future add assignment ...}
+          onClick={handleAdd}
         >
           + Add Assignment
         </Button>
@@ -120,7 +144,7 @@ export default function AssignmentListPage() {
       <div className={styles.assignmentListPage__listArea}>
         {loading ? (
           <div className={styles.assignmentListPage__loading}>
-            Loading assignments…
+            Loading assignments&hellip;
           </div>
         ) : filteredAssignments.length === 0 ? (
           <div className={styles.assignmentListPage__empty}>
@@ -141,14 +165,14 @@ export default function AssignmentListPage() {
                 <tr key={a.id}>
                   <td>{a.title}</td>
                   <td>{fmt(a.due)}</td>
-                  <td>{statusBadge(a.status)}</td>
+                  <td>{StatusBadge(a.status)}</td>
                   <td>
                     <Button
                       className={styles.assignmentListPage__actionBtn}
                       size="sm"
                       variant="outline"
                       type="button"
-                      // onClick={() => ... edit/view logic ...}
+                      onClick={() => handleEdit(a.id)}
                     >
                       Edit
                     </Button>
@@ -157,7 +181,7 @@ export default function AssignmentListPage() {
                       size="sm"
                       variant="outline"
                       type="button"
-                      // onClick={() => ... remove logic ...}
+                      onClick={() => handleRemove(a.id)}
                     >
                       Remove
                     </Button>
@@ -173,8 +197,8 @@ export default function AssignmentListPage() {
 }
 
 /**
- * Notes:
- * - All form and action controls now use UI kit components for styling and accessibility.
- * - Status badge uses Badge component for consistent chip/badge style.
- * - Actions ready to wire up for modals, dialogs, or API requests.
+ * Production Notes:
+ * - Uses only real backend API and global state via Zustand, no demo/sample arrays.
+ * - Uses only unified, accessible design system Button/Badge/Input/Select components.
+ * - All CRUD actions ready for backend connection and UX polish (modals/redirects).
  */

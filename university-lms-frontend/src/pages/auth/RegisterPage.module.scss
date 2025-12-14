@@ -1,0 +1,144 @@
+// RegisterPage.module.scss
+// ----------------------------------------------------------------------------
+// Styles for the LMS user registration page, unified with the design system.
+// Keep consistent spacing, color, and component classes for production LMS UX.
+
+.registerPage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  justify-content: center;
+  background: #fafbfc;
+
+  &__box {
+    background: #fff;
+    border-radius: 1.25rem;
+    box-shadow: 0 4px 32px 0 rgba(44, 62, 80, 0.10);
+    padding: 2.5rem 2.25rem 2rem 2.25rem;
+    width: 100%;
+    max-width: 410px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    margin-top: 2rem;
+  }
+
+  &__title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    color: #233150;
+    text-align: center;
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+
+  &__label {
+    font-size: 1rem;
+    color: #355173;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  &__input {
+    font-size: 1rem;
+    padding: 0.65rem 0.85rem;
+    border: 1px solid #d2d9e4;
+    border-radius: 0.33rem;
+    transition: border .2s;
+    background: #f7fafd;
+    color: #263047;
+
+    &:focus {
+      border-color: #2475ed;
+      outline: none;
+      background: #fff;
+    }
+
+    &:disabled {
+      background: #ebedf0;
+      color: #9a9eaf;
+      cursor: not-allowed;
+    }
+  }
+
+  &__submit {
+    margin-top: 0.35rem;
+    padding: 0.85rem 0;
+    font-size: 1.12rem;
+    font-weight: 600;
+    border-radius: 0.4rem;
+    background: linear-gradient(90deg, #2976e6, #1ad6b0);
+    color: #fff;
+    border: none;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    transition: opacity .2s;
+
+    &:hover:not(:disabled) {
+      opacity: 0.92;
+      background: linear-gradient(90deg, #1e56a0, #15b79e);
+    }
+    &:disabled {
+      opacity: 0.6;
+      cursor: progress;
+    }
+  }
+
+  &__errorMsg {
+    background: #ffeaea;
+    color: #c71b33;
+    border-radius: 0.33rem;
+    padding: 0.7rem 1rem;
+    margin: 0.5rem 0 0.5rem 0;
+    font-size: 1rem;
+  }
+
+  &__successMsg {
+    background: #edfff4;
+    color: #059769;
+    border-radius: 0.33rem;
+    padding: 0.7rem 1rem;
+    margin: 0.5rem 0 0.5rem 0;
+    font-size: 1rem;
+  }
+
+  &__footer {
+    width: 100%;
+    text-align: center;
+    color: #7e869e;
+    font-size: 1rem;
+    margin-top: 0.35rem;
+    a {
+      color: #317df8;
+      text-decoration: none;
+      font-weight: 600;
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  &__link {
+    color: #2976e6;
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    font-size: 1em;
+    text-decoration: underline;
+    &:hover {
+      color: #15b79e;
+    }
+  }
+}

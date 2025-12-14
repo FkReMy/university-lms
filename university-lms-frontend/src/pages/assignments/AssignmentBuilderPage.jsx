@@ -1,72 +1,136 @@
 /**
- * AssignmentBuilderPage Component
- * ----------------------------------------------------------
- * Page for building or editing an assignment (title, deadline, description, file, etc).
- *
- * Responsibilities:
- * - Editable form for assignment title, due date/time, description, file upload.
- * - Optionally supports existing assignment editing (loads demo/existing data).
- * - Ready for expansion: grading options, attachments, assignment type.
- *
- * Usage:
- *   <Route path="/assignments/:id/edit" element={<AssignmentBuilderPage />} />
- *   <Route path="/assignments/new" element={<AssignmentBuilderPage />} />
+ * AssignmentBuilderPage Component (Production)
+ * ----------------------------------------------------------------------------
+ * Unified global LMS page for creating/editing assignments.
+ * - Handles: title, due, description, attachment file.
+ * - Supports existing assignment editing or clean new creation.
+ * - All state wired through proper hooks; demo/sample logic removed.
+ * - File upload and UI ready for backend FastAPI integration.
  */
 
-import { useEffect, useState, useRef } from 'react';
-
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import styles from './AssignmentBuilderPage.module.scss';
 
-// --- Demo default assignment ---
-const DEMO_ASSIGNMENT = {
-  title: 'Programming Fundamentals Assignment 1',
-  due: '2025-02-22T21:00',
-  description: `Write a program in Python to calculate the factorial of a number.
-Upload your .py file using the form below.`,
-  file: null,
-};
+import { useAssignmentStore } from '@/store/assignmentStore';
+import { selectCurrentAssignment } from '@/store/assignmentStore';
+import fileApi from '@/services/api/fileApi';
+import assignmentApi from '@/services/api/assignmentApi'; // You must implement: CRUD for assignments
 
+/**
+ * AssignmentBuilderPage — handles both new and edit modes.
+ */
 export default function AssignmentBuilderPage() {
-  // State for assignment fields
+  // Optional param: assignment id (if editing)
+  const { id } = useParams();
+  const navigate = useNavigate();
+
+  // Global store hooks
+  const currentAssignment = useAssignmentStore(selectCurrentAssignment);
+  const startLoading = useAssignmentStore((s) => s.startLoading);
+  const stopLoading = useAssignmentStore((s) => s.stopLoading);
+  const setError = useAssignmentStore((s) => s.setError);
+  const setCurrentAssignment = useAssignmentStore((s) => s.setCurrentAssignment);
+
+  // Local form state
   const [title, setTitle] = useState('');
   const [due, setDue] = useState('');
   const [description, setDescription] = useState('');
   const [file, setFile] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
+
   const fileInputRef = useRef();
 
-  // Load assignment for editing, or reset for new
+  // Load assignment for edit, or reset for new
   useEffect(() => {
-    setLoading(true);
-    setTimeout(() => {
-      setTitle(DEMO_ASSIGNMENT.title);
-      setDue(DEMO_ASSIGNMENT.due);
-      setDescription(DEMO_ASSIGNMENT.description);
-      setFile(null);
-      setLoading(false);
-    }, 700);
-  }, []);
+    async function fetchOrInit() {
+      startLoading();
+      try {
+        if (id) {
+          // Edit mode: load assignment detail
+          const data = await assignmentApi.get(id);
+          setCurrentAssignment(data);
+          setTitle(data.title || '');
+          setDue(data.due || '');
+          setDescription(data.description || '');
+        } else {
+          // New mode: blank form
+          setCurrentAssignment(null);
+          setTitle('');
+          setDue('');
+          setDescription('');
+        }
+        setFile(null);
+      } catch (err) {
+        setError('Failed to load assignment.');
+      } finally {
+        stopLoading();
+      }
+    }
+    fetchOrInit();
+    // eslint-disable-next-line
+  }, [id]);
 
-  function handleFileChange(e) {
+  // File change handler
+  const handleFileChange = (e) => {
     setFile(e.target.files[0]);
-  }
+  };
 
-  function handleRemoveFile() {
+  // Remove file from UI input and state
+  const handleRemoveFile = () => {
     setFile(null);
     if (fileInputRef.current) fileInputRef.current.value = '';
-  }
+  };
 
-  // Handler for save (demo)
-  function handleSave(e) {
+  // Save handler (create or update)
+  const handleSave = useCallback(async (e) => {
     e.preventDefault();
-    // Would call API, send {title, due, description, file}
-    alert('Assignment saved!\n\n(Demo only)');
-  }
+    startLoading();
+    try {
+      let uploadedFileId = null;
+
+      // Upload attachment if any
+      if (file) {
+        setUploading(true);
+        const formData = new FormData();
+        formData.append('file', file);
+        const res = await fileApi.upload(formData);
+        uploadedFileId = res.id; // backend should return file id
+        setUploading(false);
+      }
+
+      const payload = {
+        title,
+        due,
+        description,
+        fileId: uploadedFileId || (currentAssignment ? currentAssignment.fileId : null),
+      };
+
+      let saved;
+      if (id) {
+        // Update existing
+        saved = await assignmentApi.update(id, payload);
+      } else {
+        // Create new
+        saved = await assignmentApi.create(payload);
+      }
+
+      // Optionally: optimistic UI update or redirect
+      navigate(`/assignments/${saved.id}`);
+    } catch (err) {
+      setError('Failed to save assignment.');
+    } finally {
+      stopLoading();
+    }
+    // eslint-disable-next-line
+  }, [title, due, description, file, id, currentAssignment, navigate]);
+
+  const loading = useAssignmentStore((s) => s.loading);
 
   return (
     <div className={styles.assignmentBuilderPage}>
       <h1 className={styles.assignmentBuilderPage__title}>
-        {title || 'New Assignment'}
+        {id ? (title || 'Edit Assignment') : 'New Assignment'}
       </h1>
       <div className={styles.assignmentBuilderPage__formArea}>
         {loading ? (
@@ -78,6 +142,7 @@ export default function AssignmentBuilderPage() {
             autoComplete="off"
             encType="multipart/form-data"
           >
+
             {/* Assignment title */}
             <div className={styles.assignmentBuilderPage__fieldRow}>
               <label className={styles.assignmentBuilderPage__label}>
@@ -150,8 +215,9 @@ export default function AssignmentBuilderPage() {
               <button
                 type="submit"
                 className={styles.assignmentBuilderPage__saveBtn}
+                disabled={uploading}
               >
-                Save Assignment
+                {id ? 'Save Changes' : 'Create Assignment'}
               </button>
             </div>
           </form>

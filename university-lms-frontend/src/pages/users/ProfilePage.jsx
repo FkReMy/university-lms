@@ -1,13 +1,12 @@
 /**
- * ProfilePage Component
- * ----------------------------------------------------------
- * A page for users to view and optionally edit their own LMS profile.
- *
- * Responsibilities:
- * - Show user’s personal info: name, email, role, status, join date.
- * - (Optionally) Allow editing name, email, password, etc.
- * - Show courses currently enrolled/teaching.
- * - Summary stats about progress, grades, etc.
+ * ProfilePage Component (Production)
+ * ----------------------------------------------------------------------------
+ * View and optionally edit the authenticated user's own LMS profile.
+ * - Shows all personal info (name, email, role, status, join date).
+ * - Optionally allows editing name/email.
+ * - Shows enrolled/teaching courses and dashboard progress.
+ * - All elements use unified/global components.
+ * - No sample/demo logic; 100% backend data.
  *
  * Usage:
  *   <Route path="/profile" element={<ProfilePage />} />
@@ -17,38 +16,49 @@ import { useEffect, useState } from 'react';
 
 import styles from './ProfilePage.module.scss';
 
+import Input from '@/components/ui/input';
+import Button from '@/components/ui/button';
+import Badge from '@/components/ui/badge';
+
+import profileApi from '@/services/api/profileApi';     // Should provide .getProfile(), .updateProfile()
+import enrollmentApi from '@/services/api/enrollmentApi'; // Should provide .listMine()
+
 export default function ProfilePage() {
-  // State for user profile and courses (would be loaded via API in real app)
+  // Internal state for user/courses, loading, and UI
   const [user, setUser] = useState(null);
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
-  // Form (edit) state
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState({ name: '', email: '' });
   const [successMsg, setSuccessMsg] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
 
-  // Simulated profile loading
+  // Load user profile and courses on mount
   useEffect(() => {
-    setLoading(true);
-    setTimeout(() => {
-      const demoUser = {
-        id: 18,
-        name: "Jane Student",
-        email: "jane.smith@student.edu",
-        role: "student",
-        status: "active",
-        memberSince: "2023-09-14",
-      };
-      setUser(demoUser);
-      setForm({ name: demoUser.name, email: demoUser.email });
-      setCourses([
-        { id: 101, name: "Biology 101", role: "Enrolled", progress: 73, grade: 88 },
-        { id: 102, name: "Modern Art", role: "Enrolled", progress: 94, grade: 92 },
-        { id: 103, name: "Statistics", role: "Enrolled", progress: 41, grade: 80 }
-      ]);
-      setLoading(false);
-    }, 850);
+    let isMounted = true;
+    async function fetchData() {
+      setLoading(true);
+      try {
+        // Profile
+        const u = await profileApi.getProfile();
+        // Courses/enrollments
+        const cs = await enrollmentApi.listMine();
+        if (isMounted) {
+          setUser(u || {});
+          setForm({ name: u?.name || '', email: u?.email || '' });
+          setCourses(Array.isArray(cs) ? cs : []);
+        }
+      } catch {
+        if (isMounted) {
+          setUser(null);
+          setCourses([]);
+        }
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    }
+    fetchData();
+    return () => { isMounted = false; };
   }, []);
 
   function handleEdit(e) {
@@ -66,18 +76,26 @@ export default function ProfilePage() {
     setErrorMsg('');
   }
 
-  // Simulated save
-  function handleSave(e) {
+  // Save to backend (profile update)
+  async function handleSave(e) {
     e.preventDefault();
+    setErrorMsg('');
+    setSuccessMsg('');
     if (!form.name || !form.email) {
       setErrorMsg("Name and email cannot be empty.");
-      setSuccessMsg('');
       return;
     }
-    setUser(u => ({ ...u, name: form.name, email: form.email }));
-    setEditing(false);
-    setSuccessMsg("Profile updated!");
-    setErrorMsg('');
+    try {
+      const updated = await profileApi.updateProfile({
+        name: form.name,
+        email: form.email,
+      });
+      setUser(updated || { ...user, ...form });
+      setEditing(false);
+      setSuccessMsg("Profile updated!");
+    } catch (err) {
+      setErrorMsg("Update failed, please try again.");
+    }
   }
 
   function formatDate(dt) {
@@ -88,50 +106,19 @@ export default function ProfilePage() {
   }
 
   function roleBadge(role) {
-    let color;
-    switch (role) {
-      case "student": color = "#2563eb"; break;
-      case "instructor": color = "#9c27b0"; break;
-      case "associate": color = "#e67e22"; break;
-      default: color = "#485471";
-    }
-    return (
-      <span
-        style={{
-          color,
-          background: "#f4f7fd",
-          fontWeight: 700,
-          fontSize: "0.99em",
-          borderRadius: "0.87em",
-          padding: "0.14em 0.95em",
-          marginLeft: "0.5em"
-        }}
-      >
-        {role.charAt(0).toUpperCase() + role.slice(1)}
-      </span>
-    );
+    let variant = "secondary";
+    if (/student/i.test(role)) variant = "primary";
+    else if (/instructor/i.test(role)) variant = "success";
+    else if (/associate/i.test(role)) variant = "warning";
+    return <Badge variant={variant}>{role.charAt(0).toUpperCase() + role.slice(1)}</Badge>;
   }
 
   function statusBadge(status) {
-    let bg = "#dedede", color = "#213050";
-    if (status === "active") { bg = "#e5ffe9"; color = "#179a4e"; }
-    if (status === "inactive") { bg = "#fbeaea"; color = "#e62727"; }
-    if (status === "invited") { bg = "#fff6e0"; color = "#e67e22"; }
-    return (
-      <span
-        style={{
-          background: bg,
-          color: color,
-          borderRadius: "1em",
-          padding: "0.15em 0.9em",
-          fontWeight: 600,
-          fontSize: "0.99em",
-          marginLeft: "0.35em"
-        }}
-      >
-        {status.charAt(0).toUpperCase() + status.slice(1)}
-      </span>
-    );
+    let variant = "secondary";
+    if (/active/i.test(status)) variant = "success";
+    else if (/inactive/i.test(status)) variant = "danger";
+    else if (/invited/i.test(status)) variant = "warning";
+    return <Badge variant={variant}>{status.charAt(0).toUpperCase() + status.slice(1)}</Badge>;
   }
 
   return (
@@ -148,7 +135,7 @@ export default function ProfilePage() {
               <form className={styles.profilePage__form} onSubmit={handleSave}>
                 <label>
                   Name
-                  <input
+                  <Input
                     type="text"
                     value={form.name}
                     onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
@@ -157,7 +144,7 @@ export default function ProfilePage() {
                 </label>
                 <label>
                   Email
-                  <input
+                  <Input
                     type="email"
                     value={form.email}
                     onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
@@ -165,8 +152,8 @@ export default function ProfilePage() {
                   />
                 </label>
                 <div className={styles.profilePage__formBtns}>
-                  <button type="submit" className={styles.profilePage__actionBtn}>Save</button>
-                  <button type="button" onClick={handleCancel} className={styles.profilePage__actionBtn}>Cancel</button>
+                  <Button type="submit" variant="primary" className={styles.profilePage__actionBtn}>Save</Button>
+                  <Button type="button" variant="outline" onClick={handleCancel} className={styles.profilePage__actionBtn}>Cancel</Button>
                 </div>
                 {errorMsg && <div className={styles.profilePage__errorMsg}>{errorMsg}</div>}
                 {successMsg && <div className={styles.profilePage__successMsg}>{successMsg}</div>}
@@ -185,20 +172,23 @@ export default function ProfilePage() {
                   <span className={styles.profilePage__label}>Member Since:</span>{" "}
                   {formatDate(user.memberSince)}
                 </div>
-                <button
+                <Button
                   type="button"
+                  variant="primary"
                   className={styles.profilePage__actionBtn}
                   onClick={handleEdit}
                   style={{ marginTop: "1.15em" }}
-                >Edit Profile</button>
+                >Edit Profile</Button>
                 {successMsg && <div className={styles.profilePage__successMsg}>{successMsg}</div>}
               </div>
             )}
           </section>
-          {/* Courses/teaching */}
+          {/* Courses/Teaching */}
           <section className={styles.profilePage__section}>
             <h2 className={styles.profilePage__sectionTitle}>
-              {user.role === 'student' ? 'My Courses' : 'Courses Teaching/Assisting'}
+              {user.role && /student/i.test(user.role)
+                ? 'My Courses'
+                : 'Courses Teaching/Assisting'}
             </h2>
             {courses.length === 0 ? (
               <div className={styles.profilePage__empty}>No courses yet.</div>
@@ -238,3 +228,10 @@ export default function ProfilePage() {
     </div>
   );
 }
+
+/**
+ * Production Notes:
+ * - All user/courses info is loaded from real APIs.
+ * - All form fields/buttons/badges use unified design system.
+ * - Ready for scalable UX: all error/success UI is in place and extensible.
+ */

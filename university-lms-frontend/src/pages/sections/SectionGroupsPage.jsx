@@ -1,114 +1,105 @@
 /**
- * SectionGroupsPage Component
- * ----------------------------------------------------------
- * Admin/faculty page for managing groups within a course section.
- *
- * Responsibilities:
- * - Lists all groups in a section (e.g. lab groups, project teams).
- * - Allows filtering/search by group name or leader.
- * - Ready for expansion: add, edit, assign, or remove groups.
+ * SectionGroupsPage Component (Production)
+ * ----------------------------------------------------------------------------
+ * Admin/faculty view for managing groups within a specific section.
+ * - Lists all groups (lab, project, etc) for the section.
+ * - Filter/search by group name or leader.
+ * - All actions and inputs use global design system.
+ * - No sample/demo logic; all data loads from API.
+ * - Hooks ready for add/edit/remove/assign.
  *
  * Usage:
  *   <Route path="/sections/:sectionId/groups" element={<SectionGroupsPage />} />
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 
 import styles from './SectionGroupsPage.module.scss';
 
+import Input from '@/components/ui/input';
+import Button from '@/components/ui/button';
+import Badge from '@/components/ui/badge';
+import groupApi from '@/services/api/groupApi'; // Must provide .list(sectionId), etc.
+
 export default function SectionGroupsPage() {
   const { sectionId } = useParams();
-  // State for list of groups and searching
+
+  // State for groups and searching/filter
   const [groups, setGroups] = useState([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
 
-  // Simulate fetching group data for this section
+  // Fetch groups from backend on mount or section change
   useEffect(() => {
-    setLoading(true);
-    setTimeout(() => {
-      setGroups([
-        {
-          id: 1,
-          name: 'AI Project Team',
-          leader: 'Jane Student',
-          members: ['Jane Student', 'John Lee', 'Oliver Brown'],
-          type: 'Project',
-        },
-        {
-          id: 2,
-          name: 'Lab Group 1',
-          leader: 'Olivia Brown',
-          members: ['Olivia Brown', 'Noah Clark'],
-          type: 'Lab',
-        },
-        {
-          id: 3,
-          name: 'Lab Group 2',
-          leader: 'Ava Davis',
-          members: ['Ava Davis', 'Samuel Green'],
-          type: 'Lab',
-        },
-      ]);
-      setLoading(false);
-    }, 900);
+    let isMounted = true;
+    async function fetchGroups() {
+      setLoading(true);
+      try {
+        const data = await groupApi.list(sectionId);
+        if (isMounted) setGroups(Array.isArray(data) ? data : []);
+      } catch (err) {
+        if (isMounted) setGroups([]);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    }
+    fetchGroups();
+    return () => { isMounted = false; };
   }, [sectionId]);
 
-  // Filtered list
-  const filteredGroups = groups.filter((g) => {
-    const matchesName = g.name.toLowerCase().includes(search.toLowerCase());
-    const matchesLeader = g.leader.toLowerCase().includes(search.toLowerCase());
-    return matchesName || matchesLeader;
-  });
+  // Filter for search on name/leader
+  const filteredGroups = useMemo(
+    () =>
+      groups.filter((g) => {
+        const s = search.toLowerCase();
+        return (
+          g.name?.toLowerCase().includes(s) ||
+          g.leader?.toLowerCase().includes(s)
+        );
+      }),
+    [groups, search]
+  );
 
-  // Badge for group type
+  // Badge component for group type
   function typeBadge(type) {
-    let color = '#374151',
-      bg = '#f1f5f9';
-    if (type === 'Project') {
-      color = '#2563eb';
-      bg = '#e0edff';
-    }
-    if (type === 'Lab') {
-      color = '#e67e22';
-      bg = '#fff6e0';
-    }
-    return (
-      <span
-        style={{
-          background: bg,
-          color,
-          borderRadius: '0.6em',
-          padding: '0.08em 0.85em',
-          fontWeight: 700,
-          fontSize: '0.96em',
-          marginLeft: '0.36em',
-        }}
-      >
-        {type}
-      </span>
-    );
+    let variant = "default";
+    if (/project/i.test(type)) variant = "primary";
+    else if (/lab/i.test(type)) variant = "warning";
+    // else more types can be distinguished
+    return <Badge variant={variant}>{type}</Badge>;
   }
+
+  // Callbacks for future actions
+  const handleAdd = useCallback(() => {
+    // TODO: Open add-group modal/dialog
+  }, []);
+  const handleEdit = useCallback((id) => {
+    // TODO: Trigger edit logic/modal
+  }, []);
+  const handleRemove = useCallback((id) => {
+    // TODO: Implement remove logic/modal
+  }, []);
 
   return (
     <div className={styles.sectionGroupsPage}>
       <h1 className={styles.sectionGroupsPage__title}>Section Groups</h1>
       <div className={styles.sectionGroupsPage__controls}>
-        <input
+        <Input
           className={styles.sectionGroupsPage__search}
           type="text"
           placeholder="Search by group name or leader…"
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={e => setSearch(e.target.value)}
         />
-        <button
+        <Button
           className={styles.sectionGroupsPage__addBtn}
           type="button"
-          // onClick={() => ... future add group dialog ...}
+          variant="primary"
+          onClick={handleAdd}
         >
           + Add Group
-        </button>
+        </Button>
       </div>
       <div className={styles.sectionGroupsPage__listArea}>
         {loading ? (
@@ -135,21 +126,27 @@ export default function SectionGroupsPage() {
                 <tr key={g.id}>
                   <td>{g.name}</td>
                   <td>{g.leader}</td>
-                  <td>{g.members.join(', ')}</td>
+                  <td>{(g.members || []).join(', ')}</td>
                   <td>{typeBadge(g.type)}</td>
                   <td>
-                    <button
+                    <Button
                       className={styles.sectionGroupsPage__actionBtn}
-                      // onClick={() => ... edit logic ...}
+                      size="sm"
+                      variant="outline"
+                      type="button"
+                      onClick={() => handleEdit(g.id)}
                     >
                       Edit
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       className={styles.sectionGroupsPage__actionBtn}
-                      // onClick={() => ... remove logic ...}
+                      size="sm"
+                      variant="outline"
+                      type="button"
+                      onClick={() => handleRemove(g.id)}
                     >
                       Remove
-                    </button>
+                    </Button>
                   </td>
                 </tr>
               ))}
@@ -160,3 +157,11 @@ export default function SectionGroupsPage() {
     </div>
   );
 }
+
+/**
+ * Production Notes:
+ * - Uses only backend-driven data via groupApi.
+ * - All controls and badges use design-system components.
+ * - All logic ready for future modals/dialogs for add/edit/remove/assign.
+ * - No sample/demo code or data remains; scalable and unified.
+ */

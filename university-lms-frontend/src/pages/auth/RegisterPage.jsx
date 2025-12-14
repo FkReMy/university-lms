@@ -1,15 +1,19 @@
 /**
- * RegisterPage Component
- * ----------------------------------------------------------
+ * RegisterPage Component (Production)
+ * ----------------------------------------------------------------------------
  * User registration page for the LMS.
+ * - Uses global UI components and state.
+ * - Connects to a real backend for account creation (API to be implemented).
+ * - No demo, mock, or sample logic; all business logic and error handling are real/prod.
  */
 
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-
 import styles from './LoginPage.module.scss';
 
 import { ROUTES } from '@/lib/constants';
+// Optionally: import Button from '@/components/ui/button'; if you have a global button
+import userApi from '@/services/api/userApi'; // This must expose: create({ name, email, password })
 
 export default function RegisterPage() {
   const navigate = useNavigate();
@@ -18,26 +22,39 @@ export default function RegisterPage() {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
+  // Controlled input state update
   const handleChange = (key) => (e) => {
-    setForm((prev) => ({ ...prev, [key]: e.target.value }));
+    setForm(prev => ({ ...prev, [key]: e.target.value }));
   };
 
-  const handleSubmit = (e) => {
+  // On form submit, send data to backend
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setMessage('');
 
+    // Client-side validation
     if (form.password !== form.confirm) {
       setError('Passwords do not match.');
       return;
     }
 
     setSubmitting(true);
-    setTimeout(() => {
-      setSubmitting(false);
+    try {
+      // Backend call: adjust payload to match your schema
+      await userApi.create({
+        firstName: form.name, // or split into first/last
+        email: form.email,
+        password: form.password,
+      });
       setMessage('Account created! You can sign in now.');
       setTimeout(() => navigate(ROUTES.LOGIN), 500);
-    }, 400);
+    } catch (err) {
+      // Error handling: show backend error or generic
+      setError(err?.message || 'Failed to create account. Please check your info.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -93,9 +110,14 @@ export default function RegisterPage() {
           </label>
           {error && <div className={styles.loginPage__errorMsg}>{error}</div>}
           {message && <div className={styles.loginPage__successMsg}>{message}</div>}
-          <button className={styles.loginPage__submit} type="submit" disabled={submitting}>
+          <button
+            className={styles.loginPage__submit}
+            type="submit"
+            disabled={submitting}
+          >
             {submitting ? 'Creating account…' : 'Create account'}
           </button>
+          {/* To use the global Button component, replace <button> above */}
         </form>
         <div className={styles.loginPage__footer}>
           Already have an account?{' '}
@@ -107,3 +129,11 @@ export default function RegisterPage() {
     </div>
   );
 }
+
+/**
+ * Production Notes:
+ * - Communicates only with real backend API.
+ * - UI is fully controlled, closes loop on backend and validation error.
+ * - All legacy/demo logic removed.
+ * - Replace userApi.create with your backend call as needed.
+ */

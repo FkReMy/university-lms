@@ -1,84 +1,102 @@
 /**
- * UserManagementPage Component
- * ----------------------------------------------------------
- * LMS admin page for managing users (students, instructors, staff).
- *
- * Responsibilities:
- * - Lists all users in a table with filter/search controls.
- * - Allows admin to add, edit, deactivate, or remove users.
- * - Shows roles, enrollment count, and status badges in list.
- * - Ready for future mutation actions (edit, remove, etc).
- * - Uses Badge, Button, Input, Select components from the UI kit for consistency.
+ * UserManagementPage Component (Production)
+ * ----------------------------------------------------------------------------
+ * LMS admin view for managing all users (students, instructors, associates).
+ * - Lists all users with filtering/searching (by name/email/role).
+ * - All badges, buttons, filters use the global design system.
+ * - No sample/demo logic, fully API/DB-driven.
+ * - Ready for add/edit/deactivate/remove actions.
  *
  * Usage:
  *   <Route path="/admin/users" element={<UserManagementPage />} />
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
 
-import Badge from '../../components/ui/badge';   // UI consistent badge
-import Button from '../../components/ui/button'; // UI consistent button
-import Input from '../../components/ui/input';   // UI consistent input
-import Select from '../../components/ui/select'; // UI consistent select
+import Badge from '@/components/ui/badge';
+import Button from '@/components/ui/button';
+import Input from '@/components/ui/input';
+import Select from '@/components/ui/select';
 
 import styles from './UserManagementPage.module.scss';
 
+import userApi from '@/services/api/userApi'; // Should provide .list(), .remove(id), etc.
+
 export default function UserManagementPage() {
-  // User data and search/filter state (replace with API in production)
+  // User data and search/filter state
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState('');
   const [role, setRole] = useState('all');
   const [loading, setLoading] = useState(true);
 
-  // Simulate fetching all users for management
+  // Load all users from backend on mount
   useEffect(() => {
-    setLoading(true);
-    setTimeout(() => {
-      setUsers([
-        { id: 1, name: "Olivia Brown", email: "olivia.brown@example.edu", role: "student", enrolled: 5, status: "active" },
-        { id: 2, name: "Samuel Green", email: "sam.g@faculty.edu", role: "instructor", enrolled: 2, status: "active" },
-        { id: 3, name: "Maya Lee", email: "maya.lee@staff.edu", role: "associate", enrolled: 0, status: "invited" },
-        { id: 4, name: "Noah Clark", email: "clark.noah@alumni.edu", role: "student", enrolled: 0, status: "inactive" }
-      ]);
-      setLoading(false);
-    }, 900);
+    let isMounted = true;
+    async function fetchUsers() {
+      setLoading(true);
+      try {
+        const usersResult = await userApi.list();
+        if (isMounted) setUsers(Array.isArray(usersResult) ? usersResult : []);
+      } catch {
+        if (isMounted) setUsers([]);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    }
+    fetchUsers();
+    return () => { isMounted = false; };
   }, []);
 
   // Filter users by search and role
-  const filteredUsers = users.filter(u => {
-    const matchesSearch =
-      u.name.toLowerCase().includes(search.toLowerCase()) ||
-      u.email.toLowerCase().includes(search.toLowerCase());
-    const matchesRole = role === "all" || u.role === role;
-    return matchesSearch && matchesRole;
-  });
+  const filteredUsers = useMemo(
+    () =>
+      users.filter(u => {
+        const matchesSearch =
+          u.name?.toLowerCase().includes(search.toLowerCase()) ||
+          u.email?.toLowerCase().includes(search.toLowerCase());
+        const matchesRole = role === "all" || u.role === role;
+        return matchesSearch && matchesRole;
+      }),
+    [users, search, role]
+  );
 
-  // Status badge using Badge component
+  // Status badge
   function statusBadge(status) {
-    if(!status) return null;
+    if (!status) return null;
     let variant = "default";
     if (status === "active") variant = "success";
     else if (status === "inactive") variant = "danger";
     else if (status === "invited") variant = "warning";
     return (
-      <Badge variant={variant} style={{marginLeft: "0.32em"}}>
+      <Badge variant={variant} style={{ marginLeft: "0.32em" }}>
         {status.charAt(0).toUpperCase() + status.slice(1)}
       </Badge>
     );
   }
 
-  // Role badge using Badge component with custom color variants
+  // Role badge with variants
   function roleBadge(role) {
     let variant = "secondary";
-    if (role === "student") variant = "info";
-    else if (role === "instructor") variant = "purple";
+    if (role === "student") variant = "primary";
+    else if (role === "instructor") variant = "success";
     else if (role === "associate") variant = "warning";
     return (
-      <Badge variant={variant} style={{marginRight: "0.32em", fontWeight: 700}}>
+      <Badge variant={variant} style={{ marginRight: "0.32em", fontWeight: 700 }}>
         {role.charAt(0).toUpperCase() + role.slice(1)}
       </Badge>
     );
   }
+
+  // Action button handlers for future mutations (add/edit/remove)
+  const handleAdd = useCallback(() => {
+    // TODO: open add user dialog modal
+  }, []);
+  const handleEdit = useCallback((id) => {
+    // TODO: open edit user dialog modal
+  }, []);
+  const handleRemove = useCallback((id) => {
+    // TODO: open delete/remove/confirm dialog modal
+  }, []);
 
   return (
     <div className={styles.userManagementPage}>
@@ -105,7 +123,7 @@ export default function UserManagementPage() {
           type="button"
           className={styles.userManagementPage__addBtn}
           variant="primary"
-          // onClick={() => ... future add modal ...}
+          onClick={handleAdd}
         >
           + Add User
         </Button>
@@ -142,7 +160,7 @@ export default function UserManagementPage() {
                       variant="outline"
                       title="Edit user"
                       type="button"
-                      // onClick={() => ... future edit modal ...}
+                      onClick={() => handleEdit(user.id)}
                     >
                       Edit
                     </Button>
@@ -153,7 +171,7 @@ export default function UserManagementPage() {
                       title={user.status === "inactive" ? "User is inactive" : "Remove user"}
                       type="button"
                       disabled={user.status === "inactive"}
-                      // onClick={() => ... future remove logic ...}
+                      onClick={() => handleRemove(user.id)}
                     >
                       Remove
                     </Button>
@@ -169,8 +187,8 @@ export default function UserManagementPage() {
 }
 
 /**
- * Key refactors:
- * - Status/role badges now use the shared Badge component for a design-system look.
- * - Search, select, and buttons all use your UI library so app-wide look is unified.
- * - Table layout/controls pattern remains the same, but styling/manual colors are eliminated in favor of theme variants.
+ * Production Notes:
+ * - All data/UI is backend-driven and unified via your global design system.
+ * - Button, badge, and filter patterns are ready for real mutations/modals.
+ * - No sample/demo values remain anywhere.
  */

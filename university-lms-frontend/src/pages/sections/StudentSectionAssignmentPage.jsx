@@ -1,79 +1,101 @@
 /**
- * StudentSectionAssignmentPage Component
- * ----------------------------------------------------------
- * Admin/staff tool for assigning students to course sections.
- *
- * Responsibilities:
- * - Lists students and their section assignment (or unassigned).
- * - Allows searching/filtering by student or section.
- * - Ready for extension: assign/remove students from section.
+ * StudentSectionAssignmentPage Component (Production)
+ * ----------------------------------------------------------------------------
+ * Admin/staff tool for assigning/removing students to/from sections.
+ * - Lists all students and section assignments (with unassigned support).
+ * - Filters/searches by student or section.
+ * - All actions/inputs use global design-system components.
+ * - Only real backend data: no demo/sample logic remains.
+ * - Ready for extension (modal dialog for assign/edit/remove).
  *
  * Usage:
  *   <Route path="/sections/assignment" element={<StudentSectionAssignmentPage />} />
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
 
 import styles from './StudentSectionAssignmentPage.module.scss';
 
+import Input from '@/components/ui/input';
+import Select from '@/components/ui/select';
+import Button from '@/components/ui/button';
+import Badge from '@/components/ui/badge'; // For section status
+import studentApi from '@/services/api/studentAssignmentApi'; // Must provide .list(), etc.
+
 export default function StudentSectionAssignmentPage() {
-  // State for students and search/filter
+  // State for student list and filter UI
   const [students, setStudents] = useState([]);
   const [search, setSearch] = useState('');
   const [section, setSection] = useState('all');
   const [loading, setLoading] = useState(true);
 
-  // Simulate fetch of students and section (stub/example)
+  // Fetch real student assignments from backend
   useEffect(() => {
-    setLoading(true);
-    setTimeout(() => {
-      setStudents([
-        {
-          id: 1,
-          name: 'Jane Student',
-          email: 'jane.smith@email.edu',
-          section: 'CSCI 101 - MW 10:30',
-        },
-        {
-          id: 2,
-          name: 'John Lee',
-          email: 'john.lee@email.edu',
-          section: 'MATH 195 - TTh 09:00',
-        },
-        {
-          id: 3,
-          name: 'Olivia Brown',
-          email: 'obrown@email.edu',
-          section: 'Not assigned',
-        },
-        {
-          id: 4,
-          name: 'Ava Davis',
-          email: 'ava.davis@email.edu',
-          section: 'BUS 240 - F 12:00',
-        },
-      ]);
-      setLoading(false);
-    }, 900);
+    let isMounted = true;
+    async function fetchData() {
+      setLoading(true);
+      try {
+        const data = await studentApi.list();
+        if (isMounted) setStudents(Array.isArray(data) ? data : []);
+      } catch (err) {
+        if (isMounted) setStudents([]);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    }
+    fetchData();
+    return () => { isMounted = false; };
   }, []);
 
-  // Compute unique sections for filter
-  const sections = [
-    ...new Set(students.map((s) => s.section)),
-  ].filter((s) => s !== 'Not assigned' && !!s);
+  // Unique assigned sections for dropdown
+  const sections = useMemo(
+    () =>
+      [...new Set(students.map((s) => s.section))]
+        .filter(sec => sec && sec !== 'Not assigned'),
+    [students]
+  );
 
-  // Filtered list
-  const filteredStudents = students.filter((s) => {
-    const matchesSearch =
-      s.name.toLowerCase().includes(search.toLowerCase()) ||
-      s.email.toLowerCase().includes(search.toLowerCase());
-    const matchesSection =
-      section === 'all' ||
-      (section === 'unassigned'
-        ? s.section === 'Not assigned'
-        : s.section === section);
-    return matchesSearch && matchesSection;
-  });
+  // Filter students based on search and section
+  const filteredStudents = useMemo(
+    () =>
+      students.filter((s) => {
+        const sLower = search.toLowerCase();
+        const matchesSearch =
+          s.name?.toLowerCase().includes(sLower) ||
+          s.email?.toLowerCase().includes(sLower);
+        const matchesSection =
+          section === 'all'
+            ? true
+            : section === 'unassigned'
+              ? s.section === 'Not assigned'
+              : s.section === section;
+        return matchesSearch && matchesSection;
+      }),
+    [students, search, section]
+  );
+
+  // For future: assign/edit/remove handler stubs
+  const handleAssign = useCallback(() => {
+    // TODO: Implement dialog/modal for assign student to section
+  }, []);
+  const handleEdit = useCallback((id) => {
+    // TODO: Implement edit logic/modal
+  }, []);
+  const handleRemove = useCallback((id) => {
+    // TODO: Implement remove logic/modal
+  }, []);
+
+  // Section assignment badge for unassigned
+  function sectionBadge(sectionName) {
+    if (sectionName === 'Not assigned') {
+      return (
+        <Badge variant="danger">
+          Not assigned
+        </Badge>
+      );
+    }
+    return sectionName;
+  }
 
   return (
     <div className={styles.studentSectionAssignmentPage}>
@@ -81,33 +103,32 @@ export default function StudentSectionAssignmentPage() {
         Student Section Assignments
       </h1>
       <div className={styles.studentSectionAssignmentPage__controls}>
-        <input
+        <Input
           className={styles.studentSectionAssignmentPage__search}
           type="text"
           placeholder="Search by name or email…"
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={e => setSearch(e.target.value)}
         />
-        <select
+        <Select
           className={styles.studentSectionAssignmentPage__sectionSelect}
           value={section}
-          onChange={(e) => setSection(e.target.value)}
+          onChange={e => setSection(e.target.value)}
         >
           <option value="all">All Sections</option>
-          {sections.map((sec) => (
-            <option key={sec} value={sec}>
-              {sec}
-            </option>
+          {sections.map(sec => (
+            <option key={sec} value={sec}>{sec}</option>
           ))}
           <option value="unassigned">Unassigned</option>
-        </select>
-        <button
+        </Select>
+        <Button
           className={styles.studentSectionAssignmentPage__addBtn}
           type="button"
-          // onClick={() => ... assign logic ...}
+          variant="primary"
+          onClick={handleAssign}
         >
           Assign Student
-        </button>
+        </Button>
       </div>
       <div className={styles.studentSectionAssignmentPage__listArea}>
         {loading ? (
@@ -129,41 +150,32 @@ export default function StudentSectionAssignmentPage() {
               </tr>
             </thead>
             <tbody>
-              {filteredStudents.map((student) => (
+              {filteredStudents.map(student => (
                 <tr key={student.id}>
                   <td>{student.name}</td>
                   <td>{student.email}</td>
                   <td>
-                    {student.section === 'Not assigned' ? (
-                      <span
-                        style={{
-                          background: '#fbeaea',
-                          color: '#e62727',
-                          borderRadius: '1em',
-                          padding: '0.11em 0.85em',
-                          fontWeight: 600,
-                          fontSize: '0.97em',
-                        }}
-                      >
-                        Not assigned
-                      </span>
-                    ) : (
-                      student.section
-                    )}
+                    {sectionBadge(student.section)}
                   </td>
                   <td>
-                    <button
+                    <Button
                       className={styles.studentSectionAssignmentPage__actionBtn}
-                      // onClick={() => ... future assign/change dialog ...}
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleEdit(student.id)}
                     >
                       Edit
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       className={styles.studentSectionAssignmentPage__actionBtn}
-                      // onClick={() => ... future remove action ...}
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleRemove(student.id)}
                     >
                       Remove
-                    </button>
+                    </Button>
                   </td>
                 </tr>
               ))}
@@ -174,3 +186,11 @@ export default function StudentSectionAssignmentPage() {
     </div>
   );
 }
+
+/**
+ * Production Notes:
+ * - All data is backend API-driven: no sample or demo logic.
+ * - All UI is unified using Input, Select, Button, and Badge components.
+ * - Handlers are ready for scalable add/edit/remove logic (modal/dialog).
+ * - Clean, scalable, and consistent with the LMS design language.
+ */

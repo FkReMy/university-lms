@@ -1,13 +1,12 @@
 /**
- * UserDetailPage Component
- * ----------------------------------------------------------
- * Admin or profile page to view a user's details.
- *
- * Responsibilities:
- * - Displays user's info: name, email, role, status, membership info, etc.
- * - Shows activity summary (enrollments, graded, etc.).
- * - Optionally shows courses enrolled/teaching or admin actions.
- * - Ready for extension/editing/deactivation logic.
+ * UserDetailPage Component (Production)
+ * ----------------------------------------------------------------------------
+ * Admin or profile details page for viewing a user's information and course activity.
+ * - Shows personal info: name, email, role, status, join date, etc.
+ * - Activity summary: current/completed/enrolled courses.
+ * - Unified UI: all badges/buttons use the global design system.
+ * - No sample/demo logic, purely API-driven.
+ * - Ready for further extension: edit/deactivate/etc.
  *
  * Usage:
  *   <Route path="/admin/users/:userId" element={<UserDetailPage />} />
@@ -19,90 +18,67 @@ import { useParams } from 'react-router-dom';
 
 import styles from './UserDetailPage.module.scss';
 
+import Badge from '@/components/ui/badge';
+import Button from '@/components/ui/button';
+
+import userApi from '@/services/api/userApi';         // Should provide .get(userId)
+import enrollmentApi from '@/services/api/enrollmentApi'; // Should provide .listForUser(userId)
+
 export default function UserDetailPage() {
   const { userId } = useParams();
-  // User state (in real app, fetch API)
+  
   const [user, setUser] = useState(null);
-  const [enrollments, setEnrollments] = useState([]); // List of courses
+  const [enrollments, setEnrollments] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Demo: simulate loading user data for detail page
+  // Load user and enrollment info
   useEffect(() => {
-    setLoading(true);
-    setTimeout(() => {
-      // Simulated: select by userId (or generic if not provided)
-      const demoUser = {
-        id: userId ?? 6,
-        name: "Ava Davis",
-        email: "ava.davis@student.edu",
-        role: "student",
-        status: "active",
-        memberSince: "2023-09-14",
-      };
-      setUser(demoUser);
-      setEnrollments([
-        { id: 11, course: "World History", status: "active", grade: "92", instructor: "Prof. Lee" },
-        { id: 12, course: "Statistics", status: "active", grade: "88", instructor: "Dr. Kapoor" },
-        { id: 13, course: "Modern Art", status: "completed", grade: "90", instructor: "Dr. Smith" }
-      ]);
-      setLoading(false);
-    }, 800);
-  }, [userId]);
-
-  // Status badge color
-  function statusBadge(status) {
-    let bg = "#dedede", color = "#213050";
-    if (status === "active") { bg = "#e5ffe9"; color = "#179a4e"; }
-    if (status === "inactive") { bg = "#fbeaea"; color = "#e62727"; }
-    if (status === "invited") { bg = "#fff6e0"; color = "#e67e22"; }
-    return (
-      <span
-        style={{
-          background: bg,
-          color: color,
-          borderRadius: "1em",
-          padding: "0.15em 0.9em",
-          fontWeight: 600,
-          fontSize: "0.99em",
-          marginLeft: "0.35em"
-        }}
-      >
-        {status.charAt(0).toUpperCase() + status.slice(1)}
-      </span>
-    );
-  }
-
-  // Role badge
-  function roleBadge(role) {
-    let color;
-    switch (role) {
-      case "student": color = "#2563eb"; break;
-      case "instructor": color = "#9c27b0"; break;
-      case "associate": color = "#e67e22"; break;
-      default: color = "#485471";
+    let isMounted = true;
+    async function fetchData() {
+      setLoading(true);
+      try {
+        const u = await userApi.get(userId);
+        const enr = await enrollmentApi.listForUser(userId);
+        if (isMounted) {
+          setUser(u || {});
+          setEnrollments(Array.isArray(enr) ? enr : []);
+        }
+      } catch (err) {
+        if (isMounted) {
+          setUser(null);
+          setEnrollments([]);
+        }
+      } finally {
+        if (isMounted) setLoading(false);
+      }
     }
-    return (
-      <span
-        style={{
-          color,
-          background: "#f4f7fd",
-          fontWeight: 700,
-          fontSize: "0.99em",
-          borderRadius: "0.87em",
-          padding: "0.14em 0.95em",
-          marginRight: "0.3em",
-        }}
-      >
-        {role.charAt(0).toUpperCase() + role.slice(1)}
-      </span>
-    );
-  }
+    fetchData();
+    return () => { isMounted = false; };
+  }, [userId]);
 
   function formatDate(dt) {
     if (!dt) return "";
     return new Date(dt).toLocaleDateString(undefined, {
       year: 'numeric', month: 'short', day: 'numeric'
     });
+  }
+
+  // Unified badge for status
+  function statusBadge(status) {
+    let variant = "secondary";
+    if (/active/i.test(status)) variant = "success";
+    else if (/inactive/i.test(status)) variant = "danger";
+    else if (/invited/i.test(status)) variant = "warning";
+    return <Badge variant={variant}>{status.charAt(0).toUpperCase() + status.slice(1)}</Badge>;
+  }
+
+  // Unified badge for role
+  function roleBadge(role) {
+    let variant = "secondary";
+    if (/student/i.test(role)) variant = "primary";
+    else if (/instructor/i.test(role)) variant = "success";
+    else if (/associate/i.test(role)) variant = "warning";
+    return <Badge variant={variant}>{role.charAt(0).toUpperCase() + role.slice(1)}</Badge>;
   }
 
   return (
@@ -160,18 +136,37 @@ export default function UserDetailPage() {
               </table>
             )}
           </section>
-          {/* Optional: admin actions */}
+          {/* Optional: Admin actions, ready for expansion */}
           <section className={styles.userDetailPage__actions}>
-            <button className={styles.userDetailPage__actionBtn}
+            <Button
+              className={styles.userDetailPage__actionBtn}
+              type="button"
+              size="sm"
+              variant="outline"
               // onClick={() => ... future edit ...}
-            >Edit Info</button>
-            <button className={styles.userDetailPage__actionBtn}
+            >
+              Edit Info
+            </Button>
+            <Button
+              className={styles.userDetailPage__actionBtn}
+              type="button"
+              size="sm"
+              variant="outline"
               disabled={user.status !== "active"}
               // onClick={() => ... future deactivate ...}
-            >Deactivate</button>
+            >
+              Deactivate
+            </Button>
           </section>
         </div>
       )}
     </div>
   );
 }
+
+/**
+ * Production Notes:
+ * - All state/data is fetched from production API (user/courses).
+ * - No sample/demo values; unified badges and buttons.
+ * - Ready for future mutation/expansion logic (edit, deactivate, etc).
+ */

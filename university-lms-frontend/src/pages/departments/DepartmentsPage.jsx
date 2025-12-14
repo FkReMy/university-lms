@@ -1,67 +1,91 @@
 /**
- * DepartmentsPage Component
- * ----------------------------------------------------------
- * Admin/staff page for viewing and managing university departments.
- *
- * Responsibilities:
- * - Lists all departments in a table/card view.
- * - Allows searching/filtering by name or school.
- * - Ready for extension: add/edit/delete departments.
- *
+ * DepartmentsPage Component (Production)
+ * ----------------------------------------------------------------------------
+ * Admin/staff view for listing and managing university departments.
+ * - Shows all departments in unified table view.
+ * - Filters by department name/code and school.
+ * - Global design-system components only; no sample/demo logic.
+ * - All controls ready for extension: add/edit/delete.
+ * 
  * Usage:
  *   <Route path="/departments" element={<DepartmentsPage />} />
  */
 
-import { useEffect, useState } from 'react';
-
+import { useEffect, useMemo, useState, useCallback } from 'react';
 import styles from './DepartmentsPage.module.scss';
 
+import Input from '@/components/ui/input';
+import Select from '@/components/ui/select';
+import Button from '@/components/ui/button';
+import departmentApi from '@/services/api/departmentApi'; // Must provide .list()
+
 export default function DepartmentsPage() {
-  // State for department list and search/filter
+  // State for department list and filters
   const [departments, setDepartments] = useState([]);
   const [search, setSearch] = useState('');
   const [school, setSchool] = useState('all');
   const [loading, setLoading] = useState(true);
 
-  // Simulate API load on mount
+  // Fetch all departments from the backend API
   useEffect(() => {
-    setLoading(true);
-    setTimeout(() => {
-      setDepartments([
-        { id: 1, name: "Computer Science", code: "CSCI", school: "Engineering", head: "Dr. Smith", courses: 22 },
-        { id: 2, name: "Art History", code: "ARTH", school: "Arts & Humanities", head: "Prof. Lee", courses: 8 },
-        { id: 3, name: "Mathematics", code: "MATH", school: "Sciences", head: "Dr. Kapoor", courses: 15 },
-        { id: 4, name: "Business", code: "BUS", school: "Business", head: "Dr. Turner", courses: 17 }
-      ]);
-      setLoading(false);
-    }, 900);
+    let isMounted = true;
+    async function fetchDepartments() {
+      setLoading(true);
+      try {
+        const data = await departmentApi.list();
+        if (isMounted) setDepartments(Array.isArray(data) ? data : []);
+      } catch (err) {
+        if (isMounted) setDepartments([]);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    }
+    fetchDepartments();
+    return () => { isMounted = false; };
   }, []);
 
-  // Find schools for filter dropdown
-  const schools = [
-    ...new Set(departments.map(dep => dep.school))
-  ].sort();
+  // List of unique schools for dropdown filter
+  const schools = useMemo(
+    () => [...new Set(departments.map(dep => dep.school))].filter(Boolean).sort(),
+    [departments]
+  );
 
-  // Filtered departments
-  const filteredDepartments = departments.filter(dep => {
-    const matchesName = dep.name.toLowerCase().includes(search.toLowerCase()) ||
-      dep.code.toLowerCase().includes(search.toLowerCase());
-    const matchesSchool = school === "all" || dep.school === school;
-    return matchesName && matchesSchool;
-  });
+  // Filter departments on search and school filter
+  const filteredDepartments = useMemo(
+    () =>
+      departments.filter(dep => {
+        const matchesName =
+          dep.name?.toLowerCase().includes(search.toLowerCase()) ||
+          dep.code?.toLowerCase().includes(search.toLowerCase());
+        const matchesSchool = school === "all" || dep.school === school;
+        return matchesName && matchesSchool;
+      }),
+    [departments, search, school]
+  );
+
+  // Handlers for future extension (add/edit/remove)
+  const handleAdd = useCallback(() => {
+    // TODO: Implement add department modal/dialog
+  }, []);
+  const handleEdit = useCallback((id) => {
+    // TODO: Implement edit department logic/modal
+  }, []);
+  const handleRemove = useCallback((id) => {
+    // TODO: Implement remove department logic/modal
+  }, []);
 
   return (
     <div className={styles.departmentsPage}>
       <h1 className={styles.departmentsPage__title}>Departments</h1>
       <div className={styles.departmentsPage__controls}>
-        <input
+        <Input
           className={styles.departmentsPage__search}
           type="text"
           placeholder="Search by dept. name or code…"
           value={search}
           onChange={e => setSearch(e.target.value)}
         />
-        <select
+        <Select
           className={styles.departmentsPage__schoolSelect}
           value={school}
           onChange={e => setSchool(e.target.value)}
@@ -70,14 +94,15 @@ export default function DepartmentsPage() {
           {schools.map(sch => (
             <option value={sch} key={sch}>{sch}</option>
           ))}
-        </select>
-        <button
+        </Select>
+        <Button
           className={styles.departmentsPage__addBtn}
           type="button"
-          // onClick={() => ... future dialog/modal ...}
+          variant="primary"
+          onClick={handleAdd}
         >
           + Add Department
-        </button>
+        </Button>
       </div>
       <div className={styles.departmentsPage__listArea}>
         {loading ? (
@@ -109,15 +134,21 @@ export default function DepartmentsPage() {
                   <td>{dep.head}</td>
                   <td>{dep.courses}</td>
                   <td>
-                    <button
+                    <Button
                       className={styles.departmentsPage__actionBtn}
+                      type="button"
+                      size="sm"
+                      variant="outline"
                       title="Edit department"
-                      // onClick={() => ... future edit dialog ...}
-                    >Edit</button>
-                    <button
+                      onClick={() => handleEdit(dep.id)}
+                    >Edit</Button>
+                    <Button
                       className={styles.departmentsPage__actionBtn}
-                      // onClick={() => ... future remove logic ...}
-                    >Remove</button>
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleRemove(dep.id)}
+                    >Remove</Button>
                   </td>
                 </tr>
               ))}
@@ -128,3 +159,11 @@ export default function DepartmentsPage() {
     </div>
   );
 }
+
+/**
+ * Production Notes:
+ * - Real API integration via departmentApi.list().
+ * - All UI is unified via global Input, Select, Button.
+ * - No sample/mock data; all state/data are backend-driven.
+ * - Ready for global modal/dialog logic for add/edit/remove.
+ */
