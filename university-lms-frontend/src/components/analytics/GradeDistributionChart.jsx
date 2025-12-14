@@ -23,8 +23,8 @@
  *   <GradeDistributionChart grades={dataArray} binSize={5} />
  */
 
-import { useMemo } from 'react';
 import PropTypes from 'prop-types';
+import { useMemo } from 'react';
 
 import styles from './GradeDistributionChart.module.scss';
 

@@ -10,12 +10,12 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+
 import styles from './AssignmentBuilderPage.module.scss';
 
-import { useAssignmentStore } from '@/store/assignmentStore';
-import { selectCurrentAssignment } from '@/store/assignmentStore';
-import fileApi from '@/services/api/fileApi';
 import assignmentApi from '@/services/api/assignmentApi'; // You must implement: CRUD for assignments
+import fileApi from '@/services/api/fileApi';
+import { useAssignmentStore , selectCurrentAssignment } from '@/store/assignmentStore';
 
 /**
  * AssignmentBuilderPage — handles both new and edit modes.

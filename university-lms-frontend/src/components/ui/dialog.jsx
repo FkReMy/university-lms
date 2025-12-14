@@ -1,11 +1,10 @@
 /**
  * Dialog (Modal) Component
  * ----------------------------------------------------------------------------
- * Production-grade, accessible modal dialog for LMS UI (global design system).
+ * Unified, accessible modal dialog for LMS UI (UI kit/global design system).
  * - Handles focus trap, escape-to-close, and backdrop dismiss.
- * - Global CSS module for all layout, tokens, and states.
  * - ARIA role="dialog", aria-modal, labelledby, describedby, etc.
- * - No sample/demo logic; only unified, scalable, backend-ready code.
+ * - Only props-driven, scalable, and backend-ready code.
  *
  * Props:
  * - open: boolean                    // Show/hide state
@@ -19,8 +18,9 @@
  * - ...rest: props for dialog content div
  */
 
-import { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
+import { useEffect, useRef } from 'react';
+
 import styles from './dialog.module.scss';
 
 export default function Dialog({
@@ -37,25 +37,26 @@ export default function Dialog({
   const overlayRef = useRef(null);
   const dialogRef = useRef(null);
 
-  // Trap focus and close on ESC when open
+  // Trap focus and ESC-to-close when open
   useEffect(() => {
     if (!open) return;
 
-    // Save last active element to restore on close
+    // Save the current focused element before modal opens
     const lastFocused = document.activeElement;
-    // Focus dialog root
-    dialogRef.current && dialogRef.current.focus();
 
-    // Tab focus trap (focus cycling)
+    // Focus dialog panel on open
+    const dialogNode = dialogRef.current;
+    if (dialogNode) dialogNode.focus();
+
+    // Tab focus trap handler
     const handleTab = (e) => {
       if (e.key !== 'Tab') return;
-      const focusableEls = dialogRef.current.querySelectorAll(
+      const focusableEls = dialogNode.querySelectorAll(
         'a[href],button:not([disabled]),textarea,input:not([type="hidden"]),select,[tabindex]:not([tabindex="-1"])'
       );
       if (!focusableEls.length) return;
       const firstEl = focusableEls[0];
       const lastEl = focusableEls[focusableEls.length - 1];
-
       if (e.shiftKey) {
         if (document.activeElement === firstEl) {
           e.preventDefault();
@@ -69,24 +70,26 @@ export default function Dialog({
       }
     };
 
-    // ESC key (global)
+    // ESC close handler
     const handleEsc = (e) => {
       if (e.key === 'Escape') {
         onClose?.();
       }
     };
 
-    dialogRef.current.addEventListener('keydown', handleTab);
+    dialogNode.addEventListener('keydown', handleTab);
     window.addEventListener('keydown', handleEsc);
 
+    // Clean up: remove listeners and return focus to previous element
     return () => {
-      dialogRef.current?.removeEventListener('keydown', handleTab);
+      // FIX: Capture dialog node ref at mount to ensure correct node is used in cleanup
+      dialogNode.removeEventListener('keydown', handleTab);
       window.removeEventListener('keydown', handleEsc);
       if (lastFocused && lastFocused.focus) lastFocused.focus();
     };
   }, [open, onClose]);
 
-  // Backdrop click: only close if click is exactly on overlay (not dialog)
+  // Backdrop: only close if clicked exactly on overlay (not dialog)
   const onBackdropClick = (e) => {
     if (e.target === overlayRef.current) {
       onClose?.();
@@ -95,7 +98,7 @@ export default function Dialog({
 
   if (!open) return null;
 
-  // ARIA id management for a11y
+  // ARIA ids for a11y
   const labelId = title ? 'dialog-title' : undefined;
   const descId = description ? 'dialog-desc' : undefined;
 
@@ -149,7 +152,7 @@ export default function Dialog({
         {/* Main dialog content */}
         <div className={styles.dialog__body}>{children}</div>
 
-        {/* Footer (actions/controls) */}
+        {/* Footer (optional actions/controls) */}
         {footer && (
           <div className={styles.dialog__footer}>
             {footer}
@@ -177,4 +180,5 @@ Dialog.propTypes = {
  * - Focus, tab trap, escape, and a11y handled globally.
  * - Only props-based (no demo/sample/local logic).
  * - Can be used with any backend/UI flow, including forms and async actions.
+ * - React warning cleanup: dialogNode ref is captured at mount for effect cleanup.
  */

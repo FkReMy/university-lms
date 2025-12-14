@@ -10,12 +10,11 @@
 
 import { useEffect, useState, useMemo } from 'react';
 
+import styles from './CourseCatalogPage.module.scss';
+
 import CourseCard from '@/components/courses/CourseCard';
 import Input from '@/components/ui/input';
 import Select from '@/components/ui/select';
-
-import styles from './CourseCatalogPage.module.scss';
-
 import courseApi from '@/services/api/courseApi'; // Needs to be implemented: .list()
 
 export default function CourseCatalogPage() {

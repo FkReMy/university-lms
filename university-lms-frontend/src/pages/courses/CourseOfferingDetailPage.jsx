@@ -9,23 +9,25 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+
 import styles from './CourseOfferingDetailPage.module.scss';
 
+import Badge from '@/components/ui/badge';
 import Button from '@/components/ui/button';
 import { ROUTES } from '@/lib/constants';
 import courseApi from '@/services/api/courseApi'; // Must provide .get(id), .list() etc.
 
+// StatusBadge using global Badge to ensure visual system consistency
 function StatusBadge({ status }) {
   if (!status) return null;
   let variant = 'default';
   if (status.toLowerCase() === 'active') variant = 'success';
   if (status.toLowerCase() === 'closed') variant = 'danger';
   if (status.toLowerCase() === 'waitlist') variant = 'warning';
-  // Use a global Badge component if available for visual consistency
   return (
-    <span className={styles.detailPage__status + ' status-' + status.toLowerCase()}>
+    <Badge variant={variant} className={styles.detailPage__status}>
       {status}
-    </span>
+    </Badge>
   );
 }
 
@@ -149,7 +151,7 @@ export default function CourseOfferingDetailPage() {
 /**
  * Production Notes:
  * - No demo or sample data; loads data from global courseApi only.
- * - Status badge uses centralized CSS classes; replace with global Badge if available.
- * - Related offerings are dynamically computed and displayed (same dept, not current).
+ * - Status badge uses global Badge for a unified LMS look and accessibility.
+ * - Related offerings dynamically computed and displayed.
  * - All navigation/actions ready for further expansion (e.g., enroll/join).
  */

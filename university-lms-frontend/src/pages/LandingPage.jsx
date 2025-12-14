@@ -3,21 +3,44 @@
  * ----------------------------------------------------------------------------
  * Modern, unified landing page for the University LMS.
  * - Uses only global styles/components.
- * - All navigation/actions are via SPA <Link>.
- * - Ready for expansion (marketing, FAQ, support).
+ * - All navigation/actions use SPA routing, always work with React Router.
+ * - Ready for marketing/expansion blocks.
  *
  * Usage:
  *   <Route path="/" element={<LandingPage />} />
  */
 
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { useCallback } from 'react';
 
 import styles from './LandingPage.module.scss';
 
-import { ROUTES } from '@/lib/constants';
 import Button from '@/components/ui/button';
+import { ROUTES } from '@/lib/constants';
 
+/**
+ * LandingPage: University LMS entry point, globally styled and unified.
+ * Sign In/Sign Up buttons use direct navigation for maximum reliability.
+ */
 export default function LandingPage() {
+  const navigate = useNavigate();
+
+  // Use navigate for robust integration with all router configs
+  const handleLoginClick = useCallback(
+    (e) => {
+      e.preventDefault();
+      navigate(ROUTES.LOGIN);
+    },
+    [navigate]
+  );
+  const handleRegisterClick = useCallback(
+    (e) => {
+      e.preventDefault();
+      navigate(ROUTES.REGISTER);
+    },
+    [navigate]
+  );
+
   return (
     <div className={styles.landing}>
       <section className={styles.hero}>
@@ -28,20 +51,20 @@ export default function LandingPage() {
         </p>
         <div className={styles.actions}>
           <Button
-            as={Link}
             className={styles.primary}
-            to={ROUTES.LOGIN}
             size="lg"
             variant="primary"
+            type="button"
+            onClick={handleLoginClick}
           >
             Sign in
           </Button>
           <Button
-            as={Link}
             className={styles.secondary}
-            to={ROUTES.REGISTER}
             size="lg"
             variant="outline"
+            type="button"
+            onClick={handleRegisterClick}
           >
             Create account
           </Button>
@@ -53,7 +76,7 @@ export default function LandingPage() {
 
 /**
  * Production Notes:
- * - Uses only design-system Button (as=Link) for unified SPA navigation.
- * - The layout is ready for further content blocks or support panels.
- * - No samples or demos; real navigation everywhere.
+ * - Navigation uses useNavigate for reliability regardless of linker config.
+ * - All actions are unified and scale with the global button system.
+ * - Ready for further expansion/content.
  */

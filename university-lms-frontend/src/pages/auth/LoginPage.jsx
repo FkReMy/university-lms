@@ -11,8 +11,8 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import styles from './LoginPage.module.scss';
-import Button from '@/components/ui/button'; // Use your global Button component if available
 
+import Button from '@/components/ui/button'; // Use your global Button component if available
 import { useAuth } from '@/hooks/useAuth';
 import { ROUTES } from '@/lib/constants';
 

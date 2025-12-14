@@ -1,53 +1,44 @@
 /**
- * ScheduleGrid Component
- * ---------------------------------------------------------------------------
- * A robust, unified weekly calendar/grid for displaying sessions/events.
- * - Fully accessible, modular, and responsive for use in all LMS use cases.
+ * ScheduleGrid Component (Production)
+ * ----------------------------------------------------------------------------
+ * Robust/unified weekly calendar grid for displaying session/events.
+ * - Fully accessible, modular, and responsive.
  * - Uses only global class/styles for visual consistency.
- * - No demo/sample; grid/event logic 100% production-ready.
+ * - No demo/sample logic; grid/event logic is production-ready.
  * - Event rendering is customizable by consumer.
  *
  * Props:
- * - events: Array<{
- *      id: string|number,
- *      title: string,
- *      day: 0-6,
- *      start: "HH:MM",
- *      end:   "HH:MM",
- *      color?: string,
- *      type?: string,
- *      description?: string,
- *      ...
- *   }>
- * - startHour?: number       - Grid first hour (default: 8)
- * - endHour?: number         - Last hour (inclusive; default: 18)
- * - days?: Array<string>     - Column headings (default: Sunday-Saturday)
- * - cellHeight?: number      - Hour row height in px (default: 50)
- * - renderEvent?: fn(event)  - Custom event renderer (uses default if absent)
- * - className?: string
- * - style?: object
- * - ...rest: extra props for main <div>
+ * - events: Array of event objects with fields:
+ *     { id, title, day, start, end, color?, type?, description? }
+ * - startHour, endHour: start/end of grid in hours (default: 8–18)
+ * - days: name for each column (default: Sunday–Saturday)
+ * - cellHeight: px height per hour row (default: 50)
+ * - renderEvent: custom fn(event) (uses default if not provided)
+ * - className/style/rest: layout props
  */
 
 import PropTypes from 'prop-types';
+
 import styles from './ScheduleGrid.module.scss';
 
 // Default day labels (Sun-Sat, customizable)
-const DEFAULT_DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+const DEFAULT_DAYS = [
+  'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'
+];
 
-/** Convert "HH:MM" to minutes past midnight */
+// Convert "HH:MM" to minutes past midnight
 const timestrToMinutes = (t) => {
   if (!t) return 0;
   const [h, m] = `${t}`.split(':');
   return parseInt(h, 10) * 60 + (parseInt(m, 10) || 0);
 };
 
-/** Pad numbers as "08", "18" etc (for hour display) */
+// Pad hour for display as "08"
 const pad = (n) => String(n).padStart(2, '0');
 
 /**
- * Default event block renderer.
- * All unified event styles should be handled in one place.
+ * Default block renderer for single event.
+ * All unified event styles are handled here.
  */
 function DefaultEvent({ ev }) {
   return (
@@ -56,15 +47,22 @@ function DefaultEvent({ ev }) {
       style={{ background: ev.color || "#2563eb" }}
       title={ev.title + (ev.description ? ` — ${ev.description}` : "")}
       role="listitem"
-      tabIndex={0}
     >
       {ev.title}
     </div>
   );
 }
 
+DefaultEvent.propTypes = {
+  ev: PropTypes.shape({
+    title: PropTypes.string.isRequired,
+    color: PropTypes.string,
+    description: PropTypes.string,
+  }).isRequired,
+};
+
 /**
- * Main ScheduleGrid component.
+ * ScheduleGrid
  */
 export default function ScheduleGrid({
   events = [],
@@ -81,7 +79,7 @@ export default function ScheduleGrid({
   const hours = [];
   for (let h = startHour; h <= endHour; ++h) hours.push(h);
 
-  // Group events by day (0=Sunday)
+  // Group events by day, 0=Sunday
   const slotsByDay = Array.from({ length: numDays }, () => []);
   (events || []).forEach(ev => {
     if (ev && typeof ev.day === "number" && ev.day >= 0 && ev.day < numDays) {
@@ -89,7 +87,7 @@ export default function ScheduleGrid({
     }
   });
 
-  // For absolute positioning: compute top/height relative to cell height and startHour
+  // For absolute event positioning: compute top/height rel. to cell height and grid start hour
   const getEventStyle = (ev) => {
     const slotSpan = (timestrToMinutes(ev.end) - timestrToMinutes(ev.start)) / 60;
     const startOffset = (timestrToMinutes(ev.start) - startHour * 60) / 60;
@@ -99,11 +97,11 @@ export default function ScheduleGrid({
       height: `${slotSpan * cellHeight}px`,
       left: '4%',
       width: '92%',
-      minHeight: '2em'
+      minHeight: '2em',
     };
   };
 
-  // Compose full class name using design system principles
+  // Unified class name
   const rootClass = [styles.scheduleGrid, className].filter(Boolean).join(' ');
 
   return (
@@ -114,7 +112,7 @@ export default function ScheduleGrid({
       role="table"
       {...rest}
     >
-      {/* Grid header - days of week */}
+      {/* Grid header: days of the week */}
       <div className={styles.scheduleGrid__header} role="rowgroup">
         <div className={styles.scheduleGrid__hourCell}>&nbsp;</div>
         {days.slice(0, numDays).map((d, i) => (
@@ -175,7 +173,6 @@ export default function ScheduleGrid({
   );
 }
 
-// Prop types for production safety
 ScheduleGrid.propTypes = {
   events: PropTypes.arrayOf(
     PropTypes.shape({
@@ -186,7 +183,7 @@ ScheduleGrid.propTypes = {
       end: PropTypes.string.isRequired,
       color: PropTypes.string,
       type: PropTypes.string,
-      description: PropTypes.string
+      description: PropTypes.string,
     })
   ),
   startHour: PropTypes.number,
@@ -200,8 +197,8 @@ ScheduleGrid.propTypes = {
 
 /**
  * Production/Architecture Notes:
- * - Unified, scalable, accessible. No demo or ad hoc markup.
- * - All event display logic is composable by passing a custom renderEvent function.
- * - All grid/cell/event layout is styled using global classNames and tokens in ScheduleGrid.module.scss.
- * - Designed for future theming, time granularity, and mobile responsiveness with design system.
+ * - No ad hoc/dummy/sample rendering anywhere; 100% data-driven and scalable.
+ * - All event logic is composable with renderEvent or uses the accessible DefaultEvent.
+ * - Entire grid is styled and laid out with BEM and unified tokens only.
+ * - Responsive and future-ready for time granularity and theming.
  */

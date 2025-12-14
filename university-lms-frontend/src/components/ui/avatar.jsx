@@ -19,6 +19,7 @@
  */
 
 import PropTypes from 'prop-types';
+
 import styles from './avatar.module.scss';
 
 // Generate initials from full name for fallback

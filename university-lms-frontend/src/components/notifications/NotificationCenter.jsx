@@ -26,6 +26,7 @@
  */
 
 import PropTypes from 'prop-types';
+
 import styles from './NotificationCenter.module.scss';
 
 export default function NotificationCenter({
@@ -106,7 +107,7 @@ export default function NotificationCenter({
       <div className={styles.notificationCenter__main}>
         {loading ? (
           <div className={styles.notificationCenter__loading}>
-            <div className={styles.notificationCenter__spinner} aria-hidden="true"></div>
+            <div className={styles.notificationCenter__spinner} aria-hidden="true" />
             Loading…
           </div>
         ) : notifications.length === 0 ? (

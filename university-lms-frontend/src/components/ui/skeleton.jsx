@@ -16,6 +16,7 @@
  */
 
 import PropTypes from 'prop-types';
+
 import styles from './skeleton.module.scss';
 
 export default function Skeleton({

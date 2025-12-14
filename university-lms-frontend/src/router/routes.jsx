@@ -9,7 +9,9 @@
  */
 
 import { lazy } from 'react';
+
 import ProtectedRoute from './ProtectedRoute';
+
 import App from '@/App';
 import { ROUTES } from '@/lib/constants';
 

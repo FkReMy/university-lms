@@ -20,9 +20,8 @@ import styles from './UserDetailPage.module.scss';
 
 import Badge from '@/components/ui/badge';
 import Button from '@/components/ui/button';
-
-import userApi from '@/services/api/userApi';         // Should provide .get(userId)
 import enrollmentApi from '@/services/api/enrollmentApi'; // Should provide .listForUser(userId)
+import userApi from '@/services/api/userApi';         // Should provide .get(userId)
 
 export default function UserDetailPage() {
   const { userId } = useParams();

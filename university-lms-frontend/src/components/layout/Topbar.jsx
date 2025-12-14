@@ -16,6 +16,7 @@
  */
 
 import PropTypes from 'prop-types';
+
 import styles from './Topbar.module.scss';
 
 export default function Topbar({

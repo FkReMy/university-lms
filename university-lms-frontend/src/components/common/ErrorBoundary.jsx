@@ -13,12 +13,13 @@
  * - children: ReactNode — UI protected by boundary (required)
  */
 
-import { Component } from 'react';
 import PropTypes from 'prop-types';
+import { Component } from 'react';
 
 import styles from './ErrorBoundary.module.scss';
-import Button from '@/components/ui/button';          // Global design-system button
+
 import EmptyState from '@/components/common/EmptyState'; // Centralized empty/error/fallback UI
+import Button from '@/components/ui/button';          // Global design-system button
 
 export default class ErrorBoundary extends Component {
   constructor(props) {

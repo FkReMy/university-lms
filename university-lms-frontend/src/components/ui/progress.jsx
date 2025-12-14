@@ -17,8 +17,9 @@
  * - ...rest: props for wrapper <div>
  */
 
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
+
 import styles from './progress.module.scss';
 
 // Supported color variants, fallback to "primary" if invalid

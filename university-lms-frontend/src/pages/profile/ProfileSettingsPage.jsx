@@ -12,9 +12,11 @@
  */
 
 import { useEffect, useRef, useState } from "react";
+
+import styles from "./ProfileSettingsPage.module.scss";
+
 import Button from "@/components/ui/button";
 import Input from "@/components/ui/input";
-import styles from "./ProfileSettingsPage.module.scss";
 import profileApi from "@/services/api/profileApi"; // Should provide .get(), .update(), .changePassword()
 
 export default function ProfileSettingsPage() {

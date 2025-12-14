@@ -17,8 +17,9 @@
  * - bellIcon?: ReactNode
  * - ...rest: (button props)
  */
-import { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { useState, useRef, useEffect } from 'react';
+
 import styles from './NotificationBell.module.scss';
 
 // Default SVG bell icon

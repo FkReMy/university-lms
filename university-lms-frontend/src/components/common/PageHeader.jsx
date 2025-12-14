@@ -19,6 +19,7 @@
  */
 
 import PropTypes from 'prop-types';
+
 import styles from './PageHeader.module.scss';
 
 export default function PageHeader({

@@ -16,10 +16,10 @@ import { useEffect, useMemo, useState, useCallback } from 'react';
 
 import styles from './AcademicSessionsPage.module.scss';
 
+import Badge from '@/components/ui/badge';
+import Button from '@/components/ui/button';
 import Input from '@/components/ui/input';
 import Select from '@/components/ui/select';
-import Button from '@/components/ui/button';
-import Badge from '@/components/ui/badge';
 import sessionApi from '@/services/api/sessionApi'; // Must provide .list(), etc.
 
 export default function AcademicSessionsPage() {

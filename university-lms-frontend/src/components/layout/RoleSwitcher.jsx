@@ -14,8 +14,8 @@
  * - ...rest: (props for root <div>)
  */
 
-import { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { useState, useRef, useEffect } from 'react';
 
 import styles from './RoleSwitcher.module.scss';
 

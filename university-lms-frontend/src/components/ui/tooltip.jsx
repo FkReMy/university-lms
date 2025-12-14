@@ -15,8 +15,9 @@
  * - ...rest: other props for outer <span>
  */
 
-import React, { useRef, useState, useId } from 'react';
 import PropTypes from 'prop-types';
+import React, { useRef, useState, useId } from 'react';
+
 import styles from './tooltip.module.scss';
 
 export default function Tooltip({

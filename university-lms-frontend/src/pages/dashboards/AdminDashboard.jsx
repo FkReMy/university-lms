@@ -17,7 +17,6 @@ import GradeDistributionChart from '@/components/analytics/GradeDistributionChar
 import Badge from '@/components/ui/badge';
 import Card from '@/components/ui/card';
 import Table from '@/components/ui/table';
-
 import statsApi from '@/services/api/dashboardApi'; // Expected .getStats(), .getTopCourses(), .getRecentSubmissions(), .getGrades()
 
 export default function AdminDashboard() {

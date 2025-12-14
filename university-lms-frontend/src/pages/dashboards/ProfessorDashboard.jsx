@@ -10,13 +10,13 @@
 
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+
 import styles from './ProfessorDashboard.module.scss';
 
 import GradeDistributionChart from '@/components/analytics/GradeDistributionChart';
 import Badge from '@/components/ui/badge';
 import Card from '@/components/ui/card';
 import Table from '@/components/ui/table';
-
 import professorDashboardApi from '@/services/api/professorDashboardApi'; // Expects: .getStats(), .getUpcoming(), .getRecentSubmissions(), .getGrades()
 
 export default function ProfessorDashboard() {

@@ -1,22 +1,22 @@
 /**
- * AssignmentCard Component
- * ----------------------------------------------------------
- * Renders a single assignment card.
- * - Uses only unified, global UI primitives (Card, Badge, Button, etc.)
- * - No demo/sample logic; no "hardcoded" status chips, colors, or duplicate markup.
- * - Formatters, status/class logic, tokens must be centralized in utils (`@/lib/formatters`, `@/lib/constants`)
- * - Ready for true backend/content integration.
- * - Fully accessible and keyboard operable.
+ * AssignmentCard Component (Production)
+ * ----------------------------------------------------------------------------
+ * Renders a single assignment card using only global LMS UI primitives.
+ * - Fully unified UI: Card, Badge, Button (for actions), etc.
+ * - All status, tags, class, tokens use centralized utils/constants.
+ * - Accessible and keyboard operable.
+ * - NO demo, logic duplication, or hardcoded styling.
+ * - Ready for backend/content integration.
  */
 
 import PropTypes from 'prop-types';
-import Card from '@/components/ui/card';
-import Badge from '@/components/ui/badge'; // Unified status/tag chip
-import Button from '@/components/ui/button'; // Only if rendering actions; otherwise pass them in.
-import { formatDateTime } from '@/lib/formatters'; // Central/shared date formatter
-import { getAssignmentStatusColor, getAssignmentStatusLabel } from '@/lib/constants'; // Centralized logic
 
 import styles from './AssignmentCard.module.scss';
+
+import Badge from '@/components/ui/badge';
+import Card from '@/components/ui/card';
+import { getAssignmentStatusColor, getAssignmentStatusLabel } from '@/lib/constants';
+import { formatDateTime } from '@/lib/formatters';
 
 export default function AssignmentCard({
   assignment,
@@ -39,14 +39,14 @@ export default function AssignmentCard({
     tags = [],
   } = assignment;
 
-  // Compose the root class for styling and clickable mode
+  // Compose class for styling and clickable mode
   const rootClass = [
     styles.assignmentCard,
     className,
     onClick ? styles.assignmentCard__clickable : ''
   ].filter(Boolean).join(' ');
 
-  // Accessibility/keyboard support if card is clickable
+  // Keyboard and ARIA support for clickable cards
   const clickableProps = onClick
     ? {
         tabIndex: 0,
@@ -61,10 +61,10 @@ export default function AssignmentCard({
       }
     : {};
 
-  // Render assignment status as a global Badge or similar shared component
+  // Status display using global Badge and central helpers
   const renderStatus = () => {
     if (!status) return null;
-    const statusLabel = getAssignmentStatusLabel(status); // Central/consistent everywhere
+    const statusLabel = getAssignmentStatusLabel(status);
     const statusColor = getAssignmentStatusColor(status);
     return (
       <Badge className={styles.assignmentCard__statusBadge} color={statusColor}>
@@ -73,7 +73,7 @@ export default function AssignmentCard({
     );
   };
 
-  // Render tags as unified Badge/Chip (reuse Badge if possible)
+  // Tags as unified Badges
   const renderTags = () =>
     tags && tags.length > 0 ? (
       <div className={styles.assignmentCard__tags}>
@@ -91,7 +91,7 @@ export default function AssignmentCard({
       </div>
     ) : null;
 
-  // Truncate description to tokens/characters if required
+  // Description truncation (optional, as per product design)
   const displayDescription =
     description && description.length > 130
       ? description.slice(0, 130) + '…'
@@ -145,7 +145,7 @@ export default function AssignmentCard({
           )}
         </div>
       )}
-      {/* Actions (use only global Button/Dropdown/Link components!) */}
+      {/* Actions area: always use global primitives as children */}
       {actions && (
         <div className={styles.assignmentCard__actions}>
           {actions}
@@ -174,10 +174,9 @@ AssignmentCard.propTypes = {
 };
 
 /**
- * Architectural / Production Notes:
- * - No duplicated status/tag chip logic – all chips should use global Badge.
- * - Date-time formatting is always via central formatters (never component-local).
- * - No samples, demos, or unscalable inline logic.
- * - All UI/interaction is unified via Card, Badge, and shared UI primitives.
- * - Extend only with more global UI components as design system evolves.
+ * Production Notes:
+ * - All tokens, color, status, label logic comes from shared helpers/constants.
+ * - Only imports global design system components (no local/demos).
+ * - Truncation and grade/progress display is scalable for large/long content.
+ * - Extensible with more DS components as the system evolves.
  */

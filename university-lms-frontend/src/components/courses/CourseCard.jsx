@@ -1,10 +1,11 @@
 /**
- * CourseCard Component
- * ---------------------------------------------------------------------------
- * A production-ready, design-system-aligned card displaying a course summary.
- * - Uses only global layout/primitives (Card, Button, Progress, etc.)
- * - No demo/sample logic; all behavior is prop-driven and scalable.
- * - Unified styles and accessibility for all usage (dashboard, search, lists).
+ * CourseCard Component (Production)
+ * ----------------------------------------------------------------------------
+ * Production-ready course summary card, accessible and design-system-aligned.
+ * - Uses only global UI primitives (Card, ProgressBar, actions via slots).
+ * - All content/behavior is prop-driven; absolutely no sample/demo logic.
+ * - Keyboard operable if clickable (for cards that link/navigate).
+ * - Ready for backend integration and scalable usage everywhere.
  *
  * Props:
  * - course: {
@@ -17,18 +18,18 @@
  *     progress?: number (0-100)
  *   }
  * - onClick?: function(course)
- * - actions?: ReactNode (for bottom-right unified action area; only global buttons/dropdowns)
+ * - actions?: ReactNode
  * - className?: string
  * - style?: object
- * - ...rest: (spread onto root <article>)
+ * - ...rest: spreads to root <article>
  */
 
 import PropTypes from 'prop-types';
 
-import Card from '@/components/ui/card';
-import ProgressBar from '@/components/ui/progress'; // Should be your global/shared ProgressBar
-import Button from '@/components/ui/button';         // Used only if passed into actions
 import styles from './CourseCard.module.scss';
+
+import Card from '@/components/ui/card';
+import ProgressBar from '@/components/ui/progress'; // Unified global progress bar
 
 export default function CourseCard({
   course,
@@ -49,14 +50,14 @@ export default function CourseCard({
     progress,
   } = course;
 
-  // Unified card className (adds design system modifiers)
+  // Unified card className for design system modifiers
   const rootClass = [
     styles.courseCard,
     enrolled ? styles['courseCard--enrolled'] : "",
     className
   ].filter(Boolean).join(' ');
 
-  // Enable keyboard/clickable only if handler provided
+  // Keyboard/ARIA support for clickable cards
   const clickableProps = onClick
     ? {
         tabIndex: 0,
@@ -71,7 +72,7 @@ export default function CourseCard({
       }
     : {};
 
-  // Truncate description to 120 chars for design
+  // Truncate description for card layout
   const displayDescription = description
     ? (description.length > 120
       ? description.slice(0, 120) + '…'
@@ -87,7 +88,7 @@ export default function CourseCard({
       {...clickableProps}
       {...rest}
     >
-      {/* Cover image (optional/design-library component for future extensibility) */}
+      {/* Optional cover image */}
       {imageUrl && (
         <div className={styles.courseCard__imageWrapper}>
           <img
@@ -99,7 +100,7 @@ export default function CourseCard({
         </div>
       )}
 
-      {/* Content: always unified class/typography system */}
+      {/* Text grid */}
       <div className={styles.courseCard__content}>
         <h3 className={styles.courseCard__title} title={title}>{title}</h3>
         {instructor && (
@@ -112,8 +113,6 @@ export default function CourseCard({
             {displayDescription}
           </div>
         )}
-
-        {/* Global progress bar, only if enrolled and progress present */}
         {enrolled && typeof progress === "number" && (
           <div className={styles.courseCard__progressWrap}>
             <ProgressBar value={progress} max={100} label={`${progress}% complete`} />
@@ -121,7 +120,7 @@ export default function CourseCard({
         )}
       </div>
 
-      {/* Right-aligned actions (Buttons, Dropdowns, etc. from design system) */}
+      {/* Unified right-aligned actions slot */}
       {actions && (
         <div className={styles.courseCard__actions}>{actions}</div>
       )}
@@ -147,8 +146,8 @@ CourseCard.propTypes = {
 
 /**
  * Production/Architecture Notes:
- * - No sample-specific or demo logic. All design and interactions are scalable/uniform.
- * - All action/cta/progress elements must use global, shared UI primitives/components.
- * - Accessible, visually unified, and fully backend-capable.
- * - Add/extend via design system as component library grows.
+ * - No demo or placeholder values, all props expected from backend.
+ * - All controls/actions via global design system Button/Dropdown as passed-in actions.
+ * - No duplicate HTML or per-card logic; always visually unified.
+ * - Absolutely accessible and scalable for large-page and dashboard usage.
  */

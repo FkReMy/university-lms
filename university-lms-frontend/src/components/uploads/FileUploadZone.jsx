@@ -17,8 +17,9 @@
  * - ...rest: Other props for root <div>
  */
 
-import { useCallback, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
+import { useCallback, useRef, useState } from 'react';
+
 import styles from './FileUploadZone.module.scss';
 
 export default function FileUploadZone({

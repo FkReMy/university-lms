@@ -13,13 +13,14 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
+
 import styles from './QuizTakingPage.module.scss';
 
-import Input from '@/components/ui/input';
 import Button from '@/components/ui/button';
 import Checkbox from '@/components/ui/checkbox'; // Import your design-system Checkbox if exists
-import quizApi from '@/services/api/quizApi'; // Must provide .get(id), .submit(id, answers)
+import Input from '@/components/ui/input';
 import { ROUTES } from '@/lib/constants';
+import quizApi from '@/services/api/quizApi'; // Must provide .get(id), .submit(id, answers)
 
 export default function QuizTakingPage() {
   const { id: quizId } = useParams();

@@ -16,12 +16,11 @@ import { useEffect, useState } from 'react';
 
 import styles from './ProfilePage.module.scss';
 
-import Input from '@/components/ui/input';
-import Button from '@/components/ui/button';
 import Badge from '@/components/ui/badge';
-
-import profileApi from '@/services/api/profileApi';     // Should provide .getProfile(), .updateProfile()
+import Button from '@/components/ui/button';
+import Input from '@/components/ui/input';
 import enrollmentApi from '@/services/api/enrollmentApi'; // Should provide .listMine()
+import profileApi from '@/services/api/profileApi';     // Should provide .getProfile(), .updateProfile()
 
 export default function ProfilePage() {
   // Internal state for user/courses, loading, and UI
@@ -212,7 +211,7 @@ export default function ProfilePage() {
                           <div
                             className={styles.profilePage__progressBar}
                             style={{ width: `${c.progress}%` }}
-                          ></div>
+                           />
                         </div>
                         <span>{c.progress}%</span>
                       </td>

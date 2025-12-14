@@ -16,6 +16,7 @@
  */
 
 import PropTypes from 'prop-types';
+
 import styles from './Breadcrumbs.module.scss';
 
 // Global chevron separator (SVG for clarity at all scales)

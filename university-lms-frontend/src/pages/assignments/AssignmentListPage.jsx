@@ -12,16 +12,14 @@
 import { useEffect, useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import styles from './AssignmentListPage.module.scss';
+
 import Badge from '@/components/ui/badge';
 import Button from '@/components/ui/button';
 import Input from '@/components/ui/input';
 import Select from '@/components/ui/select';
-
-import styles from './AssignmentListPage.module.scss';
-
-// Global assignment store/actions
-import { useAssignmentStore, selectAssignments, selectAssignmentLoading } from '@/store/assignmentStore';
 import assignmentApi from '@/services/api/assignmentApi'; // Must be implemented: real API client
+import { useAssignmentStore, selectAssignments, selectAssignmentLoading } from '@/store/assignmentStore';
 
 export default function AssignmentListPage() {
   // Global store selectors and actions

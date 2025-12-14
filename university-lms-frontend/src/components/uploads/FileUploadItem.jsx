@@ -18,6 +18,7 @@
  */
 
 import PropTypes from 'prop-types';
+
 import styles from './FileUploadItem.module.scss';
 
 // Map file type to a global icon (for full prod: use design system, not emoji)

@@ -21,6 +21,7 @@
  */
 
 import PropTypes from 'prop-types';
+
 import styles from './table.module.scss';
 
 export default function Table({

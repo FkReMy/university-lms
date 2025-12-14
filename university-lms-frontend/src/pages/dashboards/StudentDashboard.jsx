@@ -12,12 +12,11 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
+import styles from './StudentDashboard.module.scss';
+
 import GradeDistributionChart from '@/components/analytics/GradeDistributionChart';
 import Badge from '@/components/ui/badge';
 import Card from '@/components/ui/card';
-
-import styles from './StudentDashboard.module.scss';
-
 import { ROUTES } from '@/lib/constants';
 
 // Production: connect these to backend APIs:

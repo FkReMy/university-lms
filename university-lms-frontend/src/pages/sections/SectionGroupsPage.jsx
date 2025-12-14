@@ -17,9 +17,9 @@ import { useParams } from 'react-router-dom';
 
 import styles from './SectionGroupsPage.module.scss';
 
-import Input from '@/components/ui/input';
-import Button from '@/components/ui/button';
 import Badge from '@/components/ui/badge';
+import Button from '@/components/ui/button';
+import Input from '@/components/ui/input';
 import groupApi from '@/services/api/groupApi'; // Must provide .list(sectionId), etc.
 
 export default function SectionGroupsPage() {

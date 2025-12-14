@@ -28,6 +28,7 @@
  */
 
 import PropTypes from 'prop-types';
+
 import styles from './QuestionRenderer.module.scss';
 
 export default function QuestionRenderer({

@@ -17,8 +17,9 @@
  * - ...rest: extra props for <span>
  */
 
-import { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
+import { useState, useEffect, useRef } from 'react';
+
 import styles from './QuizTimer.module.scss';
 
 // Formats seconds into "HH:MM:SS" or "MM:SS"

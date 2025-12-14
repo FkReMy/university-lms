@@ -8,11 +8,12 @@
  */
 
 import { useEffect, useMemo, useState, useCallback } from 'react';
+
 import styles from './CourseOfferingsPage.module.scss';
 
+import Button from '@/components/ui/button';
 import Input from '@/components/ui/input';
 import Select from '@/components/ui/select';
-import Button from '@/components/ui/button';
 import sectionApi from '@/services/api/sectionApi';
 
 export default function CourseOfferingsPage() {

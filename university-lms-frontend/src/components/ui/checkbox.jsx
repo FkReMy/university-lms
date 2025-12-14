@@ -18,8 +18,9 @@
  * - ...rest: All other native <input> props (checked, onChange, etc.)
  */
 
-import { useId } from 'react';
 import PropTypes from 'prop-types';
+import { useId } from 'react';
+
 import styles from './checkbox.module.scss';
 
 export default function Checkbox({

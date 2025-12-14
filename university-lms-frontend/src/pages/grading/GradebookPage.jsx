@@ -13,11 +13,10 @@
 
 import { useEffect, useMemo, useState } from 'react';
 
-import Input from '@/components/ui/input';
-import Table from '@/components/ui/table';
-
 import styles from './GradebookPage.module.scss';
 
+import Input from '@/components/ui/input';
+import Table from '@/components/ui/table';
 import gradebookApi from '@/services/api/gradebookApi'; // Backend must provide: .listStudents(), .listColumns(), .listGrades()
 
 export default function GradebookPage() {

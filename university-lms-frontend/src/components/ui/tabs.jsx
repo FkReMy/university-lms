@@ -16,8 +16,9 @@
  * - className?: string (root classes)
  */
 
-import { useState, useMemo, Children } from 'react';
 import PropTypes from 'prop-types';
+import { useState, useMemo, Children } from 'react';
+
 import styles from './tabs.module.scss';
 
 // Compound component for <Tabs><TabPane ...>...</TabPane></Tabs>

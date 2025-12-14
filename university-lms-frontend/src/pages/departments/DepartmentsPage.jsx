@@ -12,11 +12,12 @@
  */
 
 import { useEffect, useMemo, useState, useCallback } from 'react';
+
 import styles from './DepartmentsPage.module.scss';
 
+import Button from '@/components/ui/button';
 import Input from '@/components/ui/input';
 import Select from '@/components/ui/select';
-import Button from '@/components/ui/button';
 import departmentApi from '@/services/api/departmentApi'; // Must provide .list()
 
 export default function DepartmentsPage() {

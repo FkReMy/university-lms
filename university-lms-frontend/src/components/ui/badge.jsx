@@ -15,6 +15,7 @@
  */
 
 import PropTypes from 'prop-types';
+
 import styles from './badge.module.scss';
 
 // Valid variant list, fallback to "info"

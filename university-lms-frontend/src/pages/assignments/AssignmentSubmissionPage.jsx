@@ -9,18 +9,18 @@
  */
 
 import { useEffect, useState, useRef, useCallback } from 'react';
-import { Link, useParams, useNavigate } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 import styles from './AssignmentSubmissionPage.module.scss';
+
 import Button from '@/components/ui/button'; // Ensure to use global Button component
+import { ROUTES } from '@/lib/constants';
 import assignmentApi from '@/services/api/assignmentApi'; // Backend CRUD for assignments
 import fileApi from '@/services/api/fileApi';
 import { useAssignmentStore } from '@/store/assignmentStore';
-import { ROUTES } from '@/lib/constants';
 
 export default function AssignmentSubmissionPage() {
   const { id: assignmentId } = useParams();
-  const navigate = useNavigate();
 
   // Store actions to minimize API requests if already loaded
   const setError = useAssignmentStore((s) => s.setError);
@@ -162,7 +162,9 @@ export default function AssignmentSubmissionPage() {
                       onClick={handleRemoveFile}
                       title="Remove file"
                       aria-label="Remove file"
-                    >&#215;</button>
+                    >
+                      &#215;
+                    </button>
                   </div>
                 )}
               </div>
