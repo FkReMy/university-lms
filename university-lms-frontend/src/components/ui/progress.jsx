@@ -1,33 +1,27 @@
 /**
  * Progress Component
- * ----------------------------------------------------------
- * A reusable, accessible progress bar for the LMS UI, styled with CSS modules.
- *
- * Responsibilities:
- * - Displays a horizontal progress bar with optional label/text.
- * - Fully accessible (ARIA & native semantics).
- * - Accepts value (percentage), min, max, and variant/color.
- * - Optionally shows percentage/value label.
+ * ----------------------------------------------------------------------------
+ * Global, accessible progress bar for LMS UI.
+ * - All tokens, sizes, and color variants come from progress.module.scss.
+ * - ARIA/natively accessible for screen readers.
+ * - No sample/demo logic—only production-quality, scalable code.
  *
  * Props:
- * - value: number            - Current value (e.g., 60 for 60%)
- * - min: number (default 0)  - Minimum value
- * - max: number (default 100)- Maximum value
- * - showLabel: boolean       - Show value label (default false)
- * - label: string/ReactNode  - Optional descriptive label above bar
- * - variant: string          - Optional ("primary" | "success" | "warning" | "error" | "neutral")
- * - className: string        - Extra classes for wrapper
- * - ...rest: other props for the <div> wrapper
- *
- * Usage:
- *   <Progress value={44} label="Course Completion" showLabel variant="success" />
+ * - value: number                  // Current progress value (between min/max)
+ * - min?: number                   // Min value (default 0)
+ * - max?: number                   // Max value (default 100)
+ * - showLabel?: boolean            // Show numeric percent label inside bar (default: false)
+ * - label?: string | ReactNode     // Optional label above bar (for ARIA, etc.)
+ * - variant?: string               // "primary" | "success" | "warning" | "error" | "neutral" (default: primary)
+ * - className?: string             // Extra wrapper classes
+ * - ...rest: props for wrapper <div>
  */
 
 import React from 'react';
-
+import PropTypes from 'prop-types';
 import styles from './progress.module.scss';
 
-// Supported color variants (primary is default)
+// Supported color variants, fallback to "primary" if invalid
 const VARIANTS = [
   "primary",
   "success",
@@ -46,14 +40,15 @@ export default function Progress({
   className = "",
   ...rest
 }) {
-  // Calculate percentage, clamp value between min and max
+  // Clamp and compute percent
   const safeVal = isNaN(value) ? min : Math.min(Math.max(value, min), max);
   const pct = ((safeVal - min) / (max - min)) * 100;
 
-  // CSS variant class
-  const variantClass = styles[`progress--${VARIANTS.includes(variant) ? variant : "primary"}`];
+  // Variants for color/style
+  const safeVariant = VARIANTS.includes(variant) ? variant : "primary";
+  const variantClass = styles[`progress--${safeVariant}`];
 
-  // ARIA
+  // Unique ID for aria-labelledby association
   const barId = React.useId();
 
   return (
@@ -86,3 +81,20 @@ export default function Progress({
     </div>
   );
 }
+
+Progress.propTypes = {
+  value: PropTypes.number.isRequired,
+  min: PropTypes.number,
+  max: PropTypes.number,
+  showLabel: PropTypes.bool,
+  label: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
+  variant: PropTypes.oneOf(VARIANTS),
+  className: PropTypes.string,
+};
+
+/**
+ * Production/Architecture Notes:
+ * - Only design-system tokens/colors, and ARIA accessible.
+ * - Safe for use in dashboards, cards, forms, and feedback UIs.
+ * - No sample/demo/local usage, only scalable component logic.
+ */

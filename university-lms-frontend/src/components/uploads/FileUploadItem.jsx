@@ -1,45 +1,36 @@
 /**
  * FileUploadItem Component
- * ----------------------------------------------------------
- * Displays an individual uploaded file (or selected-for-upload file) in a list.
- *
- * Responsibilities:
- * - Shows file name, file size, optional preview icon (by type), and upload progress/status.
- * - Provides a remove/delete button.
- * - Can show upload progress bar or statuses: completed, error, uploading, etc.
+ * ----------------------------------------------------------------------------
+ * Global, accessible file upload item for LMS UI.
+ * - Displays file icon, name, size, status/progress, and remove button.
+ * - Follows design system for all layout/state.
+ * - No sample/demo logic; extensible for backend/async flows.
  *
  * Props:
  * - file: File | { name, size, type, status?, progress? } (required)
- * - onRemove: function() (optional)   - Called when remove button clicked
- * - status: "uploading" | "done" | "error" (optional; overrides file.status)
- * - progress: number (0-100, optional; for uploading; overrides file.progress)
- * - error: string (optional)         - Error message if upload failed
- * - className: string (optional)
- * - style: object (optional)
- * - ...rest: (other wrapper props)
- *
- * Usage:
- *   <FileUploadItem
- *     file={fileObj}
- *     onRemove={() => {}}
- *     status="uploading"
- *     progress={70}
- *     error="Network error"
- *   />
+ * - onRemove?: function()      // Callback when remove ("×") button is clicked
+ * - status?: "uploading" | "done" | "error" (overrides file.status if given)
+ * - progress?: number (0-100, overrides file.progress if given)
+ * - error?: string             // Error message if upload failed
+ * - className?: string
+ * - style?: object
+ * - ...rest: other root props
  */
 
+import PropTypes from 'prop-types';
 import styles from './FileUploadItem.module.scss';
 
-// File type → icon mapping (SVGs or emoji for demo; replace for production)
+// Map file type to a global icon (for full prod: use design system, not emoji)
 const fileTypeIcon = (type = "", name = "") => {
-  if (type.startsWith("image/")) return <span role="img" aria-label="Image">🖼️</span>;
-  if (type.startsWith("video/")) return <span role="img" aria-label="Video">🎞️</span>;
-  if (type === "application/pdf" || name.endsWith(".pdf")) return <span role="img" aria-label="PDF">📄</span>;
-  if (type.includes("excel") || name.match(/\.(csv|xls|xlsx)$/i)) return <span role="img" aria-label="Spreadsheet">📊</span>;
-  if (type.includes("word") || name.match(/\.(doc|docx)$/i)) return <span role="img" aria-label="Doc">📄</span>;
-  return <span role="img" aria-label="File">📁</span>;
+  if (type.startsWith("image/")) return (<span role="img" aria-label="Image">🖼️</span>);
+  if (type.startsWith("video/")) return (<span role="img" aria-label="Video">🎞️</span>);
+  if (type === "application/pdf" || name.endsWith(".pdf")) return (<span role="img" aria-label="PDF">📄</span>);
+  if (type.includes("excel") || name.match(/\.(csv|xls|xlsx)$/i)) return (<span role="img" aria-label="Spreadsheet">📊</span>);
+  if (type.includes("word") || name.match(/\.(doc|docx)$/i)) return (<span role="img" aria-label="Document">📄</span>);
+  return (<span role="img" aria-label="File">📁</span>);
 };
 
+// Format file size to KB/MB readable
 function formatSize(size) {
   if (size == null || isNaN(size)) return '';
   const kb = size / 1024;
@@ -57,25 +48,30 @@ export default function FileUploadItem({
   style = {},
   ...rest
 }) {
-  // File info normalization (support native File or supplied object)
+  // Normalize file object: supports native File or shape
   const {
     name = "",
     size,
     type = "",
     status: fileStatus,
-    progress: fileProgress
+    progress: fileProgress,
   } = typeof file === "object" && file ? file : {};
 
   const resolvedStatus = status ?? fileStatus ?? "done";
-  const resolvedProgress = progress != null ? progress : (fileProgress ?? (resolvedStatus === "done" ? 100 : 0));
+  const resolvedProgress = progress != null
+    ? progress
+    : (fileProgress != null
+      ? fileProgress
+      : (resolvedStatus === "done" ? 100 : 0)
+    );
 
-  // Status text for error or status label
+  // Status label (descriptive)
   let statusLabel = null;
   if (resolvedStatus === "uploading") statusLabel = "Uploading…";
   if (resolvedStatus === "done") statusLabel = "Uploaded";
   if (resolvedStatus === "error") statusLabel = error || "Upload failed";
 
-  // Compose wrapper class
+  // Classes for status
   const rootClass = [
     styles.fileUploadItem,
     styles[`fileUploadItem--${resolvedStatus}`] || "",
@@ -84,19 +80,18 @@ export default function FileUploadItem({
 
   return (
     <div className={rootClass} style={style} {...rest}>
-      {/* Icon/preview */}
+      {/* File type icon */}
       <div className={styles.fileUploadItem__icon}>
         {fileTypeIcon(type, name)}
       </div>
-      {/* Name and size */}
+      {/* Name, size, and status/progress */}
       <div className={styles.fileUploadItem__info}>
         <div className={styles.fileUploadItem__name} title={name}>{name}</div>
         <div className={styles.fileUploadItem__meta}>
           <span className={styles.fileUploadItem__size}>{formatSize(size)}</span>
         </div>
-        {/* Status/progress/error display, underneath */}
         <div className={styles.fileUploadItem__statusLine}>
-          {resolvedStatus === "uploading" && (
+          {resolvedStatus === "uploading" ? (
             <div className={styles.fileUploadItem__progressWrap}>
               <div className={styles.fileUploadItem__progressBar}>
                 <div
@@ -108,8 +103,7 @@ export default function FileUploadItem({
                 {Math.round(resolvedProgress)}%
               </span>
             </div>
-          )}
-          {resolvedStatus !== "uploading" && (
+          ) : (
             <span
               className={[
                 styles.fileUploadItem__statusText,
@@ -121,7 +115,7 @@ export default function FileUploadItem({
           )}
         </div>
       </div>
-      {/* Remove button (right side) */}
+      {/* Remove button */}
       {onRemove && (
         <button
           className={styles.fileUploadItem__remove}
@@ -129,9 +123,35 @@ export default function FileUploadItem({
           onClick={onRemove}
           aria-label={`Remove ${name || "file"}`}
         >
-          ✕
+          ×
         </button>
       )}
     </div>
   );
 }
+
+FileUploadItem.propTypes = {
+  file: PropTypes.oneOfType([
+    PropTypes.shape({
+      name: PropTypes.string,
+      size: PropTypes.number,
+      type: PropTypes.string,
+      status: PropTypes.string,
+      progress: PropTypes.number,
+    }),
+    PropTypes.instanceOf(File),
+  ]).isRequired,
+  onRemove: PropTypes.func,
+  status: PropTypes.oneOf(['uploading', 'done', 'error']),
+  progress: PropTypes.number,
+  error: PropTypes.string,
+  className: PropTypes.string,
+  style: PropTypes.object,
+};
+
+/**
+ * Production/Architecture Notes:
+ * - All status/size/type/label/UI rules use design system (FileUploadItem.module.scss).
+ * - No sample/demo icons; production system should use global Icon library.
+ * - No local/sample logic; UX is production-safe and extensible.
+ */

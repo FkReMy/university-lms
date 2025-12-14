@@ -1,38 +1,26 @@
 /**
  * Input Component
- * ----------------------------------------------------------
- * A reusable, accessible input field for the LMS UI using CSS modules.
- *
- * Responsibilities:
- * - Provide a styled, consistent input element for text, email, password, etc.
- * - Forward all props for flexibility (placeholder, type, onChange, etc.).
- * - Allow custom label, error, and help message.
- * - Support controlled and uncontrolled usage.
- * - Fully accessible with label association and ARIA.
+ * ----------------------------------------------------------------------------
+ * A production-ready, unified input field for the LMS UI.
+ * - Applies all design system styles with input.module.scss.
+ * - Fully accessible (label association, describedBy, aria-invalid, etc.).
+ * - Controlled/uncontrolled and flexible in all forms and panels.
+ * - Accepts all native input props and wrapper/input classname overrides.
+ * - No sample/demo logic; prod architecture only.
  *
  * Props:
- * - type: string ("text" | "email" | "password" | etc., default: "text")
- * - id: string (required for accessibility if using label)
- * - label: ReactNode or string (optional label, rendered if provided)
- * - error: string or ReactNode (optional error message, shown under input)
- * - help: string or ReactNode (optional help text under input)
- * - className: string (to add to wrapper)
- * - inputClassName: string (to add to the input element)
- * - ...rest: All other input props (value, onChange, placeholder, etc.)
- *
- * Usage:
- *   <Input
- *     id="email"
- *     type="email"
- *     label="Email Address"
- *     value={email}
- *     onChange={e => setEmail(e.target.value)}
- *     error={error}
- *   />
+ * - type?: string (e.g., "text" | "email" | "password" | "number") (Default: "text")
+ * - id?: string                     // Required if label given, else auto-generated
+ * - label?: string | ReactNode      // Optional field label
+ * - error?: string | ReactNode      // Error message (below input)
+ * - help?: string | ReactNode       // Help/hint message (below input)
+ * - className?: string              // Wrapper classes
+ * - inputClassName?: string         // Field (input) classes
+ * - ...rest: All native input props (value, onChange, placeholder, etc.)
  */
 
+import PropTypes from 'prop-types';
 import { useId } from 'react';
-
 import styles from './input.module.scss';
 
 export default function Input({
@@ -45,11 +33,11 @@ export default function Input({
   inputClassName = '',
   ...rest
 }) {
-  // Unique id fallback for label/input association, if no id is passed
+  // For a11y: auto-generate ID if none provided
   const generatedId = useId();
   const inputId = id || generatedId;
 
-  // Compose base classes for input and wrapper
+  // Design-system classes for inputs and wrapper
   const wrapperClass = [styles.input__wrapper, className].filter(Boolean).join(' ');
   const fieldClass = [
     styles.input,
@@ -57,26 +45,28 @@ export default function Input({
     inputClassName,
   ].filter(Boolean).join(' ');
 
+  // Compose aria-describedby chain
+  const describedByIds = [];
+  if (help) describedByIds.push(`${inputId}-help`);
+  if (error) describedByIds.push(`${inputId}-error`);
+  const ariaDescribedBy = describedByIds.length ? describedByIds.join(' ') : undefined;
+
   return (
     <div className={wrapperClass}>
-      {/* Optional label */}
       {label && (
         <label className={styles.input__label} htmlFor={inputId}>
           {label}
         </label>
       )}
-
-      {/* The input element */}
       <input
         id={inputId}
         className={fieldClass}
         type={type}
         aria-invalid={!!error}
-        aria-describedby={help ? `${inputId}-help` : error ? `${inputId}-error` : undefined}
+        aria-describedby={ariaDescribedBy}
         {...rest}
       />
 
-      {/* Help or error message */}
       {help && (
         <div id={`${inputId}-help`} className={styles.input__help}>
           {help}
@@ -90,3 +80,20 @@ export default function Input({
     </div>
   );
 }
+
+Input.propTypes = {
+  type: PropTypes.string,
+  id: PropTypes.string,
+  label: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
+  error: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
+  help: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
+  className: PropTypes.string,
+  inputClassName: PropTypes.string,
+};
+
+/**
+ * Production/Architecture Notes:
+ * - No local/sample/demo markup, only production-ready global input/label layout.
+ * - All accessible/ARIA logic is global and composable.
+ * - Can be used for forms, modals, panels, filters, and search.
+ */

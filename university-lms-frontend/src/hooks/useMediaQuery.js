@@ -1,33 +1,26 @@
 /**
- * useMediaQuery
- * ----------------------------------------------------------
- * React hook for matching CSS media queries in the LMS frontend.
- *
- * Responsibilities:
- * - Accept a media query string or array of strings.
- * - Return a boolean indicating whether the query matches the current viewport.
- * - Provide a stable ref that updates on viewport changes or input changes.
+ * useMediaQuery Hook (LMS Design System/Production Utility)
+ * ----------------------------------------------------------------------------
+ * Subscribe to and reactively match CSS media queries for responsive UI.
+ * - Accepts one or more media query strings.
+ * - Returns a boolean: true if any query matches.
+ * - Works in all browser/SSR/CSR environments; SSR will always return false.
+ * - Global, production-grade (no sample/demo logic).
  *
  * Usage:
- *   const isLargeScreen = useMediaQuery('(min-width: 1024px)');
+ *   const isTabletOrAbove = useMediaQuery(['(min-width: 768px)', '(pointer: fine)'])
  *
- * Notes:
- * - Falls back to false during SSR.
- * - If you use an array, returns true if ANY query matches.
+ * @param {string|string[]} query CSS media query or array of queries.
+ * @returns {boolean} true if any query matches the viewport.
  */
 
 import { useEffect, useState } from 'react';
 
-/**
- * Returns true if the CSS media query (or any query in the array) matches.
- * @param {string|string[]} query One or more media query strings.
- * @returns {boolean}
- */
 export function useMediaQuery(query) {
-  // Normalize to array for easier logic
+  // Always operate on array for normalization.
   const queries = Array.isArray(query) ? query : [query];
 
-  // Only evaluate in browser
+  // Get match result for current environment.
   function getMatch() {
     if (typeof window === 'undefined' || !window.matchMedia) return false;
     return queries.some((q) => window.matchMedia(q).matches);
@@ -36,26 +29,25 @@ export function useMediaQuery(query) {
   const [matches, setMatches] = useState(getMatch);
 
   useEffect(() => {
-    // If we're not in a DOM environment, skip
     if (typeof window === 'undefined' || !window.matchMedia) return;
 
-    // Create media query lists and attach listeners
     const mqls = queries.map((q) => window.matchMedia(q));
     const handler = () => setMatches(getMatch);
 
+    // Add change listeners for all queries used.
     mqls.forEach((mql) => {
       if (mql.addEventListener) {
         mql.addEventListener('change', handler);
       } else if (mql.addListener) {
-        // Support Safari and old browsers
+        // Legacy: Safari/old
         mql.addListener(handler);
       }
     });
 
-    // Set initial state in case of changes since mount
+    // Update on mount, in case of immediate media change.
     setMatches(getMatch);
 
-    // Cleanup: remove all listeners
+    // Cleanup listeners on unmount or queries change
     return () => {
       mqls.forEach((mql) => {
         if (mql.removeEventListener) {
@@ -65,8 +57,16 @@ export function useMediaQuery(query) {
         }
       });
     };
+    // It is safe to stringify queries, which will always yield same result for same arrays.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [/* stable: */ JSON.stringify(queries)]);
+  }, [JSON.stringify(queries)]);
 
   return matches;
 }
+
+/**
+ * Production/Architecture Notes:
+ * - Global, library-level hook; no demo/sample logic.
+ * - Can be used for adaptive cards, layouts, menus, dialogs, forms, etc.
+ * - Always safe for SSR: returns false if window not available.
+ */

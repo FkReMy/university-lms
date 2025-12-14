@@ -1,41 +1,28 @@
 /**
- * useDebounce
- * ----------------------------------------------------------
- * React hook for debouncing changing values or inputs.
+ * useDebounce Hook (LMS Design System/Production Utility)
+ * ----------------------------------------------------------------------------
+ * Debounces any changing value and returns a stable version after a set delay.
+ * - Use for async search, debounced backend requests, input UX, etc.
+ * - No sample/demo logic—just scalable, global hook for all UI flows.
  *
- * Responsibilities:
- * - Accept a value and a delay.
- * - Return a debounced "stable" value that only updates after the delay.
- * - Useful for input fields, search queries, typeahead, etc.
- *
- * Usage:
- *   const debouncedValue = useDebounce(value, 300);
- *
- * Notes:
- * - If `value` changes before the delay, the timer resets.
- * - Only updates the returned value after delay ms of inactivity.
+ * @param {*} value         Value to debounce (input, query, object, etc.)
+ * @param {number} delay    Milliseconds to wait after last change (default: 300)
+ * @returns {*}             Debounced value, updates only after delay
  */
 
 import { useEffect, useState } from 'react';
 
-/**
- * Returns a debounced version of the input value.
- *
- * @param {*} value         The value to debounce.
- * @param {number} delay    Debounce delay (in ms). Default: 300.
- * @returns {*}             The "debounced" value.
- */
 export function useDebounce(value, delay = 300) {
-  // State for the debounced value
+  // State to store the debounced version of incoming value
   const [debouncedValue, setDebouncedValue] = useState(value);
 
   useEffect(() => {
-    // Set a timer to update the debounced value
+    // On value or delay change, debounce setDebouncedValue
     const handler = setTimeout(() => {
       setDebouncedValue(value);
     }, delay);
 
-    // Clear the timer if value changes before delay elapses
+    // Clean up: cancel timer on value or delay change
     return () => {
       clearTimeout(handler);
     };
@@ -43,3 +30,10 @@ export function useDebounce(value, delay = 300) {
 
   return debouncedValue;
 }
+
+/**
+ * Production/Architecture Notes:
+ * - Global and composable, safe for all UI/UX scenarios.
+ * - Only updates value after delay ms of inactivity/reset.
+ * - No local/sample/demo logic; suitable for input, search, validation, etc.
+ */

@@ -1,42 +1,32 @@
 /**
  * Button Component
- * ----------------------------------------------------------
- * A reusable, themeable button for the LMS UI using CSS modules for styling.
- *
- * Responsibilities:
- * - Provide a customizable button with primary/secondary/danger/default styles.
- * - Handle loading and disabled states in both styling and accessibility.
- * - Accept extra className from props for further customization.
+ * ----------------------------------------------------------------------------
+ * Production-grade, global button for LMS.
+ * - Fully design-system compliant (CSS module: button.module.scss).
+ * - Supports primary/secondary/danger/default/etc. via variant prop.
+ * - Handles loading (spinner, ARIA) and disabled states.
+ * - NO demo/sample logic.
  *
  * Props:
- * - type: "button" | "submit" | "reset" (default: "button")
- * - variant: "primary" | "secondary" | "danger" | "default" (styling variant)
- * - loading: boolean (shows spinner, disables interaction)
- * - disabled: boolean (disables interaction)
- * - className: string (extra custom classes)
- * - children: ReactNode (button content)
- * - ...rest: All other button props (onClick, value, form, etc)
- *
- * Usage:
- *   <Button variant="primary" onClick={handleClick}>Submit</Button>
- *   <Button variant="danger" loading>Deleting…</Button>
+ * - type?: "button" | "submit" | "reset"     // Default: "button"
+ * - variant?: "primary" | "secondary" | "danger" | "default" (Default: "primary")
+ * - loading?: boolean                        // Spinner + disables interaction
+ * - disabled?: boolean
+ * - className?: string                       // Extra/override class names
+ * - children?: ReactNode                     // Button content
+ * - ...rest: All native button props (onClick, value, etc)
  */
 
+import PropTypes from 'prop-types';
 import styles from './button.module.scss';
 
 /**
- * Spinner icon for loading state.
- * Uses the .button__spinner class from the CSS module.
+ * Unified design-system loading spinner (16x16).
  */
 function Spinner() {
   return (
     <span className={styles.button__spinner} aria-label="Loading…">
-      <svg
-        width="16"
-        height="16"
-        viewBox="0 0 16 16"
-        fill="none"
-      >
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
         <circle
           cx="8"
           cy="8"
@@ -58,7 +48,7 @@ function Spinner() {
 }
 
 /**
- * Main Button component.
+ * Global Button component.
  */
 export default function Button({
   type = 'button',
@@ -69,31 +59,44 @@ export default function Button({
   children,
   ...rest
 }) {
-  // Combine SCSS module classes for base, variant, disabled, and user-supplied className
+  // Class composition: global base, variant, disabled, additional
   const baseClass = styles.button;
   const variantClass = styles[`button--${variant}`] || '';
-  // Use an is-disabled class for visual style (also handled by :disabled)
   const isDisabledClass = (loading || disabled) ? styles['is-disabled'] : '';
-  const combinedClassName = [
+  const finalClassName = [
     baseClass,
     variantClass,
     isDisabledClass,
     className,
-  ]
-    .filter(Boolean)
-    .join(' ');
+  ].filter(Boolean).join(' ');
 
   return (
     <button
       type={type}
-      className={combinedClassName}
+      className={finalClassName}
       disabled={disabled || loading}
       aria-busy={loading || undefined}
       {...rest}
     >
-      {/* Show spinner if loading */}
+      {/* Loader spinner (design system only) */}
       {loading && <Spinner />}
       {children}
     </button>
   );
 }
+
+Button.propTypes = {
+  type: PropTypes.oneOf(['button', 'submit', 'reset']),
+  variant: PropTypes.oneOf(['primary', 'secondary', 'danger', 'default']),
+  loading: PropTypes.bool,
+  disabled: PropTypes.bool,
+  className: PropTypes.string,
+  children: PropTypes.node,
+};
+
+/**
+ * Production/Architecture Notes:
+ * - NO demo/sample/local markup - only unified, scalable, backend-ready UI.
+ * - All variants, loading, and disabled are styled and handled globally.
+ * - Additional tokens/variants are easily added in the design system.
+ */

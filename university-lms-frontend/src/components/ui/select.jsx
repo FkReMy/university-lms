@@ -1,43 +1,26 @@
 /**
  * Select Component
- * ----------------------------------------------------------
- * A reusable, accessible select (dropdown) component for the LMS UI using CSS modules.
- *
- * Responsibilities:
- * - Provide a styled <select> dropdown with support for label, help, and error.
- * - Forward all props to the native <select> for flexibility.
- * - Allow custom className, selectClassName, and options.
- * - Support both controlled and uncontrolled usage.
- * - Accessible: label association, ARIA for error/help.
+ * ----------------------------------------------------------------------------
+ * Global, accessible select (dropdown) for LMS UI.
+ * - All style, state, and tokens are governed by select.module.scss (design system).
+ * - ARIA-compliant, fully accessible for all input forms/dialogs.
+ * - Controlled/uncontrolled compatible.
+ * - No sample/demo logic; only production-ready code.
  *
  * Props:
- * - id: string (required for accessibility if label is provided)
- * - label: string or ReactNode (optional field label)
- * - error: string or ReactNode (optional error message)
- * - help: string or ReactNode (optional help text)
- * - options: array of { value, label, disabled? }   OR   ReactNode children
- * - className: string (extra class to wrapper)
- * - selectClassName: string (extra class for the select element)
- * - children: ReactNode (for custom <option> elements instead of options array)
- * - ...rest: all other native <select> props
- *
- * Usage:
- *   <Select
- *     id="role"
- *     label="Role"
- *     options={[
- *       { value: 'student', label: 'Student' },
- *       { value: 'professor', label: 'Professor' },
- *       { value: 'admin', label: 'Admin', disabled: true }
- *     ]}
- *     value={role}
- *     onChange={e => setRole(e.target.value)}
- *     error={error}
- *   />
+ * - id?: string                         // For label association (auto-generated if omitted)
+ * - label?: string | ReactNode          // Optional label for the dropdown field
+ * - error?: string | ReactNode          // Error message (shown under select)
+ * - help?: string | ReactNode           // Help/hint message (shown under select)
+ * - options?: Array<{ value, label, disabled? }>   // Option list (optional if children used)
+ * - className?: string                  // Extra class(es) for wrapper
+ * - selectClassName?: string            // Extra class(es) for <select>
+ * - children?: ReactNode                // Custom <option> children (optional, if options not used)
+ * - ...rest: All native <select> props 
  */
 
+import PropTypes from 'prop-types';
 import { useId } from 'react';
-
 import styles from './select.module.scss';
 
 export default function Select({
@@ -51,11 +34,11 @@ export default function Select({
   selectClassName = '',
   ...rest
 }) {
-  // Unique fallback id (for associating label) if not provided
+  // For accessible label association
   const generatedId = useId();
   const selectId = id || generatedId;
 
-  // CSS modules: combine classes for wrapper and <select>
+  // Compose design-system classes
   const wrapperClass = [styles.select__wrapper, className].filter(Boolean).join(' ');
   const fieldClass = [
     styles.select,
@@ -63,30 +46,34 @@ export default function Select({
     selectClassName,
   ].filter(Boolean).join(' ');
 
+  // Compute aria-describedby
+  const describedByIds = [];
+  if (help) describedByIds.push(`${selectId}-help`);
+  if (error) describedByIds.push(`${selectId}-error`);
+  const ariaDescribedBy = describedByIds.length ? describedByIds.join(' ') : undefined;
+
   return (
     <div className={wrapperClass}>
-      {/* Optional label */}
       {label && (
         <label htmlFor={selectId} className={styles.select__label}>
           {label}
         </label>
       )}
 
-      {/* The select dropdown */}
       <select
         id={selectId}
         className={fieldClass}
         aria-invalid={!!error}
-        aria-describedby={help ? `${selectId}-help` : error ? `${selectId}-error` : undefined}
+        aria-describedby={ariaDescribedBy}
         {...rest}
       >
-        {/* Render options: via props.options array or direct children */}
         {options
           ? options.map(opt => (
               <option
                 value={opt.value}
                 disabled={opt.disabled}
-                key={typeof opt.value === 'string' || typeof opt.value === 'number' ? opt.value : String(opt.label)}
+                key={typeof opt.value === 'string' || typeof opt.value === 'number'
+                  ? opt.value : String(opt.label)}
               >
                 {opt.label}
               </option>
@@ -94,7 +81,6 @@ export default function Select({
           : children}
       </select>
 
-      {/* Help and error messaging */}
       {help && (
         <div id={`${selectId}-help`} className={styles.select__help}>
           {help}
@@ -108,3 +94,25 @@ export default function Select({
     </div>
   );
 }
+
+Select.propTypes = {
+  id: PropTypes.string,
+  label: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
+  error: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
+  help: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
+  options: PropTypes.arrayOf(PropTypes.shape({
+    value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    label: PropTypes.oneOfType([PropTypes.string, PropTypes.node]).isRequired,
+    disabled: PropTypes.bool,
+  })),
+  className: PropTypes.string,
+  selectClassName: PropTypes.string,
+  children: PropTypes.node,
+};
+
+/**
+ * Production/Architecture Notes:
+ * - Design-system styling ensures field, error, help, and label are unified.
+ * - Uses auto-generated id for label/aria if not provided for a11y robustness.
+ * - No local/demo/sample code; ready for dynamic backend-driven options/values.
+ */

@@ -1,27 +1,22 @@
 /**
  * Card Component
- * ----------------------------------------------------------
- * A simple, reusable Card component for the LMS UI, using CSS modules for styling.
- *
- * Responsibilities:
- * - Provide a visually distinct container for content (e.g., in dashboards, lists, forms).
- * - Support optional header, footer, and body sections.
- * - Accept className and style props for customization.
+ * ----------------------------------------------------------------------------
+ * Unified, reusable card container for LMS UI.
+ * - Encapsulates all card style/layout via card.module.scss (global design system).
+ * - Supports optional header, footer, and flexible body slots.
+ * - No sample/demo logic; ready for scalable/production use in all UI patterns.
  *
  * Props:
- * - className: string     - Additional custom classes for the card wrapper.
- * - style: object         - React style object for inline styles.
- * - header: ReactNode     - Card header content (optional).
- * - footer: ReactNode     - Card footer content (optional).
- * - children: ReactNode   - Card main/body content.
- * - ...rest:              - Other props passed to the root div.
- *
- * Usage:
- *  <Card header="Course Overview" footer={<ActionBtns />}>
- *    <div>Main content here…</div>
- *  </Card>
+ * - className?: string                 // Additional classes for the card wrapper
+ * - style?: object                     // Inline style for card wrapper
+ * - header?: ReactNode                 // Optional card header area
+ * - footer?: ReactNode                 // Optional card footer area
+ * - children?: ReactNode               // Main body content
+ * - as?: element/String                // Polymorphic wrapper (default: div)
+ * - ...rest: Other props (passed to root)
  */
 
+import PropTypes from 'prop-types';
 import styles from './card.module.scss';
 
 export default function Card({
@@ -30,34 +25,50 @@ export default function Card({
   header,
   footer,
   children,
+  as: Component = 'div',
   ...rest
 }) {
-  // Combine base and any user-supplied classes
-  const combinedClassName = [
+  const cardClass = [
     styles.card,
     className,
   ].filter(Boolean).join(' ');
 
   return (
-    <div className={combinedClassName} style={style} {...rest}>
-      {/* Optional header */}
+    <Component className={cardClass} style={style} {...rest}>
+      {/* Header slot */}
       {header && (
         <div className={styles.card__header}>
           {header}
         </div>
       )}
 
-      {/* Body/children */}
+      {/* Body/content */}
       <div className={styles.card__body}>
         {children}
       </div>
 
-      {/* Optional footer */}
+      {/* Footer slot */}
       {footer && (
         <div className={styles.card__footer}>
           {footer}
         </div>
       )}
-    </div>
+    </Component>
   );
 }
+
+Card.propTypes = {
+  className: PropTypes.string,
+  style: PropTypes.object,
+  header: PropTypes.node,
+  footer: PropTypes.node,
+  children: PropTypes.node,
+  as: PropTypes.elementType,
+};
+
+/**
+ * Production/Architecture Notes:
+ * - All layout, colors, radii, and slots governed by card.module.scss.
+ * - Supports polymorphic rendering via `as` prop for accessibility and flexibility.
+ * - Only global/unified patterns - no ad hoc markup or sample/demo code.
+ */

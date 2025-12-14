@@ -1,36 +1,24 @@
 /**
  * FileUploadZone Component
- * ----------------------------------------------------------
- * Drag-and-drop file upload area for LMS.
- *
- * Responsibilities:
- * - Shows a dropzone area or a file picker button.
- * - Handles drag events for UX highlight.
- * - Triggers onFiles(files: File[]) when files are picked/dropped.
- * - Shows optional prompt or children as the dropzone content.
- * - Accessible: keyboard, ARIA, focus ring.
+ * ----------------------------------------------------------------------------
+ * Production-grade, accessible drag-and-drop file upload/drop zone for LMS.
+ * - All layout/state via FileUploadZone.module.scss (global design system).
+ * - Handles keyboard, ARIA, drag, drop, and file picker dialog.
+ * - No sample/demo logic.
  *
  * Props:
- * - onFiles: function(FileList or File[]) (required)   - Triggered when files selected/dropped
- * - accept: string (optional)    - File input accept attribute (e.g. ".pdf,.docx")
- * - multiple: bool (optional)    - Allow multiple file upload
- * - prompt: ReactNode (optional) - Shown when no children
- * - children: ReactNode (optional) - Override content for dropzone
- * - className: string (optional)
- * - style: object (optional)
- * - ...rest: (extra props to <div> root)
- *
- * Usage:
- *   <FileUploadZone
- *     onFiles={handleFiles}
- *     accept=".pdf,.docx"
- *     multiple
- *     prompt="Drag files here or click to upload"
- *   />
+ * - onFiles: function(File[])         // REQUIRED, called with selected or dropped file list
+ * - accept?: string                   // Accept filter for file picker/input
+ * - multiple?: boolean                // Allow multiple files (default: false)
+ * - prompt?: ReactNode                // Prompt when no children are supplied
+ * - children?: ReactNode              // Custom drop zone content
+ * - className?: string
+ * - style?: object
+ * - ...rest: Other props for root <div>
  */
 
 import { useCallback, useRef, useState } from 'react';
-
+import PropTypes from 'prop-types';
 import styles from './FileUploadZone.module.scss';
 
 export default function FileUploadZone({
@@ -46,7 +34,7 @@ export default function FileUploadZone({
   const [dragActive, setDragActive] = useState(false);
   const inputRef = useRef(null);
 
-  // Drag and drop handlers
+  // Drag enter/over/leave handlers
   const handleDrag = useCallback((e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -54,7 +42,7 @@ export default function FileUploadZone({
     if (e.type === 'dragleave') setDragActive(false);
   }, []);
 
-  // Drop handler
+  // Drop files
   const handleDrop = useCallback((e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -64,19 +52,19 @@ export default function FileUploadZone({
     }
   }, [onFiles]);
 
-  // File input handler
+  // Handle native input selection
   const handleChange = useCallback((e) => {
     if (e.target.files && e.target.files.length) {
       onFiles(Array.from(e.target.files));
     }
   }, [onFiles]);
 
-  // Open file picker dialog
+  // Click or keyboard triggers file select
   const triggerFileSelect = () => {
     inputRef.current?.click();
   };
 
-  // Keyboard accessibility (space/enter triggers file dialog)
+  // Keyboard accessibility (space/enter)
   const handleKeyDown = (e) => {
     if (e.key === ' ' || e.key === 'Enter') {
       e.preventDefault();
@@ -84,7 +72,7 @@ export default function FileUploadZone({
     }
   };
 
-  // Compose class names
+  // Design system/global classes
   const rootClass = [
     styles.fileUploadZone,
     dragActive ? styles["fileUploadZone--active"] : "",
@@ -125,3 +113,20 @@ export default function FileUploadZone({
     </div>
   );
 }
+
+FileUploadZone.propTypes = {
+  onFiles: PropTypes.func.isRequired,
+  accept: PropTypes.string,
+  multiple: PropTypes.bool,
+  prompt: PropTypes.node,
+  children: PropTypes.node,
+  className: PropTypes.string,
+  style: PropTypes.object,
+};
+
+/**
+ * Production/Architecture Notes:
+ * - All focus highlight, drag, button states are via FileUploadZone.module.scss.
+ * - Keyboard and ARIA support is robust.
+ * - No local/sample/demo logic; ready for backend/async and large-scale upload UIs.
+ */

@@ -1,27 +1,21 @@
 /**
  * Skeleton Component
- * ----------------------------------------------------------
- * A simple skeleton/loading placeholder for the LMS UI using CSS modules.
- *
- * Responsibilities:
- * - Render a block, line, circle, or custom skeleton shape for loading states.
- * - Supports width, height, circle, and custom style.
- * - Animates with shimmer effect for better perception.
+ * ----------------------------------------------------------------------------
+ * Global, animated loading skeleton placeholder for LMS UI.
+ * - Provides block, line, or circle visual skeletons for loading feedback.
+ * - Fully design-system driven—class names and shimmer effect only via CSS module.
+ * - No sample/demo/inline logic; all shapes and styles unified.
  *
  * Props:
- * - width: string|number (optional)   - e.g. "100%", 120 (px)
- * - height: string|number (optional)  - e.g. "2em", 40 (px)
- * - circle: boolean (optional)        - Makes the skeleton a circle (default: false)
- * - className: string (optional)      - Extra classes for the root div
- * - style: object (optional)          - Inline styles
- * - ...rest: any other props for <div>
- *
- * Usage:
- *   <Skeleton width={120} height={22} />
- *   <Skeleton circle width={48} height={48} />
- *   <Skeleton width="100%" height="1.5em" className="mt-2" />
+ * - width?: string|number        // Accepts "100%", 120, etc.
+ * - height?: string|number       // Accepts "2em", 40, etc.
+ * - circle?: boolean             // If true, renders as a circle
+ * - className?: string           // Extra classes to root
+ * - style?: object               // Custom inline style for fine-tuning
+ * - ...rest: any props on <div>
  */
 
+import PropTypes from 'prop-types';
 import styles from './skeleton.module.scss';
 
 export default function Skeleton({
@@ -32,11 +26,12 @@ export default function Skeleton({
   style = {},
   ...rest
 }) {
+  // Merge inline/circle/size styles
   const inlineStyle = {
     width: typeof width === "number" ? `${width}px` : width,
     height: typeof height === "number" ? `${height}px` : height,
     borderRadius: circle ? "50%" : "0.36em",
-    ...style
+    ...style,
   };
 
   const skeletonClass = [
@@ -55,3 +50,18 @@ export default function Skeleton({
     />
   );
 }
+
+Skeleton.propTypes = {
+  width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  circle: PropTypes.bool,
+  className: PropTypes.string,
+  style: PropTypes.object,
+};
+
+/**
+ * Production/Architecture Notes:
+ * - All animation/tokens/colors use skeleton.module.scss (no inline CSS for shimmer).
+ * - Fully accessible for screen readers.
+ * - Safe for use in cards, tables, lists, avatars, and all async UI.
+ */

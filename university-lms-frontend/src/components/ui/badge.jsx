@@ -1,27 +1,23 @@
 /**
  * Badge Component
- * ----------------------------------------------------------
- * A reusable badge component for the LMS UI using CSS modules.
- *
- * Responsibilities:
- * - Display a small, colored label for status, tags, categories, etc.
- * - Supports several color variants (info, success, warning, error, etc).
- * - Accepts a custom className and inline style.
+ * ----------------------------------------------------------------------------
+ * Production-grade, design-system badge for LMS.
+ * - Shows a colored status/label with unified size/typography and variant coloring.
+ * - Supports variants: info, success, warning, error, neutral, (and design-system extension).
+ * - No sample/demo logic; only props+design-system classes.
  *
  * Props:
- * - children: ReactNode             - The badge content/text.
- * - variant: string                 - Visual style (info | success | warning | error | neutral | custom). Default: "info"
- * - className: string               - Additional classes for the badge.
- * - style: object                   - Inline style.
- * - ...rest:                        - Other props for <span>.
- *
- * Usage:
- *   <Badge variant="success">Active</Badge>
- *   <Badge variant="error" className="ml-2">Failed</Badge>
+ * - children: ReactNode              // Badge content (text or icon+text)
+ * - variant?: string                 // "info" | "success" | "warning" | "error" | "neutral" (default: info)
+ * - className?: string
+ * - style?: object
+ * - ...rest: attributes for root <span>
  */
 
+import PropTypes from 'prop-types';
 import styles from './badge.module.scss';
 
+// Valid variant list, fallback to "info"
 const VARIANTS = [
   "info",
   "success",
@@ -37,8 +33,9 @@ export default function Badge({
   style = {},
   ...rest
 }) {
-  // Variant CSS: fallback to "info" for unknown values, renders ".badge--[variant]"
-  const variantClass = styles[`badge--${VARIANTS.includes(variant) ? variant : "info"}`];
+  // Use only supported variants for strict design-system coloring
+  const safeVariant = VARIANTS.includes(variant) ? variant : "info";
+  const variantClass = styles[`badge--${safeVariant}`];
   const badgeClass = [styles.badge, variantClass, className].filter(Boolean).join(" ");
 
   return (
@@ -47,3 +44,17 @@ export default function Badge({
     </span>
   );
 }
+
+Badge.propTypes = {
+  children: PropTypes.node.isRequired,
+  variant: PropTypes.oneOf(VARIANTS),
+  className: PropTypes.string,
+  style: PropTypes.object,
+};
+
+/**
+ * Production/Architecture Notes:
+ * - All colors and layout come from badge.module.scss (no inline styles except "style" prop).
+ * - Only approved global variants are supported.
+ * - 100% design-system scalable and ready for prod data.
+ */

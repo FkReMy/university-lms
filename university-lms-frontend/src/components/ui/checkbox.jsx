@@ -1,35 +1,25 @@
 /**
  * Checkbox Component
- * ----------------------------------------------------------
- * A reusable, accessible checkbox component for the LMS UI, styled with CSS modules.
- *
- * Responsibilities:
- * - Render a box with optional label, help, and error message.
- * - Fully accessible (keyboard, ARIA, label).
- * - Controlled (checked/onChange) or uncontrolled (defaultChecked) usage.
- * - Forwards all props to the underlying <input type="checkbox">.
+ * ----------------------------------------------------------------------------
+ * Global, accessible, and production-ready checkbox component for the LMS UI.
+ * - All styles/theme are driven by checkbox.module.scss (global design system).
+ * - Supports full accessibility: uses id, label, ARIA, help/error association.
+ * - Can be used as controlled (checked/onChange) or uncontrolled (defaultChecked).
+ * - Passes all extra props to <input type="checkbox"> (e.g. aria, tabIndex).
+ * - Never includes sample/demo logic.
  *
  * Props:
- * - id:   string                 (for accessibility and label association)
- * - label: string or ReactNode   (optional text or element after the box)
- * - error: string or ReactNode   (optional error message below)
- * - help: string or ReactNode    (optional help/hint below)
- * - className: string            (extra classes for wrapper)
- * - checkboxClassName: string    (extra classes for the checkbox input itself)
- * - ...rest: all other native <input> props (checked, onChange, etc.)
- *
- * Usage:
- *   <Checkbox
- *     id="accept"
- *     label="I accept the terms"
- *     checked={accepted}
- *     onChange={e => setAccepted(e.target.checked)}
- *     error={accepted === false ? "You must accept." : undefined}
- *   />
+ * - id?: string                       // For accessibility and label association (auto-generated if omitted)
+ * - label?: string | ReactNode        // Label (optional)
+ * - error?: string | ReactNode        // Error text/message (optional)
+ * - help?: string | ReactNode         // Help/hint text (optional)
+ * - className?: string                // Extra classes for wrapper
+ * - checkboxClassName?: string        // Extra classes for checkbox field only
+ * - ...rest: All other native <input> props (checked, onChange, etc.)
  */
 
 import { useId } from 'react';
-
+import PropTypes from 'prop-types';
 import styles from './checkbox.module.scss';
 
 export default function Checkbox({
@@ -41,13 +31,19 @@ export default function Checkbox({
   checkboxClassName = '',
   ...rest
 }) {
-  // Unique fallback id for accessibility if not specified
+  // Generate a unique id if not supplied for labeling/input
   const generatedId = useId();
   const checkboxId = id || generatedId;
 
-  // Compose wrapper and checkbox field classes
+  // Root and field class names (design-system only)
   const wrapperClass = [styles.checkbox__wrapper, className].filter(Boolean).join(' ');
   const fieldClass = [styles.checkbox, checkboxClassName].filter(Boolean).join(' ');
+
+  // ARIA described-by logic
+  const describedByIds = [];
+  if (help) describedByIds.push(`${checkboxId}-help`);
+  if (error) describedByIds.push(`${checkboxId}-error`);
+  const ariaDescribedBy = describedByIds.length ? describedByIds.join(' ') : undefined;
 
   return (
     <div className={wrapperClass}>
@@ -57,13 +53,7 @@ export default function Checkbox({
           id={checkboxId}
           className={fieldClass}
           aria-invalid={!!error}
-          aria-describedby={
-            help
-              ? `${checkboxId}-help`
-              : error
-              ? `${checkboxId}-error`
-              : undefined
-          }
+          aria-describedby={ariaDescribedBy}
           {...rest}
         />
         {label && (
@@ -73,12 +63,13 @@ export default function Checkbox({
         )}
       </div>
 
-      {/* Help and error messaging below */}
+      {/* Help/Hint message */}
       {help && (
         <div id={`${checkboxId}-help`} className={styles.checkbox__help}>
           {help}
         </div>
       )}
+      {/* Error message */}
       {error && (
         <div id={`${checkboxId}-error`} className={styles.checkbox__error}>
           {error}
@@ -87,3 +78,19 @@ export default function Checkbox({
     </div>
   );
 }
+
+Checkbox.propTypes = {
+  id: PropTypes.string,
+  label: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
+  error: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
+  help: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
+  className: PropTypes.string,
+  checkboxClassName: PropTypes.string,
+};
+
+/**
+ * Production/Architecture Notes:
+ * - All label, error, help, and ARIA states use one global logic model.
+ * - Styling, spacing, checked/disabled are from checkbox.module.scss.
+ * - Ready for use in forms, quizzes, settings, and dynamic content.
+ */

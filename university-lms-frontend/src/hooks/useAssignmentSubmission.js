@@ -1,17 +1,16 @@
 /**
  * useAssignmentSubmission
- * ----------------------------------------------------------
- * Manages fetch and submission state for an assignment attempt in the LMS frontend.
+ * ----------------------------------------------------------------------------
+ * Centralized hook for managing assignment submission state in the LMS frontend.
+ * - Handles loading assignment details and previous submissions.
+ * - Manages answer field state and uploads (including multi-file).
+ * - Handles loading, submitting, success, and error feedback.
+ * - All code is backend-ready, with no local data, sample logic, or demo defaults.
+ * - To connect to your backend, replace fetch endpoints/API logic with your client.
  *
- * Responsibilities:
- * - Fetch assignment details and (optionally) the user's prior submission.
- * - Track field state (text answers, file uploads, etc).
- * - Handle submission, uploading, and error management.
- * - Expose status flags for UI loading/submitting/error feedback.
- *
- * Notes:
- * - Replace fetch/file upload operations with your own API client as needed.
- * - Client-side only; server is a source of truth for correctness.
+ * Usage Notes:
+ * - Directly suitable for backend-driven forms: updates, reload, real network error feedback.
+ * - No internal demo/sample logic.
  */
 
 import { useCallback, useEffect, useState } from 'react';
@@ -19,21 +18,22 @@ import { useCallback, useEffect, useState } from 'react';
 const DEFAULT_HEADERS = { 'Content-Type': 'application/json' };
 
 export function useAssignmentSubmission({ assignmentId }) {
-  // Assignment details and user's prior submission (if any)
+  // Assignment and submission state
   const [assignment, setAssignment] = useState(null);
   const [submission, setSubmission] = useState(null);
 
-  // Form state ("answers" could be an object, text, or files, depending on assignment)
+  // Answer fields and file uploads
   const [answers, setAnswers] = useState({});
   const [files, setFiles] = useState([]);
 
-  // UX state
+  // UI status flags
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
 
   /**
-   * Load assignment details (and optionally prior submission)
+   * Fetch assignment details (and prior submission if it exists).
+   * Update assignment, submission, and input field state.
    */
   const loadAssignment = useCallback(async () => {
     if (!assignmentId) return;
@@ -51,7 +51,7 @@ export function useAssignmentSubmission({ assignmentId }) {
       setAssignment(data.assignment);
       setSubmission(data.submission || null);
       setAnswers(data.submission?.answers || {});
-      setFiles([]); // Files reset on load
+      setFiles([]); // Reset file field on load (not persisted after submit)
     } catch (err) {
       setError(err);
     } finally {
@@ -60,23 +60,24 @@ export function useAssignmentSubmission({ assignmentId }) {
   }, [assignmentId]);
 
   /**
-   * Update the answer field for a particular question/key
+   * Set answer value for a particular field/key.
+   * Supports controlled inputs in forms.
    */
   const setAnswer = useCallback((key, value) => {
     setAnswers((prev) => ({ ...prev, [key]: value }));
   }, []);
 
   /**
-   * Update files array (e.g. from input type="file")
-   * Expects: Array of File objects
+   * Update the files array (attached files: File[]).
    */
   const setUploadFiles = useCallback((filesArray = []) => {
     setFiles(Array.isArray(filesArray) ? filesArray : []);
   }, []);
 
   /**
-   * Submit the assignment (with answers and files)
-   * Replace implementation as needed for backend contracts.
+   * Submit assignment answers + files.
+   * Will POST JSON (if no files) or FormData (if files attached) for backend compatibility.
+   * Throws on error so forms can respond to errors.
    */
   const submit = useCallback(async () => {
     if (!assignmentId) return;
@@ -85,15 +86,13 @@ export function useAssignmentSubmission({ assignmentId }) {
 
     try {
       let responseData;
-
-      // If submitting files, use FormData
+      // Use FormData for file uploads; otherwise use JSON body
       if (files.length > 0) {
         const formData = new FormData();
         formData.append('answers', JSON.stringify(answers));
         files.forEach((file, idx) => {
           formData.append(`file${idx + 1}`, file);
         });
-        // Could also include other metadata if needed
         const res = await fetch(`/api/assignments/${assignmentId}/submission`, {
           method: 'POST',
           body: formData,
@@ -104,7 +103,6 @@ export function useAssignmentSubmission({ assignmentId }) {
         }
         responseData = await res.json();
       } else {
-        // No files, submit JSON
         const res = await fetch(`/api/assignments/${assignmentId}/submission`, {
           method: 'POST',
           headers: DEFAULT_HEADERS,
@@ -116,7 +114,6 @@ export function useAssignmentSubmission({ assignmentId }) {
         }
         responseData = await res.json();
       }
-
       setSubmission(responseData.submission || responseData);
       return responseData;
     } catch (err) {
@@ -127,23 +124,30 @@ export function useAssignmentSubmission({ assignmentId }) {
     }
   }, [assignmentId, answers, files]);
 
-  // Load on mount or when assignmentId changes
+  // Fetch initial data on mount or when assignmentId changes
   useEffect(() => {
     loadAssignment();
   }, [loadAssignment]);
 
   return {
-    assignment,    // assignment info (title, description, questions, ...)
-    submission,    // user's prior submission object (or null)
-    answers,       // form field state (object)
-    files,         // file attachments (array of File, not submitted yet)
-    loading,       // is fetching initial data?
-    submitting,    // is submitting?
-    error,         // error to present to the user (if any)
+    assignment,      // assignment metadata (title, description, etc.)
+    submission,      // latest submission (if any)
+    answers,         // answer form state (object)
+    files,           // files to upload (File[])
+    loading,         // fetching state
+    submitting,      // submit-in-progress state
+    error,           // error object/message
     hasSubmitted: !!submission,
-    setAnswer,     // update a single answer value
-    setFiles: setUploadFiles, // set attached files
-    reload: loadAssignment,   // reload assignment state from API
-    submit,        // fire off the submission
+    setAnswer,       // update a single answer field
+    setFiles: setUploadFiles, // update file upload array
+    reload: loadAssignment,   // manual refresh
+    submit,          // submit (returns promise)
   };
 }
+
+/**
+ * Production/Architecture Notes:
+ * - No demo/sample/mock code; all logic expects backend integration.
+ * - To swap actual fetch with your own API client, only replace fetch endpoints as needed.
+ * - Can be attached to any assignment/quiz UI and supports full loading, error, and submitting feedback.
+ */
