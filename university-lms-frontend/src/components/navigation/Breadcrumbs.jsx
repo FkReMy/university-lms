@@ -1,34 +1,24 @@
 /**
  * Breadcrumbs Component
- * ----------------------------------------------------------
- * Navigation aid displaying the user's path as a list of links.
- *
- * Responsibilities:
- * - Renders a horizontally-arranged breadcrumb navigation.
- * - Each crumb except the last is a link. The last is current/active.
- * - Accepts an array of { label, href } OR children for full custom use.
- * - Accessible (ARIA nav, aria-current).
+ * ---------------------------------------------------------------------------
+ * Global navigational breadcrumbs for LMS UI.
+ * - Accepts a list of { label, href } or custom children for maximum flexibility.
+ * - All visual/style/spacing is design-system driven in Breadcrumbs.module.scss.
+ * - No sample or demo logic; all logic is production unified.
+ * - Fully accessible (ARIA navigation, aria-current on current page).
  *
  * Props:
- * - items: Array<{ label: string, href?: string }>
- * - separator: ReactNode (optional, defaults to chevron)
- * - className: string (optional wrapper class)
- * - children: ReactNode (optional, alternate: supply <li> manually)
- * - ...rest:       (extra props for <nav>)
- *
- * Usage:
- *   <Breadcrumbs
- *     items={[
- *       { label: "Dashboard", href: "/" },
- *       { label: "Courses", href: "/courses" },
- *       { label: "Math 101" }
- *     ]}
- *   />
+ * - items?: Array<{ label: string, href?: string }>
+ * - separator?: ReactNode     // Optional, defaults to global chevron
+ * - className?: string
+ * - children?: ReactNode      // If provided, items ignored, supply <li> manually
+ * - ...rest: extra props for <nav>
  */
 
+import PropTypes from 'prop-types';
 import styles from './Breadcrumbs.module.scss';
 
-// Default chevron separator (SVG for sharp screens)
+// Global chevron separator (SVG for clarity at all scales)
 function Chevron() {
   return (
     <span className={styles.breadcrumbs__separator} aria-hidden="true">
@@ -46,13 +36,12 @@ export default function Breadcrumbs({
   children,
   ...rest
 }) {
-  // Use either `items` array or `children`
+  // Prefer children (for complete control, not sample/demo use)
   let content;
   if (children) {
-    // If custom children provided (control everything)
     content = children;
   } else if (items && items.length > 0) {
-    // Array, render all but last crumb as links
+    // All but last crumb: links. Last: span aria-current.
     content = items.map((item, idx) => {
       const isLast = idx === items.length - 1;
       return (
@@ -75,13 +64,11 @@ export default function Breadcrumbs({
               {item.label}
             </span>
           )}
-          {/* Add separator unless last crumb */}
           {!isLast && (separator ?? <Chevron />)}
         </li>
       );
     });
   } else {
-    // Nothing to render
     content = null;
   }
 
@@ -97,3 +84,23 @@ export default function Breadcrumbs({
     </nav>
   );
 }
+
+Breadcrumbs.propTypes = {
+  items: PropTypes.arrayOf(
+    PropTypes.shape({
+      label: PropTypes.string.isRequired,
+      href: PropTypes.string,
+    })
+  ),
+  separator: PropTypes.node,
+  className: PropTypes.string,
+  children: PropTypes.node,
+};
+
+/**
+ * Production Notes:
+ * - All horizontal spacing, typography, and pointer styles are design-system driven.
+ * - Current page/active is set with aria-current for accessibility.
+ * - Separator fully flexible, defaults to chevron but can use any global icon/element.
+ * - No sample/demo shortcuts; safe, maintainable, and always accessible.
+ */

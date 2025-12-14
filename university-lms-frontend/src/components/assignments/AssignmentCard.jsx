@@ -1,71 +1,22 @@
 /**
  * AssignmentCard Component
  * ----------------------------------------------------------
- * Displays a single assignment as a card in a list or dashboard.
- *
- * Responsibilities:
- * - Shows assignment title, due date, short description, status, and optionally grade/progress.
- * - Optionally displays status/tag chips (e.g., "Submitted", "Late", "Graded").
- * - Includes action area (buttons, etc.).
- * - Clickable: goes to assignment page or triggers a handler.
- *
- * Props:
- * - assignment: {
- *     id: string|number,
- *     title: string,
- *     dueDate?: string|Date,
- *     description?: string,
- *     status?: string,      // "submitted" | "late" | "pending" | "graded" | ...
- *     grade?: string|number,
- *     maxGrade?: string|number,
- *     progress?: number,    // For drafts, optional
- *     tags?: string[],
- *   }
- * - onClick: fn(assignment) (optional) - Handler for clicking the card.
- * - actions: ReactNode (optional)      - Shown at the right/bottom.
- * - className: string (optional)
- * - style: object (optional)
- * - ...rest (spread on root <article>)
- *
- * Usage:
- *   <AssignmentCard
- *     assignment={assignment}
- *     onClick={() => navigate(`/assignments/${assignment.id}`)}
- *     actions={<Button>Submit</Button>}
- *   />
+ * Renders a single assignment card.
+ * - Uses only unified, global UI primitives (Card, Badge, Button, etc.)
+ * - No demo/sample logic; no "hardcoded" status chips, colors, or duplicate markup.
+ * - Formatters, status/class logic, tokens must be centralized in utils (`@/lib/formatters`, `@/lib/constants`)
+ * - Ready for true backend/content integration.
+ * - Fully accessible and keyboard operable.
  */
 
+import PropTypes from 'prop-types';
+import Card from '@/components/ui/card';
+import Badge from '@/components/ui/badge'; // Unified status/tag chip
+import Button from '@/components/ui/button'; // Only if rendering actions; otherwise pass them in.
+import { formatDateTime } from '@/lib/formatters'; // Central/shared date formatter
+import { getAssignmentStatusColor, getAssignmentStatusLabel } from '@/lib/constants'; // Centralized logic
+
 import styles from './AssignmentCard.module.scss';
-
-// Format date in "Mar 7, 2025 11:59 PM" style
-function formatDate(date) {
-  if (!date) return '';
-  const d = date instanceof Date ? date : new Date(date);
-  return d.toLocaleString(undefined, {
-    month: 'short',
-    day: 'numeric',
-    year: d.getFullYear(),
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true,
-  });
-}
-
-// Return a status/style class for assignment status
-function getStatusClass(status) {
-  switch ((status || "").toLowerCase()) {
-    case "submitted":
-      return styles["assignmentCard__status--submitted"];
-    case "late":
-      return styles["assignmentCard__status--late"];
-    case "graded":
-      return styles["assignmentCard__status--graded"];
-    case "pending":
-      return styles["assignmentCard__status--pending"];
-    default:
-      return "";
-  }
-}
 
 export default function AssignmentCard({
   assignment,
@@ -76,6 +27,7 @@ export default function AssignmentCard({
   ...rest
 }) {
   if (!assignment) return null;
+
   const {
     title,
     dueDate,
@@ -87,48 +39,67 @@ export default function AssignmentCard({
     tags = [],
   } = assignment;
 
+  // Compose the root class for styling and clickable mode
   const rootClass = [
     styles.assignmentCard,
-    status ? getStatusClass(status) : "",
     className,
+    onClick ? styles.assignmentCard__clickable : ''
   ].filter(Boolean).join(' ');
 
-  // Status/tag chip
-  const renderStatusChip = () => {
-    if (!status) return null;
-    let label = status.charAt(0).toUpperCase() + status.slice(1);
-    return (
-      <div className={styles.assignmentCard__statusChip}>
-        {label}
-      </div>
-    );
-  };
-
-  // Chips for tags (if present, e.g., "Essay", "Group work")
-  const renderTags = () => (
-    tags && tags.length > 0 && (
-      <div className={styles.assignmentCard__tags}>
-        {tags.map((tag) => (
-          <span className={styles.assignmentCard__tagChip} key={tag}>
-            {tag}
-          </span>
-        ))}
-      </div>
-    )
-  );
-
-  // Card is clickable if onClick
+  // Accessibility/keyboard support if card is clickable
   const clickableProps = onClick
     ? {
         tabIndex: 0,
         role: "button",
         onClick: (e) => { e.stopPropagation(); onClick(assignment); },
-        onKeyDown: e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onClick(assignment); } }
+        onKeyDown: e => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            onClick(assignment);
+          }
+        }
       }
     : {};
 
+  // Render assignment status as a global Badge or similar shared component
+  const renderStatus = () => {
+    if (!status) return null;
+    const statusLabel = getAssignmentStatusLabel(status); // Central/consistent everywhere
+    const statusColor = getAssignmentStatusColor(status);
+    return (
+      <Badge className={styles.assignmentCard__statusBadge} color={statusColor}>
+        {statusLabel}
+      </Badge>
+    );
+  };
+
+  // Render tags as unified Badge/Chip (reuse Badge if possible)
+  const renderTags = () =>
+    tags && tags.length > 0 ? (
+      <div className={styles.assignmentCard__tags}>
+        {tags.map(tag => (
+          <Badge
+            key={tag}
+            className={styles.assignmentCard__tagBadge}
+            color="secondary"
+            variant="outline"
+            size="sm"
+          >
+            {tag}
+          </Badge>
+        ))}
+      </div>
+    ) : null;
+
+  // Truncate description to tokens/characters if required
+  const displayDescription =
+    description && description.length > 130
+      ? description.slice(0, 130) + '…'
+      : description;
+
   return (
-    <article
+    <Card
+      as="article"
       className={rootClass}
       style={style}
       aria-label={title}
@@ -137,22 +108,22 @@ export default function AssignmentCard({
     >
       <div className={styles.assignmentCard__header}>
         <h4 className={styles.assignmentCard__title} title={title}>{title}</h4>
-        {renderStatusChip()}
+        {renderStatus()}
       </div>
       <div className={styles.assignmentCard__meta}>
         {dueDate && (
           <span className={styles.assignmentCard__dueDate}>
-            Due: {formatDate(dueDate)}
+            Due: {formatDateTime(dueDate)}
           </span>
         )}
         {renderTags()}
       </div>
       {description && (
         <div className={styles.assignmentCard__description}>
-          {description.length > 130 ? description.slice(0, 130) + "…" : description}
+          {displayDescription}
         </div>
       )}
-      {/* Grade/progress area */}
+      {/* Grade / progress row */}
       {(grade != null || progress != null) && (
         <div className={styles.assignmentCard__gradeRow}>
           {grade != null && (
@@ -174,12 +145,39 @@ export default function AssignmentCard({
           )}
         </div>
       )}
-      {/* Actions */}
+      {/* Actions (use only global Button/Dropdown/Link components!) */}
       {actions && (
         <div className={styles.assignmentCard__actions}>
           {actions}
         </div>
       )}
-    </article>
+    </Card>
   );
 }
+
+AssignmentCard.propTypes = {
+  assignment: PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    title: PropTypes.string.isRequired,
+    dueDate: PropTypes.oneOfType([PropTypes.string, PropTypes.instanceOf(Date)]),
+    description: PropTypes.string,
+    status: PropTypes.string,
+    grade: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    maxGrade: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    progress: PropTypes.number,
+    tags: PropTypes.arrayOf(PropTypes.string),
+  }).isRequired,
+  onClick: PropTypes.func,
+  actions: PropTypes.node,
+  className: PropTypes.string,
+  style: PropTypes.object,
+};
+
+/**
+ * Architectural / Production Notes:
+ * - No duplicated status/tag chip logic – all chips should use global Badge.
+ * - Date-time formatting is always via central formatters (never component-local).
+ * - No samples, demos, or unscalable inline logic.
+ * - All UI/interaction is unified via Card, Badge, and shared UI primitives.
+ * - Extend only with more global UI components as design system evolves.
+ */

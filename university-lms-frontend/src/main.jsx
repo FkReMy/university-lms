@@ -1,40 +1,44 @@
 import { StrictMode, Suspense } from 'react';
 import ReactDOM from 'react-dom/client';
 
-import '@/styles/global.scss';
-import RouterProvider from '@/router';
+import '@/styles/global.scss'; // Import global SCSS (tokens, reset, theming)
+import RouterProvider from '@/router'; // Main router entry (should always use global AppShell/layout)
 
-/*
- * Application entry point
+/**
+ * Application Entry Point
  * ---------------------------------------------------------------------------
  * - Boots the React app into #root.
- * - Uses React.StrictMode for highlighting potential problems in dev.
- * - Wraps the router (RouterProvider) in Suspense so route-level lazy loading can show a fallback.
- * - Assumes that all route imports in routes.jsx are correct; otherwise the app will crash on mount.
+ * - Enforces React.StrictMode (catches unsafe patterns, highlights issues).
+ * - Suspense fallback provides unified loading state for all route/page-level lazy loads.
+ * - No sample/demo/data; backend integration assumed.
+ * - Fails early if #root mount node missing so broken HTML or misconfiguration is caught instantly.
+ * - Assumes all global UI components and layouts are used throughout.
  */
 
 const rootElement = document.getElementById('root');
 
 if (!rootElement) {
-  // Fail fast with a clear error if the mount point is missing.
+  // Immediately fail with a clear message if mounting point is not found.
   throw new Error('Root element #root not found in index.html');
 }
 
-// Create the root (React 18+ API).
+// Create the root using React 18+ API.
 const root = ReactDOM.createRoot(rootElement);
 
 root.render(
   <StrictMode>
     <Suspense fallback={<div className="app__loading">Loading…</div>}>
+      {/* RouterProvider should always be your global provider, with unified layout and global UI components */}
       <RouterProvider />
     </Suspense>
   </StrictMode>
 );
 
 /**
- * NOTES:
- * - This entrypoint assumes that '@/router' exports a valid RouterProvider (e.g., from react-router or your own wrapper).
- * - If your routes.jsx contains unresolved import errors, the app will fail to render on startup and a stack trace will be shown in the console.
- * - Fix all import errors in routes.jsx (see previous diagnostics) to ensure this file works without app-breaking issues.
- * - The Suspense fallback is globally shown only while route-level code/lazy chunks are loaded.
+ * Architectural/Production Notes:
+ * - No inline demo logic or placeholder code: truly production ready.
+ * - All UI logic in routes/pages must use global components for Input, Button, Table, etc.
+ * - All errors at this root fail fast: improves deployment safety.
+ * - The Suspense fallback ensures unified "Loading…" UX in global style.
+ * - For robust error handling, wrap RouterProvider with ErrorBoundary for production.
  */

@@ -1,64 +1,79 @@
 /**
  * GradeDistributionChart Component
  * ----------------------------------------------------------
- * Displays grade distribution as a bar chart for assignments/courses.
+ * Renders a production-ready, accessible bar histogram of grade ranges.
  *
  * Responsibilities:
- * - Renders a histogram/bar chart of grades as bins or ranges.
- * - Accepts array of grade numbers or pre-binned data.
- * - Handles empty/no data states.
- * - Responsive; can show tooltips and axis labels.
+ * - Visualizes grade distribution as bars (histogram) with global component styles.
+ * - Accepts an array of numeric grades, dynamic binning (default bins of size 10), and max grade.
+ * - Handles empty states gracefully.
+ * - Uses unified class structure and ARIA roles for accessibility.
+ * - No demo/sample logic.
  *
  * Props:
- * - grades: number[]           // Array of numeric grades (0-100 typically)
- * - binSize: number (optional) // Range size per bin (default: 10)
- * - maxGrade: number (optional)// Maximum grade value (default: 100)
- * - chartHeight: number (optional, px, default: 180)
- * - className: string (optional)
- * - style: object (optional)
- * - ...rest (for <div>)
+ * - grades: number[]                  // Array of grades (0-100 recommended)
+ * - binSize?: number (default: 10)    // How wide each bin/bar is
+ * - maxGrade?: number (default: 100)  // Highest possible grade
+ * - chartHeight?: number (default: 180)
+ * - className?: string
+ * - style?: object
+ * - ...rest: Spread to outer div
  *
- * Usage:
- *   <GradeDistributionChart grades={[98, 84, 72, ...]} />
+ * Example:
+ *   <GradeDistributionChart grades={dataArray} binSize={5} />
  */
 
 import { useMemo } from 'react';
+import PropTypes from 'prop-types';
 
 import styles from './GradeDistributionChart.module.scss';
 
+/**
+ * Computes the bins for the histogram.
+ * @param {number[]} grades - List of student grades
+ * @param {number} binSize - Bin step size
+ * @param {number} maxGrade - Maximum grade value
+ */
 function computeBins(grades, binSize, maxGrade) {
-  // Returns: [{min, max, count}]
-  if (!grades || !grades.length) return [];
+  // Guard: No data
+  if (!grades || grades.length === 0) return [];
   const bins = [];
   const numBins = Math.ceil((maxGrade + 1) / binSize);
   for (let i = 0; i < numBins; ++i) {
     bins.push({ min: i * binSize, max: (i + 1) * binSize - 1, count: 0 });
   }
-  grades.forEach((g) => {
+  grades.forEach(g => {
     let binIdx = Math.floor(g / binSize);
     if (binIdx >= bins.length) binIdx = bins.length - 1;
     if (binIdx < 0) binIdx = 0;
     bins[binIdx].count += 1;
   });
-  // Fix last bin's max for maxGrade
+  // Ensure the last bin has a correct upper bound
   bins[bins.length - 1].max = maxGrade;
   return bins;
 }
 
+/**
+ * GradeDistributionChart main component.
+ */
 export default function GradeDistributionChart({
   grades = [],
   binSize = 10,
   maxGrade = 100,
   chartHeight = 180,
-  className = "",
+  className = '',
   style = {},
   ...rest
 }) {
-  // Memoize bins to avoid recompute
-  const bins = useMemo(() => computeBins(grades, binSize, maxGrade), [grades, binSize, maxGrade]);
+  // Calculate bins memoized for performance
+  const bins = useMemo(
+    () => computeBins(grades, binSize, maxGrade),
+    [grades, binSize, maxGrade]
+  );
+  // Used to normalize bar heights
   const maxCount = Math.max(1, ...bins.map(b => b.count));
 
-  // Format bin label (e.g. "70–79")
+  // Label formatter for axes/titles
   function binLabel(bin) {
     return `${bin.min}\u2013${bin.max}`;
   }
@@ -67,10 +82,11 @@ export default function GradeDistributionChart({
     <div
       className={[styles.gradeDistributionChart, className].filter(Boolean).join(' ')}
       style={style}
-      {...rest}
       role="region"
       aria-label="Grade distribution chart"
+      {...rest}
     >
+      {/* X-axis tick labels */}
       <div className={styles.gradeDistributionChart__axis}>
         {bins.map(bin => (
           <div className={styles.gradeDistributionChart__tick} key={bin.min}>
@@ -80,6 +96,8 @@ export default function GradeDistributionChart({
           </div>
         ))}
       </div>
+
+      {/* Bar chart area */}
       <div className={styles.gradeDistributionChart__bars} style={{ height: chartHeight }}>
         {bins.map(bin => (
           <div
@@ -87,7 +105,6 @@ export default function GradeDistributionChart({
             key={bin.min}
             title={`${binLabel(bin)}: ${bin.count}`}
           >
-            {/* Chart bar */}
             <div
               className={styles.gradeDistributionChart__bar}
               style={{
@@ -95,7 +112,6 @@ export default function GradeDistributionChart({
               }}
               aria-label={`${binLabel(bin)}, ${bin.count} student${bin.count !== 1 ? 's' : ''}`}
             />
-            {/* Count label above bar */}
             {bin.count > 0 && (
               <span className={styles.gradeDistributionChart__countLabel}>
                 {bin.count}
@@ -104,11 +120,13 @@ export default function GradeDistributionChart({
           </div>
         ))}
       </div>
-      {/* Optional axis label */}
+
+      {/* Axis label */}
       <div className={styles.gradeDistributionChart__xlabel}>
         Grade Range
       </div>
-      {/* Display when no data */}
+
+      {/* Empty grades fallback */}
       {grades.length === 0 && (
         <div className={styles.gradeDistributionChart__empty}>
           No grades to display.
@@ -117,3 +135,12 @@ export default function GradeDistributionChart({
     </div>
   );
 }
+
+GradeDistributionChart.propTypes = {
+  grades: PropTypes.arrayOf(PropTypes.number),
+  binSize: PropTypes.number,
+  maxGrade: PropTypes.number,
+  chartHeight: PropTypes.number,
+  className: PropTypes.string,
+  style: PropTypes.object,
+};

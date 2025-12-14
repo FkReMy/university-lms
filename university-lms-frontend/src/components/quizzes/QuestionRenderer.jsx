@@ -1,40 +1,33 @@
 /**
  * QuestionRenderer Component
- * ----------------------------------------------------------
- * Renders a quiz question based on its type (multiple-choice, true/false, short answer, etc.).
- *
- * Responsibilities:
- * - Receives a question object and handles rendering and input logic based on its type.
- * - Manages answer selection/entry and triggers onAnswer callback with the new value.
- * - Optionally shows feedback/correct answer (if provided).
+ * ----------------------------------------------------------------------------
+ * Standardized, extensible quiz question renderer for LMS.
+ * - Handles all main question types (MCQ, True/False, Short, Essay).
+ * - Manages all selection/input/answer-change logic and correctness feedback.
+ * - Unified/production-grade: no sample/demo, 100% design-system/class driven.
+ * - Easily extendable for future types: only update switch/handlers.
  *
  * Props:
  * - question: {
  *     id: string|number,
  *     text: string,
  *     type: "multiple-choice" | "true-false" | "short-answer" | "essay" | ...,
- *     options?: string[] (for MC/TF),
+ *     options?: string[],
  *     correctAnswer?: any,
  *     feedback?: string,
  *     required?: bool,
  *     ...others
  *   }
- * - value: user's answer (optional, string/array/etc)
- * - onAnswer: function(value) (required, calls when answer changes)
- * - disabled: bool (optional)      - Disable all inputs
- * - showSolution: bool (optional)  - Show correct solution/feedback view
- * - className: string (optional)
- * - style: object (optional)
- * - ...rest: (other wrapper props)
- *
- * Usage:
- *   <QuestionRenderer
- *     question={{ id, text, type: "multiple-choice", options: [...] }}
- *     value={selected}
- *     onAnswer={setSelected}
- *   />
+ * - value: any                  // User's answer (string, etc.)
+ * - onAnswer: function(value)   // Called when answer changes
+ * - disabled?: bool
+ * - showSolution?: bool
+ * - className?: string
+ * - style?: object
+ * - ...rest: additional outer div props
  */
 
+import PropTypes from 'prop-types';
 import styles from './QuestionRenderer.module.scss';
 
 export default function QuestionRenderer({
@@ -58,29 +51,25 @@ export default function QuestionRenderer({
     required,
   } = question;
 
-  // For MC/TF, normalize selected for radio/checkbox
-  // For text, value is just the string
-  // For TF, options can be ["True", "False"]
+  // Type guards for current question variant
   const isMC = type === "multiple-choice";
   const isTF = type === "true-false";
   const isShort = type === "short-answer";
   const isEssay = type === "essay";
 
-  // Handle change/input logic
+  // Unified option changing: MC/TF both are radiogroups
   const handleChange = (e) => {
     if (disabled || showSolution) return;
-    if (isMC || isTF) {
-      onAnswer(e.target.value);
-    } else if (isShort || isEssay) {
+    if (isMC || isTF || isShort || isEssay) {
       onAnswer(e.target.value);
     }
   };
 
-  // Mark option as correct/incorrect if showSolution
+  // Assign classes for options (correct/incorrect feedback)
   const getOptionClass = (opt) => {
     if (!showSolution) return "";
-    if (Array.isArray(correctAnswer)) {
-      if (correctAnswer.includes(opt)) return styles["questionRenderer__option--correct"];
+    if (Array.isArray(correctAnswer) && correctAnswer.includes(opt)) {
+      return styles["questionRenderer__option--correct"];
     } else if (correctAnswer == null) {
       return "";
     } else if (opt === correctAnswer) {
@@ -91,20 +80,21 @@ export default function QuestionRenderer({
     return "";
   };
 
-  // Compose root class
+  // Root className as per global design-system
   const rootClass = [styles.questionRenderer, className].filter(Boolean).join(' ');
 
   return (
     <div className={rootClass} style={style} {...rest}>
+      {/* Question Title */}
       <div className={styles.questionRenderer__text}>
         {required && <span className={styles["questionRenderer__required"]}>*</span>}
         {text}
       </div>
 
-      {/* Multiple Choice or True/False */}
-          {(isMC || isTF) && (
-            <ul className={styles.questionRenderer__options} role="radiogroup" aria-labelledby={`q-${id}`}>
-              {options.map((opt) => (
+      {/* Multiple Choice / True-False */}
+      {(isMC || isTF) && (
+        <ul className={styles.questionRenderer__options} role="radiogroup" aria-labelledby={`q-${id}`}>
+          {options.map((opt) => (
             <li
               key={opt}
               className={[
@@ -125,12 +115,12 @@ export default function QuestionRenderer({
                 />
                 <span className={styles.questionRenderer__optionText}>{opt}</span>
               </label>
-              {/* Correctness mark */}
+              {/* Correctness visual marks */}
               {showSolution && correctAnswer === opt && (
-                <span className={styles.questionRenderer__badge}>✔</span>
+                <span className={styles.questionRenderer__badge} aria-label="correct">✔</span>
               )}
               {showSolution && value === opt && value !== correctAnswer && (
-                <span className={styles.questionRenderer__badge}>✖</span>
+                <span className={styles.questionRenderer__badge} aria-label="incorrect">✖</span>
               )}
             </li>
           ))}
@@ -146,7 +136,7 @@ export default function QuestionRenderer({
             value={typeof value === "string" ? value : ""}
             onChange={handleChange}
             disabled={disabled || showSolution}
-            placeholder="Type your answer..."
+            placeholder="Type your answer…"
             className={styles.questionRenderer__input}
             autoComplete="off"
             aria-disabled={disabled || showSolution}
@@ -155,7 +145,7 @@ export default function QuestionRenderer({
         </div>
       )}
 
-      {/* Essay (long text) */}
+      {/* Essay (textarea/long answer) */}
       {isEssay && (
         <div className={styles.questionRenderer__inputGroup}>
           <textarea
@@ -172,7 +162,7 @@ export default function QuestionRenderer({
         </div>
       )}
 
-      {/* Feedback/solution area */}
+      {/* Solution/feedback summary */}
       {showSolution && (feedback || (correctAnswer != null)) && (
         <div className={styles.questionRenderer__solution}>
           {correctAnswer != null && (
@@ -193,3 +183,28 @@ export default function QuestionRenderer({
     </div>
   );
 }
+
+QuestionRenderer.propTypes = {
+  question: PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    text: PropTypes.string.isRequired,
+    type: PropTypes.string.isRequired,
+    options: PropTypes.arrayOf(PropTypes.string),
+    correctAnswer: PropTypes.any,
+    feedback: PropTypes.string,
+    required: PropTypes.bool,
+  }).isRequired,
+  value: PropTypes.any,
+  onAnswer: PropTypes.func.isRequired,
+  disabled: PropTypes.bool,
+  showSolution: PropTypes.bool,
+  className: PropTypes.string,
+  style: PropTypes.object,
+};
+
+/**
+ * Production/Architecture Notes:
+ * - No demo/sample logic—props, style, feedback/solution handling are all design-system driven.
+ * - All input types and solution states are accessible and unified.
+ * - Extendable to numeric, file upload, or custom quiz types globally.
+ */

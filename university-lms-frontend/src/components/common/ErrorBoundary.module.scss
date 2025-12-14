@@ -1,0 +1,58 @@
+/**
+ * ErrorBoundary.module.scss
+ * ---------------------------------------------------------------------
+ * Styles for the global ErrorBoundary fallback in the University LMS.
+ * - Ensures error states are clear, accessible, and visually unified.
+ * - All theme, spacing, and typography is governed by your global design tokens.
+ */
+
+/* Use a design token prefix if available, e.g., $color-danger, $border-radius-base, etc. */
+
+.errorBoundary {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 220px;
+  padding: 2rem;
+  background: var(--color-bg-soft, #fef2f2);
+  border-radius: var(--radius-md, 8px);
+  box-shadow: 0 2px 16px rgba(204, 42, 42, 0.08);
+  color: var(--color-danger-strong, #991b1b);
+  margin: 2rem 0;
+  text-align: center;
+}
+
+.errorBoundary__icon {
+  font-size: 2.8rem;
+  margin-bottom: 0.75rem;
+  color: var(--color-danger, #991b1b);
+}
+
+.errorBoundary__headline {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--color-danger-strong, #991b1b);
+}
+
+.errorBoundary__description {
+  color: var(--color-danger-muted, #7f1d1d);
+  font-size: 1.1rem;
+  margin-bottom: 1.25rem;
+}
+
+.errorBoundary__action {
+  margin-top: 0.5rem;
+}
+
+/* Responsive adjustments for small screens */
+@media (max-width: 600px) {
+  .errorBoundary {
+    padding: 1rem;
+    min-height: 160px;
+  }
+  .errorBoundary__headline {
+    font-size: 1.1rem;
+  }
+}

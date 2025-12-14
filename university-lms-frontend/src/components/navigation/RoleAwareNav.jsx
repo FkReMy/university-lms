@@ -1,37 +1,22 @@
 /**
  * RoleAwareNav Component
- * ----------------------------------------------------------
- * Navigation menu that adapts links/items to the active user role.
- *
- * Responsibilities:
- * - Renders nav structure (list or sidebar) based on a user's current role.
- * - Accepts a mapping of role → nav items.
- * - Provides ARIA attributes and accessibility.
+ * ----------------------------------------------------------------------------
+ * Role-driven navigation container for LMS.
+ * - Uses global class styles for layout and color.
+ * - Accessible nav presentation with ARIA roles.
+ * - No demo/sample logic; all links/labels/icons are passed in via navConfig.
  *
  * Props:
- * - role: string                                 - The current/active role (e.g. 'student', 'teacher', 'admin')
- * - navConfig: object (role: array of nav items) - Example: { student: [...], teacher: [...], admin: [...] }
- *   Each nav item: { label, href, icon?: ReactNode, external?: bool }
- * - className: string (optional)                 - Wrapper classes
- * - navProps: object (optional)                  - Extra props for the <nav> element
- * - ...rest: props for root div
- *
- * Usage:
- *   <RoleAwareNav
- *     role="student"
- *     navConfig={{
- *       student: [
- *         { label: "My Courses", href: "/courses" },
- *         { label: "Profile", href: "/profile", icon: <UserIcon /> }
- *       ],
- *       teacher: [
- *         { label: "Teach", href: "/teach" },
- *       ]
- *     }}
- *   />
+ * - role: string (required)       // Current user role ("student", "teacher", "admin", etc)
+ * - navConfig: object (required)  // { [role]: [ { label, href, icon?, external? } ] }
+ * - className?: string
+ * - navProps?: object             // Extra props for <nav>
+ * - ...rest: passed to root <div>
  */
 
+import PropTypes from 'prop-types';
 import { NavLink } from 'react-router-dom';
+
 import styles from './RoleAwareNav.module.scss';
 
 export default function RoleAwareNav({
@@ -41,7 +26,7 @@ export default function RoleAwareNav({
   navProps = {},
   ...rest
 }) {
-  // Get list for current role, fallback to empty array
+  // Get the array of nav items for the current role, or an empty array if missing.
   const navList = navConfig?.[role] || [];
 
   return (
@@ -71,6 +56,7 @@ export default function RoleAwareNav({
                     styles.roleAwareNav__link,
                     isActive ? styles.roleAwareNav__linkActive : ''
                   ].filter(Boolean).join(' ')}
+                  aria-current={({ isActive }) => (isActive ? 'page' : undefined)}
                 >
                   {item.icon && (<span className={styles.roleAwareNav__icon}>{item.icon}</span>)}
                   <span className={styles.roleAwareNav__label}>{item.label}</span>
@@ -83,3 +69,27 @@ export default function RoleAwareNav({
     </div>
   );
 }
+
+RoleAwareNav.propTypes = {
+  role: PropTypes.string.isRequired,
+  navConfig: PropTypes.objectOf(
+    PropTypes.arrayOf(
+      PropTypes.shape({
+        label: PropTypes.string.isRequired,
+        href: PropTypes.string.isRequired,
+        icon: PropTypes.node,
+        external: PropTypes.bool,
+      })
+    )
+  ).isRequired,
+  className: PropTypes.string,
+  navProps: PropTypes.object,
+};
+
+/**
+ * Production/Architecture Notes:
+ * - No magic static links or in-component demo logic: all data comes from props.
+ * - Styling, active state, focus, hover, etc., are defined in RoleAwareNav.module.scss.
+ * - Fully ARIA/accessible and global design-system compliant.
+ * - Role-driven, scalable, and ready for backend/content-driven navigation.
+ */

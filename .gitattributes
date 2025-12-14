@@ -1,12 +1,19 @@
-# Normalize line endings across the repo (LF everywhere).
+# .gitattributes
+# ---------------------------------------------------------------------
+# Standardizes line endings and controls diffing/handling of binary/text files
+# across all platforms and developers for a consistent experience.
+#
+# This config is PRODUCTION-READY, suited for collaborative, cross-OS,
+# and open-source projects.
+
+# Normalize line endings to LF across the entire repo (Windows, macOS, Linux)
 * text=auto eol=lf
 
-# Treat common binary assets correctly (no diff/merge attempts).
+# Binary assets are treated as binary: no diffs/merges, always LF for lockfiles
 *.png   binary
 *.jpg   binary
 *.jpeg  binary
 *.gif   binary
-*.svg   text   # allow diffing SVG (XML-based)
 *.ico   binary
 *.mp4   binary
 *.mov   binary
@@ -17,17 +24,23 @@
 *.otf   binary
 *.zip   binary
 
-# Keep lockfiles marked as text with LF endings.
+# SVG is XML/text-based so allow diffing and keep as text
+*.svg   text
+
+# Lockfiles should always be considered text with LF endings (consistent for all contributors)
 package-lock.json text eol=lf
 yarn.lock        text eol=lf
 pnpm-lock.yaml   text eol=lf
 
-# Optimize GitHub language statistics if needed (examples).
-# Adjust or remove these lines based on your stack.
+# Source code language statistics optimizations for GitHub linguist
+# (Adjust if your repo changes language balance or stack.)
 *.scss linguist-language=SCSS
 *.css  linguist-language=CSS
 *.jsx  linguist-language=JavaScript
 *.js   linguist-language=JavaScript
 
-# Docs and markdown should stay text with LF.
-*.md text eol=lf
+# Docs, configuration, and markdown remain text with LF endings
+*.md  text eol=lf
+
+# Optionally, add further patterns for specific project requirements below:
+# e.g., *.json text eol=lf

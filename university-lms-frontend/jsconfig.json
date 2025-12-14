@@ -1,16 +1,11 @@
 {
-  // JS project config for editor IntelliSense / path aliases.
-  // Notes:
-  // - TypeScript 6 deprecates baseUrl/moduleResolution=node10. We keep baseUrl for paths
-  //   and silence the notice with ignoreDeprecations: "6.0".
-  // - moduleResolution "bundler" matches Vite/ESM setups.
+  // JS project config for editor IntelliSense & path aliases.
   "compilerOptions": {
+    // Silences TS 6 deprecation warning (only affects JS projects).
     "ignoreDeprecations": "6.0",
+    "baseUrl": ".",         // All paths relative to project root
 
-    // Path alias base (keep "." so aliases resolve from project root)
-    "baseUrl": ".",
-
-    // Aliases (map "@/..." to src/...)
+    // Path aliases, must match your Vite config and IDE settings:
     "paths": {
       "@/*": ["src/*"],
       "@/assets/*": ["src/assets/*"],
@@ -24,28 +19,18 @@
       "@/pages/*": ["src/pages/*"]
     },
 
-    // JS/JSX settings
     "jsx": "react-jsx",
     "module": "esnext",
     "moduleResolution": "bundler",
     "target": "esnext",
 
-    // Useful flags
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
     "checkJs": false,
-
-    // Prevent TS from trying to auto-include missing @types (avoids the jsx-a11y type lookup)
     "types": []
   },
-
-  // Scope JS/JSX files
   "include": ["src"],
-
-  // Exclude build and dependencies
   "exclude": ["node_modules", "dist"],
-
-  // Optional: further restrict automatic type acquisition
   "typeAcquisition": {
     "enable": true,
     "exclude": ["eslint-plugin-jsx-a11y"]

@@ -1,80 +1,79 @@
 # University LMS Frontend
 
-A React + Vite based front-end for a University Learning Management System (LMS).  
-It is designed around a PostgreSQL schema that models users, roles, courses, quizzes, assignments, grades, and file management.
+A **production-ready React + Vite** frontend for a University Learning Management System (LMS), to be connected to a Python FastAPI (MVC) backend using PostgreSQL.
 
 ---
 
 ## Tech Stack
+
 - **Build tool:** Vite
 - **Framework:** React (JSX, functional components, hooks)
-- **Styling:** SCSS modules + global SCSS
-- **State management:** Lightweight custom stores (e.g., Zustand) in `src/store/`
-- **HTTP client:** Axios
-- **Routing:** React Router
-- **Realtime:** WebSocket client wrappers in `src/services/realtime/`
-- *(Comment: You can swap libraries if you keep the structure intact.)*
+- **Styling:** SCSS modules + global SCSS tokens
+- **UI:** Centralized, reusable global components (Button, Input, Select, Table, Badge, Card, Sidebar, Topbar, etc.)
+- **State management:** Global store (Zustand or equivalent) in `src/store/`
+- **HTTP client:** Axios with interceptors
+- **Routing:** React Router v6+
+- **Realtime:** WebSocket support in `src/services/realtime/`
 
 ---
 
 ## Project Structure
-```text
+
+```txt
 university-lms-frontend/
-├── public/                 # Static assets served as-is
+├── public/                   # Static, publicly served assets
 └── src/
-    ├── assets/             # Fonts, images, SVGs
-    ├── styles/             # Global + partial SCSS
-    ├── lib/                # Constants, utilities, validators, formatters
+    ├── assets/               # Fonts, images, SVGs
+    ├── styles/               # Global SCSS, tokens, themes
+    ├── lib/                  # Utilities, constants, validators, formatters
     ├── services/
-    │   ├── api/            # Axios instance & feature-specific API modules
-    │   └── realtime/       # WebSocket wrappers (notifications, quizzes, etc.)
-    ├── store/              # App-level and domain-specific stores
-    ├── hooks/              # Reusable hooks and domain hooks
-    ├── router/             # React Router configuration and guards
-    ├── components/         # UI library + feature components
-    └── pages/              # Route-level pages grouped by domain
+    │   ├── api/              # API adapters for each domain (axios-based)
+    │   └── realtime/         # WebSocket/service wrappers
+    ├── store/                # Global and domain-specific store modules
+    ├── hooks/                # Custom and domain hooks
+    ├── router/               # Routing config, guards, route helpers
+    ├── components/           # Global UI library and feature components
+    └── pages/                # Route-level pages by domain (no business logic here)
 ```
 
-*(Comment: The folder layout maps cleanly to backend domains for easier maintenance.)*
+> **Folder layout is aligned to backend and database domains for traceable, maintainable development.**
 
-Backend-aligned domains (example tables):
-- `users`, `user_roles`, `admins`, `students`, `professors`, `associate_teachers`
-- `departments`, `specializations`
-- `course_catalog`, `course_offerings`, `course_enrollments`
-- `section_groups`, `student_section_assignments`
-- `academic_sessions`, `rooms`, `scheduled_slots`
-- `quizzes`, `questions`, `question_options`, `quiz_attempts`, `quiz_answers`, `quiz_files`, `quiz_file_submissions`
-- `assignments`, `assignment_files`, `assignment_submissions`
-- `grades`
-- `uploaded_files`
+**Typical backend-aligned domains:**
+- users, user_roles, admins, students, professors, associate_teachers
+- departments, specializations
+- course_catalog, course_offerings, course_enrollments
+- section_groups, student_section_assignments
+- academic_sessions, rooms, scheduled_slots
+- quizzes, questions, question_options, quiz_attempts, quiz_answers, quiz_files, quiz_file_submissions
+- assignments, assignment_files, assignment_submissions
+- grades, uploaded_files
 
-*(Comment: Each domain should have a `services/api/*Api.js` module and route pages in `src/pages/`.)*
+Each should have a matching API module and page(s).
 
 ---
 
 ## Getting Started
 
 ### Prerequisites
-- Node.js (LTS recommended, e.g., >= 18)
-- npm (or yarn/pnpm; scripts assume npm)
+- [Node.js LTS](https://nodejs.org/) (v18+ strongly recommended)
+- npm (or yarn/pnpm – scripts assume npm)
 
 ### Install dependencies
 ```bash
 npm install
 ```
 
-### Run development server
+### Run in development
 ```bash
 npm run dev
 ```
-*(Comment: Vite prints a local dev URL, usually http://localhost:5173.)*
 
 ### Build for production
 ```bash
 npm run build
 ```
 
-### Preview production build
+### Preview production build locally
 ```bash
 npm run preview
 ```
@@ -82,83 +81,83 @@ npm run preview
 ---
 
 ## Environment Variables
-Create a `.env` file in the project root (do **not** commit it):
-```bash
-cp .env.example .env
-```
 
-Typical variables:
-```bash
-VITE_API_BASE_URL=http://localhost:3000/api
-VITE_WS_BASE_URL=ws://localhost:3000
-```
-*(Comment: Adjust to match your backend endpoints.)*
+1. Copy `.env.example` to `.env` (never commit secrets):
+    ```sh
+    cp .env.example .env
+    ```
+2. Example:
+    ```env
+    VITE_API_BASE_URL=http://localhost:8000/api
+    VITE_WS_BASE_URL=ws://localhost:8000/ws
+    ```
+3. Adjust as needed for your backend service URLs.
 
 ---
 
 ## Role-Based Access & Routing
 
-Supported roles (from `user_roles.role`):
-- `Admin`
-- `Professor`
-- `AssociateTeacher`
-- `Student`
-
-Front-end routing:
-- `src/router/routes.jsx` – central route definitions
-- `ProtectedRoute.jsx` – blocks unauthenticated users
-- `AdminRoute.jsx`, `ProfessorRoute.jsx`, `AssociateRoute.jsx`, `StudentRoute.jsx` – role-based guards
-
-Helpers & state:
-- `src/store/authStore.js` – current user/role snapshot
-- `src/hooks/useAuth.js` – login, logout, load current user
-- `src/hooks/useRoleAccess.js` – role helpers (`isAdmin`, `isProfessor`, `canGrade`, etc.)
-- `src/components/layout/RoleSwitcher.jsx` – dev-only role switcher (remove in prod)
-
-*(Comment: Keep guards aligned with backend role definitions to avoid drift.)*
+- Roles: Admin, Professor, AssociateTeacher, Student (see `user_roles` table)
+- Routing: Defined centrally in `src/router/routes.jsx`
+    - Role-based redirect/guards (AdminRoute, ProfessorRoute, etc.)
+    - Use `<ProtectedRoute>` for authentication checks
+- State: Auth/user in `src/store/authStore.js`
+- Auth helpers: `src/hooks/useAuth.js`, `useRoleAccess.js`
+- Navigation: Always use global Sidebar and Topbar for unified experience
+- UI navigation: All internal links use `<Link>` from React Router
 
 ---
 
 ## API Layer
 
-Domain-specific modules (examples):
-- `authApi.js` – login, logout, refresh current user
-- `userApi.js` – CRUD for users & roles
-- `departmentApi.js` – departments & specializations
-- `courseApi.js` – catalog and offerings
-- `enrollmentApi.js` – enrollments
-- `sectionApi.js` – sections and assignments
-- `sessionApi.js` – academic sessions, rooms, schedule slots
-- `quizApi.js` – quizzes, questions, options, attempts, answers, attachments
-- `assignmentApi.js` – assignments and submissions
-- `gradeApi.js` – grades and gradebook views
-- `fileApi.js` – file uploads and library management
-
-*(Comment: All use `axiosInstance.js` for base URL, auth headers, and interceptors.)*
+- API logic modularized in `src/services/api/DOMAINApi.js`
+    - All use a shared `axiosInstance.js` for consistent auth/headers/interceptors
+- Example modules:  
+  `authApi.js`, `userApi.js`, `departmentApi.js`, `courseApi.js`, `enrollmentApi.js`, etc.
 
 ---
 
-## Styling
+## Styling & Theming
 
-- `src/styles/global.scss` is imported in `main.jsx` (reset, tokens, typography).
-- Component styles use `.module.scss` for scoping.
-- Shared tokens and helpers:
-  - `_variables.scss`
-  - `_mixins.scss`
-  - `_typography.scss`
-  - `_themes.scss`
-  - `_reset.scss`
-  - `_animations.scss`
+- Global styles: `src/styles/global.scss` (imported in main entry)
+- Tokens/variables: `_variables.scss`, `_mixins.scss`, etc.
+- All component/module-level styles are scoped via `.module.scss`
+- **No inline or demo styles permitted.**
 
 ---
 
-## Development Notes
+## UI & Component System
 
-- Use `src/lib/constants.js` to centralize enums/statuses (roles, quiz types, etc.).
-- Keep forms, filters, and guards in sync with backend schema.
-- Prefer feature folders in `pages/` and `components/` so each domain is easy to find.
+- Only use standardized components for:
+    - Forms/fields: `<Input>`, `<Select>`, `<Button>`
+    - Layout: `<AppShell>`, `<Sidebar>`, `<Topbar>`
+    - Tables/data display: `<Table>`, `<Badge>`, `<Card>`
+    - Navigation: `<Link>`
+- Business logic (status color, role labels, etc.) and date/number formatting centralized in `src/lib/` utilities.
+- All pages must use these shared UI components: NO custom or duplicate markup/logic.
+
+---
+
+## Development Guidelines
+
+- All business/domain logic lives in API or store layers, **not** in page components.
+- Keep UI composition logic in page/layout, not state or data transformations.
+- Write all new pages/components to consume API/store data directly – no local “sample” data.
+- Remove all demo/sample logic before production!
+- Use error boundaries, loading states, and guard CLIs for production robustness.
+- Commit code only after running lint, typecheck (if using TS), and full build.
 
 ---
 
 ## License
-Internal / educational use.
+
+**Internal or Educational Use Only. Not for production without IT/security review and code audit.**
+
+---
+
+**For backend Python/FastAPI/PostgreSQL integration:**  
+Ensure all endpoints and models are aligned with the APIs expected by the frontend. All connectivity, data schema, and security logic should be handled server-side.
+
+---
+
+*This project is production-focused: clean, modular, testable, and ready for real backend integration.*

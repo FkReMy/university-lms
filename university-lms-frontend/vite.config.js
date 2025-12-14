@@ -1,18 +1,22 @@
+/**
+ * Vite configuration for University LMS Frontend
+ * --------------------------------------------------------------------------
+ * - Enables React fast refresh and modern JSX support.
+ * - Standardizes path aliases (update here and in jsconfig/tsconfig for sync).
+ * - Dev server: accessible on all interfaces, allows external testing, runs on port 5000.
+ * - Source maps enabled for easier production debugging.
+ * - No demo/samples – production-ready baseline.
+ */
+
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
-/*
- * Vite configuration for the University LMS frontend.
- * - React plugin for JSX/fast refresh.
- * - Path aliases aligned with jsconfig.json for cleaner imports.
- * - Dev server defaults (port 5173, auto-open).
- * - Build generates sourcemaps for easier debugging in production.
- */
-
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react()
+  ],
 
-  // Resolve aliases to avoid long relative paths (e.g., "../../../components")
+  // Path aliases for clean and consistent imports across the repo
   resolve: {
     alias: {
       '@': '/src',
@@ -28,14 +32,18 @@ export default defineConfig({
     },
   },
 
-  // Dev server settings
   server: {
-    port: 5173,
-    open: true, // auto-open browser on dev start
+    port: 5000,          // Accessible at http://localhost:5000/
+    host: '0.0.0.0',     // Listen on all network interfaces
+    allowedHosts: 'all', // Accept requests from any host (internal/external)
+    open: false,         // Do not auto-open browser (CI/CD/devops friendly)
   },
 
-  // Build settings
   build: {
-    sourcemap: true, // generate source maps for production debugging
+    sourcemap: true,      // Enable source maps for production debugging
+    outDir: 'dist',       // Production build output directory
+    emptyOutDir: true,    // Clean output dir on build
+    minify: 'esbuild',    // Use esbuild for fast minification
+    reportCompressedSize: true, // Show compressed size in build logs
   },
 });

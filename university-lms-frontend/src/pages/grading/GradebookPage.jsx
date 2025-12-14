@@ -15,8 +15,9 @@
  */
 
 import { useEffect, useState } from 'react';
-import Table from '../../components/ui/table';    // Design system Table
+
 import Input from '../../components/ui/input';    // Design system Input
+import Table from '../../components/ui/table';    // Design system Table
 
 import styles from './GradebookPage.module.scss';
 

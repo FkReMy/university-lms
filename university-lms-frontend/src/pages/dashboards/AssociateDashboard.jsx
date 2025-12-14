@@ -14,8 +14,11 @@
 
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+
 import GradeDistributionChart from '../../components/analytics/GradeDistributionChart';
+
 import styles from './AssociateDashboard.module.scss';
+
 import { ROUTES } from '@/lib/constants';
 
 export default function AssociateDashboard() {

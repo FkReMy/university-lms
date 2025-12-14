@@ -1,29 +1,24 @@
 /**
  * EmptyState Component
  * ----------------------------------------------------------
- * A reusable empty state UI for cases where there is no data to display.
+ * A production-grade, global empty-state UI for the LMS.
  *
  * Responsibilities:
- * - Shows an illustration, label, and optional description/cta when a page or section is empty.
- * - Provides a consistently branded, cheerful fallback UI.
+ * - Render a clean, branded empty state across all pages and sections.
+ * - Accepts unified icon, label, description, and global action/button as props.
+ * - Accessible, stylable, and never demo/sample code.
  *
  * Props:
- * - icon: ReactNode (optional)        - Illustration or icon to show.
- * - label: string (required)          - Main message/title.
- * - description: ReactNode (optional) - Subtext or instructions.
- * - action: ReactNode (optional)      - Button or link for call to action.
- * - className: string (optional)      - Extra wrapper class.
- * - style: object (optional)          - Inline style.
- * - ...rest: (other props for <section>)
- *
- * Usage:
- *   <EmptyState
- *     icon={<ArchiveIcon />}
- *     label="No assignments yet"
- *     description="You haven't been assigned any tasks for this course."
- *     action={<button>Add Task</button>}
- *   />
+ * - icon: ReactNode (optional)        - Illustration/icon, use global iconography (not local SVGs).
+ * - label: string (required)          - Main headline/message.
+ * - description: ReactNode (optional) - Further instructions or context.
+ * - action: ReactNode (optional)      - Use only global components for CTA (Button, Link, etc.).
+ * - className: string (optional)      - For BEM/SCSS/utility class customization.
+ * - style: object (optional)
+ * - ...rest: Spread to root <section>.
  */
+
+import PropTypes from 'prop-types';
 
 import styles from './EmptyState.module.scss';
 
@@ -49,12 +44,15 @@ export default function EmptyState({
         </div>
       )}
       <div className={styles.emptyState__main}>
+        {/* Label/headline */}
         <h2 className={styles.emptyState__label}>{label}</h2>
+        {/* Optional description or subtext */}
         {description && (
           <div className={styles.emptyState__description}>
             {description}
           </div>
         )}
+        {/* Optional action (global Button/Link/Dropdown only) */}
         {action && (
           <div className={styles.emptyState__action}>
             {action}
@@ -64,3 +62,21 @@ export default function EmptyState({
     </section>
   );
 }
+
+EmptyState.propTypes = {
+  icon: PropTypes.node,
+  label: PropTypes.string.isRequired,
+  description: PropTypes.node,
+  action: PropTypes.node,
+  className: PropTypes.string,
+  style: PropTypes.object,
+};
+
+/**
+ * Architectural/UX Notes:
+ * - Use across all pages/sections for consistent branding and empty-data fallback.
+ * - Always use global design-system components for icon and action/CTA.
+ * - No sample or local/duplicate markup—centralized for all teams/features.
+ * - ARIA and semantic heading markup improve accessibility.
+ * - Extensible for theme, dark mode, or different illustration packs.
+ */

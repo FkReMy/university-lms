@@ -7,9 +7,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
+import styles from './CourseOfferingDetailPage.module.scss';
+
 import Button from '@/components/ui/button';
 import { ROUTES } from '@/lib/constants';
-import styles from './CourseOfferingDetailPage.module.scss';
 
 const DEMO_OFFERINGS = [
   {

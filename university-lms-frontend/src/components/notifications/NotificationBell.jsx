@@ -1,39 +1,27 @@
 /**
  * NotificationBell Component
- * ----------------------------------------------------------
- * A bell icon/button that shows a notification count and opens a dropdown panel of notifications.
- *
- * Responsibilities:
- * - Shows a notification bell (with badge for unread count).
- * - Opens/closes notifications panel on click.
- * - Handles keyboard accessibility (Esc closes, focus trap, etc).
- * - Renders a list of notification items (supplied as prop or children).
+ * ----------------------------------------------------------------------------
+ * LMS production global notification bell.
+ * - Global badge/button + drop-down notifications panel (keyboard accessible).
+ * - Only global styles, tokens, and components; NO demo/sample logic.
+ * - Badge shows count, drop-down as menu of notifications; slot for custom children.
+ * - Extensible for global notification state/feature flags.
  *
  * Props:
- * - count: number (optional, for unread badge)
- * - notifications: array (optional, list of notification objects)
- *      notification: { id, title, description, time, icon? }
- * - renderNotification: fn(notification) => ReactNode (optional, custom render)
- * - children: ReactNode (optional, to override default dropdown panel)
- * - label: string (optional, aria-label/title, default: "Notifications")
- * - className: string (optional, for root)
- * - bellIcon: ReactNode (optional, use custom icon)
- * - ...rest: (other button props)
- *
- * Usage:
- *   <NotificationBell
- *     count={3}
- *     notifications={[
- *       { id: 1, title: "Assignment graded", description: "Your quiz was graded.", time: "2h ago" }
- *     ]}
- *   />
+ * - count?: number                  // Unread badge (shows only if > 0)
+ * - notifications?: array           // [{ id, title, description, time, icon? }]
+ * - renderNotification?: fn(n)      // Custom notification renderer (optional)
+ * - children?: ReactNode            // If present, overrides notification list
+ * - label?: string                  // ARIA-label/title (defaults "Notifications")
+ * - className?: string
+ * - bellIcon?: ReactNode
+ * - ...rest: (button props)
  */
-
 import { useState, useRef, useEffect } from 'react';
-
+import PropTypes from 'prop-types';
 import styles from './NotificationBell.module.scss';
 
-// Default bell SVG icon
+// Default SVG bell icon
 function BellIcon() {
   return (
     <svg width="26" height="26" viewBox="0 0 26 26" fill="none" aria-hidden="true">
@@ -45,7 +33,7 @@ function BellIcon() {
   );
 }
 
-// Default notification item renderer
+// Default notification item renderer (uses only design-system classes)
 function DefaultNotificationItem({ n }) {
   return (
     <div className={styles.notificationBell__item}>
@@ -61,6 +49,16 @@ function DefaultNotificationItem({ n }) {
   );
 }
 
+DefaultNotificationItem.propTypes = {
+  n: PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    title: PropTypes.string.isRequired,
+    description: PropTypes.string,
+    time: PropTypes.string,
+    icon: PropTypes.node,
+  }).isRequired,
+};
+
 export default function NotificationBell({
   count,
   notifications = [],
@@ -75,7 +73,7 @@ export default function NotificationBell({
   const btnRef = useRef(null);
   const panelRef = useRef(null);
 
-  // Handle click outside or Escape to close
+  // Handle click outside and Escape key to close the dropdown
   useEffect(() => {
     if (!open) return;
     const handle = (e) => {
@@ -90,15 +88,14 @@ export default function NotificationBell({
         btnRef.current && btnRef.current.focus();
       }
     };
-    document.addEventListener('mousedown', handle);
-    document.addEventListener('keydown', handle);
+    document.addEventListener('mousedown', handle, true);
+    document.addEventListener('keydown', handle, true);
     return () => {
-      document.removeEventListener('mousedown', handle);
-      document.removeEventListener('keydown', handle);
+      document.removeEventListener('mousedown', handle, true);
+      document.removeEventListener('keydown', handle, true);
     };
   }, [open]);
 
-  // Button class handling
   const rootClass = [styles.notificationBell, className].filter(Boolean).join(' ');
 
   return (
@@ -124,7 +121,7 @@ export default function NotificationBell({
         )}
       </button>
 
-      {/* Dropdown notifications panel */}
+      {/* Dropdown notification list panel */}
       {open && (
         <div
           className={styles.notificationBell__panel}
@@ -154,3 +151,22 @@ export default function NotificationBell({
     </div>
   );
 }
+
+NotificationBell.propTypes = {
+  count: PropTypes.number,
+  notifications: PropTypes.array,
+  renderNotification: PropTypes.func,
+  children: PropTypes.node,
+  label: PropTypes.string,
+  className: PropTypes.string,
+  bellIcon: PropTypes.node,
+};
+
+/**
+ * Production/Architecture Notes:
+ * - Only global styles and classes applied: theme via NotificationBell.module.scss
+ * - All notification panel and items must use design-system slots.
+ * - Panel is keyboard accessible and escape/click closes reliably.
+ * - Badge only shown if count > 0; max "99+" for visual clarity.
+ * - No inline demo, sample, or ad hoc logic.
+ */

@@ -1,30 +1,27 @@
 /**
  * LoadingState Component
- * ----------------------------------------------------------
- * Simple, reusable loading indicator for async content.
- *
- * Responsibilities:
- * - Shows a centered spinner (SVG or custom) and optional label.
- * - Can be used in place of page/section content during data loading.
- * - Accessible with ARIA label and roles.
+ * -------------------------------------------------------------------------
+ * Production-grade, unified loading indicator for async page/section content.
+ * - Displays a consistent, accessible, and branded spinner/loading label.
+ * - Includes default spinner (global style) or accepts a design-system override.
+ * - No sample, demo, or inline-specific logic.
  *
  * Props:
- * - label: string (optional, defaults to "Loading…")
- * - spinner: ReactNode (optional, supply custom spinner, overrides default SVG)
- * - className: string (optional wrapper class)
- * - style: object (optional inline style)
- * - ...rest: any other props for <section>
- *
- * Usage:
- *   <LoadingState />
- *   <LoadingState label="Loading assignments…" />
- *   <LoadingState spinner={<PulseLoader />} />
+ * - label?: string         // Optional, for ARIA label (default "Loading…")
+ * - spinner?: ReactNode    // Use to override default (must be design-system spinner!)
+ * - className?: string
+ * - style?: object
+ * - ...rest: any extra props forwarded to root <section>
  */
 
+import PropTypes from 'prop-types';
 import styles from './LoadingState.module.scss';
 
+/**
+ * Renders a consistent SVG spinner (use only for default loading).
+ * You can override via `spinner` prop for branded/dark-mode/etc.
+ */
 function DefaultSpinner() {
-  // A simple animated SVG spinner (12-dot fade)
   return (
     <span className={styles.loadingState__spinner} aria-hidden="true">
       <svg
@@ -35,6 +32,7 @@ function DefaultSpinner() {
         stroke="#2563eb"
         strokeWidth="3"
         role="presentation"
+        aria-hidden="true"
       >
         <circle
           cx="22"
@@ -66,6 +64,10 @@ function DefaultSpinner() {
   );
 }
 
+/**
+ * LoadingState main component.
+ * All loading indicators use this for visual/UX consistency.
+ */
 export default function LoadingState({
   label = "Loading…",
   spinner,
@@ -91,3 +93,18 @@ export default function LoadingState({
     </section>
   );
 }
+
+LoadingState.propTypes = {
+  label: PropTypes.string,
+  spinner: PropTypes.node,
+  className: PropTypes.string,
+  style: PropTypes.object,
+};
+
+/**
+ * Production/Architecture Notes:
+ * - No demo/sample logic: always a unified entry point for all async state UX across the LMS.
+ * - All styles, motion, and color tokens are scoped in LoadingState.module.scss.
+ * - May be used in any section/page Suspense fallback or while data loads.
+ * - ARIA attributes for full screen reader support.
+ */

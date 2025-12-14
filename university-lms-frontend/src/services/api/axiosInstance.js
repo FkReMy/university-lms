@@ -8,6 +8,7 @@
  */
 
 import axios from 'axios';
+
 import { useAuthStore } from '@/store/authStore';
 
 // -----------------------------------------------------------------------------
@@ -77,8 +78,16 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   (response) => response.data,
   (error) => {
+    // Handle 401 Unauthorized - logout user
+    if (error.response?.status === 401) {
+      const authStore = useAuthStore.getState();
+      if (authStore.isAuthenticated) {
+        authStore.logout();
+      }
+      error.message = 'Session expired. Please log in again.';
+    }
     // Normalize network/timeouts
-    if (error.code === 'ECONNABORTED') {
+    else if (error.code === 'ECONNABORTED') {
       error.message = 'Request timed out. Please try again.';
     } else if (!error.response) {
       error.message = 'Network error. Check your connection and try again.';

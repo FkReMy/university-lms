@@ -13,6 +13,7 @@
  */
 
 import { useEffect, useMemo } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 import { useAuthStore } from '@/store/authStore';
 
@@ -28,7 +29,7 @@ export function useAuth() {
     logout,
     updateUser,
     hydrate,
-  } = useAuthStore((state) => ({
+  } = useAuthStore(useShallow((state) => ({
     user: state.user,
     token: state.token,
     ready: state.ready,
@@ -39,7 +40,7 @@ export function useAuth() {
     logout: state.logout,
     updateUser: state.updateUser,
     hydrate: state.hydrate,
-  }));
+  })));
 
   useEffect(() => {
     if (!ready) {

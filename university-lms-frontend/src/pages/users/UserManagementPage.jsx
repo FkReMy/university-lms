@@ -16,10 +16,10 @@
 
 import { useEffect, useState } from 'react';
 
+import Badge from '../../components/ui/badge';   // UI consistent badge
+import Button from '../../components/ui/button'; // UI consistent button
 import Input from '../../components/ui/input';   // UI consistent input
 import Select from '../../components/ui/select'; // UI consistent select
-import Button from '../../components/ui/button'; // UI consistent button
-import Badge from '../../components/ui/badge';   // UI consistent badge
 
 import styles from './UserManagementPage.module.scss';
 

@@ -1,34 +1,21 @@
 /**
  * RoleSwitcher Component
- * ----------------------------------------------------------
- * A UI control for switching between user roles (e.g., Student, Teacher, Admin).
- *
- * Responsibilities:
- * - Displays the current active role.
- * - Allows user to select a different role from a dropdown menu.
- * - Calls onChange handler with new role.
- * - Keyboard accessible and styled with a CSS module.
+ * ---------------------------------------------------------------------------
+ * Production-grade UI control for switching between user roles (e.g. Student, Admin).
+ * - Uses only global primitives and design system styles.
+ * - Fully accessible: keyboard support, ARIA, screen reader compliant.
+ * - Never demo/sample-specific logic; no magic role labels in code.
  *
  * Props:
  * - roles: Array<{ label: string, value: string, icon?: ReactNode }>
- * - value: string                - Current active role value.
- * - onChange: function(newValue) - Called when a new role is selected.
- * - className: string (optional) - Extra class for wrapper.
- * - ...rest: other props for <div>.
- *
- * Usage:
- *   <RoleSwitcher
- *     roles={[
- *       { label: "Student", value: "student", icon: <StudentIcon /> },
- *       { label: "Teacher", value: "teacher", icon: <TeacherIcon /> },
- *       { label: "Admin", value: "admin", icon: <AdminIcon /> },
- *     ]}
- *     value={currentRole}
- *     onChange={setCurrentRole}
- *   />
+ * - value: string (active role value)
+ * - onChange: function(newValue: string)
+ * - className?: string
+ * - ...rest: (props for root <div>)
  */
 
-import React, { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import PropTypes from 'prop-types';
 
 import styles from './RoleSwitcher.module.scss';
 
@@ -43,14 +30,14 @@ export default function RoleSwitcher({
   const btnRef = useRef(null);
   const dropdownRef = useRef(null);
 
-  // Find the selected role object
+  // Find the active role
   const activeRole = roles.find(r => r.value === value) || roles[0];
 
-  // Toggle dropdown
-  const toggle = () => setOpen((o) => !o);
+  // Toggle and close helpers
+  const toggle = () => setOpen(prev => !prev);
   const close = () => setOpen(false);
 
-  // Handle keyboard nav and focus
+  // Keyboard and focus navigation support
   const handleKeyDown = e => {
     if (e.key === "Escape") {
       close();
@@ -61,8 +48,8 @@ export default function RoleSwitcher({
     }
   };
 
-  // Handle click outside
-  React.useEffect(() => {
+  // Outside click handler to close dropdown
+  useEffect(() => {
     if (!open) return;
     const handleClick = e => {
       if (
@@ -108,7 +95,7 @@ export default function RoleSwitcher({
         </span>
       </button>
 
-      {/* Dropdown Menu */}
+      {/* Accessible Dropdown Menu */}
       <ul
         ref={dropdownRef}
         id="role-switcher-menu"
@@ -148,3 +135,24 @@ export default function RoleSwitcher({
     </div>
   );
 }
+
+RoleSwitcher.propTypes = {
+  roles: PropTypes.arrayOf(
+    PropTypes.shape({
+      label: PropTypes.string.isRequired,
+      value: PropTypes.string.isRequired,
+      icon: PropTypes.node,
+    })
+  ).isRequired,
+  value: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+  className: PropTypes.string,
+};
+
+/**
+ * Production/Architecture Notes:
+ * - RoleSwitcher is a presentational/global component; no sample logic or "magic" roles hardcoded.
+ * - All icons/labels/buttons passed in must be from the design system.
+ * - All keyboard and ARIA interactions are included.
+ * - Extensible for theme, feature flags, or org-specific role sets.
+ */

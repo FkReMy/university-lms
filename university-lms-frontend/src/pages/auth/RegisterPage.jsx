@@ -7,8 +7,9 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
-import { ROUTES } from '@/lib/constants';
 import styles from './LoginPage.module.scss';
+
+import { ROUTES } from '@/lib/constants';
 
 export default function RegisterPage() {
   const navigate = useNavigate();

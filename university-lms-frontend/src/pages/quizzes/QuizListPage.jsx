@@ -15,10 +15,10 @@
 
 import { useEffect, useState } from 'react';
 
+import Badge from '../../components/ui/badge';   // Consistent styled badge
+import Button from '../../components/ui/button'; // Consistent styled button
 import Input from '../../components/ui/input';   // Consistent styled input
 import Select from '../../components/ui/select'; // Consistent styled select
-import Button from '../../components/ui/button'; // Consistent styled button
-import Badge from '../../components/ui/badge';   // Consistent styled badge
 
 import styles from './QuizListPage.module.scss';
 

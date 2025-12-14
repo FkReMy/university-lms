@@ -2,33 +2,38 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <!-- Title and basic SEO -->
+
+    <!--
+      University LMS - Production Frontend Entry
+      ------------------------------------------
+      - SEO-friendly title/description for institutions.
+      - Progressive enhancement & best practices for webapps.
+      - Only essential external resources and meta tags.
+    -->
+
     <title>University LMS</title>
-    <meta
-      name="description"
-      content="University Learning Management System – courses, quizzes, assignments, grades, and more."
-    />
+    <meta name="description" content="University Learning Management System: courses, quizzes, assignments, grades, and more – powered by React and Vite." />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- Progressive enhancement: theme color for address bar on mobile -->
+    <!-- Set theme color for browser chrome (mobile address bar, etc.) -->
     <meta name="theme-color" content="#2563EB" />
 
-    <!-- Favicon & PWA manifest -->
+    <!-- Favicon & Web App Manifest -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="manifest" href="/manifest.webmanifest" />
 
-    <!-- Preconnects for faster font loading (optional if self-hosting fonts) -->
+    <!-- (Optional) Preconnect for faster hosted font load (remove if self-hosted) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
 
-    <!-- Hosted font example: Inter (remove if fully self-hosted in assets) -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-  </head>
+    <!-- Optional: Hosted "Inter" font, remove if using asset pipeline/font-face -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
+    <!-- Global stylesheet (if not handled dynamically in main.jsx) -->
+    <!-- <link rel="stylesheet" href="/src/styles/global.scss" /> -->
+    
+  </head>
   <body>
-    <!-- React mounts here -->
+    <!-- React application mounts here via Vite -->
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

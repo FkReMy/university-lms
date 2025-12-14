@@ -1,32 +1,23 @@
 /**
  * QuestionNavigator Component
- * ----------------------------------------------------------
- * Provides navigation controls for quiz question pages.
- *
- * Responsibilities:
- * - Renders numbered buttons or dots for each question.
- * - Allows navigation to previous/next or directly jump to a question.
- * - Shows progress/completion (e.g., which answered), disables/hides buttons as needed.
+ * ---------------------------------------------------------------------------
+ * Unified quiz question navigation UI.
+ * - Provides navigation dots or numbers for all questions in a quiz.
+ * - Accessible, themeable, no sample/demo logic.
+ * - Shows active, answered, and disables prev/next when appropriate.
  *
  * Props:
- * - total: number (required)            - Total number of questions.
- * - current: number (required, 0-based) - Current active question index.
- * - answered: array of bool (length: total) (optional)  - True for answered.
- * - onNavigate: fn(targetIndex) (required)              - Handler for jumps.
- * - showPrevNext: bool (default true)   - Show Prev/Next controls.
- * - className: string (optional)
- * - style: object (optional)
- * - ...rest (props for <nav>)
- *
- * Usage:
- *   <QuestionNavigator
- *     total={10}
- *     current={2}
- *     answered={[true, false, ...]}
- *     onNavigate={setIdx}
- *   />
+ * - total: number (REQUIRED)               // Total question count
+ * - current: number (REQUIRED, 0-based)    // Current active question index
+ * - answered?: boolean[]                   // Marks questions as answered (optional)
+ * - onNavigate: function(targetIdx)        // Callback on navigation (REQUIRED)
+ * - showPrevNext?: bool (default true)     // Show Previous/Next controls
+ * - className?: string
+ * - style?: object
+ * - ...rest: props spread to root <nav>
  */
 
+import PropTypes from 'prop-types';
 import styles from './QuestionNavigator.module.scss';
 
 export default function QuestionNavigator({
@@ -41,7 +32,7 @@ export default function QuestionNavigator({
 }) {
   if (!total || total <= 1) return null;
 
-  // Helper: label/button for each question
+  // Renders each tab/button for a question index
   const renderTab = (idx) => (
     <button
       type="button"
@@ -64,7 +55,7 @@ export default function QuestionNavigator({
     </button>
   );
 
-  // Prev/next controls
+  // Previous/Next button enable/disable check
   const canPrev = current > 0;
   const canNext = current < total - 1;
 
@@ -72,7 +63,7 @@ export default function QuestionNavigator({
     <nav
       className={[styles.questionNavigator, className].filter(Boolean).join(' ')}
       style={style}
-      aria-label="Questions navigation"
+      aria-label="Question navigation"
       {...rest}
     >
       {showPrevNext && (
@@ -103,3 +94,22 @@ export default function QuestionNavigator({
     </nav>
   );
 }
+
+// Strict prop types for production contracts
+QuestionNavigator.propTypes = {
+  total: PropTypes.number.isRequired,
+  current: PropTypes.number.isRequired,
+  answered: PropTypes.arrayOf(PropTypes.bool),
+  onNavigate: PropTypes.func.isRequired,
+  showPrevNext: PropTypes.bool,
+  className: PropTypes.string,
+  style: PropTypes.object,
+};
+
+/**
+ * Production/Architecture Notes:
+ * - No demo/sample logic—all UI & ARIA are unified and scalable.
+ * - Design system dictates all color/theme/highlight via QuestionNavigator.module.scss.
+ * - Fully accessible—labels, aria-current, and disables for navigation arrows.
+ * - Modular: works for quizzes of any length or display style.
+ */

@@ -15,10 +15,10 @@
 
 import { useEffect, useState } from 'react';
 
+import Badge from '../../components/ui/badge';   // Design system badge
+import Button from '../../components/ui/button'; // Design system button
 import Input from '../../components/ui/input';   // Design system input
 import Select from '../../components/ui/select'; // Design system select
-import Button from '../../components/ui/button'; // Design system button
-import Badge from '../../components/ui/badge';   // Design system badge
 
 import styles from './AssignmentListPage.module.scss';
 

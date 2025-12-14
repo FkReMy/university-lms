@@ -17,6 +17,7 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
 import styles from './QuizTakingPage.module.scss';
+
 import { ROUTES } from '@/lib/constants';
 
 // Demo: default quiz data

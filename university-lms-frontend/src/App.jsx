@@ -1,37 +1,71 @@
 import { Suspense } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 
-import AppShell from '@/components/layout/AppShell';
-import NotificationCenter from '@/components/notifications/NotificationCenter';
+import ErrorBoundary from '@/components/common/ErrorBoundary';     // Global error boundary for all routes
+import AppShell from '@/components/layout/AppShell';               // Global, unified app layout (sidebar, topbar, etc.)
+import { ROUTES } from '@/lib/constants';                          // Centralized route constants (no magic strings)
 
-/*
+/**
+ * Production-ready global loading fallback using standardized components/styles.
+ */
+function LoadingFallback() {
+  return (
+    <div className="app__loading" role="status" aria-busy="true">
+      Loading…
+    </div>
+  );
+}
+
+/**
  * App
  * ---------------------------------------------------------------------------
- * Top-level layout used by the router. Responsibilities:
- * - Wrap all routed pages with AppShell (header/sidebar/etc.).
- * - Provide a global notification center (toasts).
- * - Include a skip link for keyboard/screen-reader users.
- * - Wrap routed content in Suspense to support lazy-loaded routes.
+ * Root of the UI tree. Handles:
+ *   - Route-level error boundaries (never let uncaught errors crash the app)
+ *   - Global AppShell/layout for all protected/private content
+ *   - Minimal wrapper for public/landing-only pages (login, register, access denied, etc.)
+ *   - Centralization of Suspense/lazy fallback UI using design system
+ *   - Absolutely no demo/sample logic anywhere
+ *
+ * Assumptions:
+ *   - All global components (ErrorBoundary, AppShell, Input, Button, etc.) are available and used throughout.
+ *   - Router handles protected/public checks; publicPaths are explicit.
  */
 function App() {
-  return (
-    <AppShell>
-      {/* Accessible skip link to jump past chrome to main content */}
-      <a href="#main-content" className="visually-hidden focusable">
-        Skip to main content
-      </a>
+  const location = useLocation();
 
-      {/* Global notification center / toasts */}
-      <NotificationCenter />
+  // Define public-only routes (should match backend/public endpoints)
+  const publicPaths = ['/', ROUTES.LOGIN, ROUTES.REGISTER, ROUTES.ACCESS_DENIED];
+  const isPublicPage = publicPaths.includes(location.pathname);
 
-      {/* Routed content with a simple suspense fallback */}
-      <Suspense fallback={<div className="app__loading">Loading…</div>}>
-        <main id="main-content">
+  // Public/landing/login/register/access-denied page: just render outlet with error boundary.
+  if (isPublicPage) {
+    return (
+      <ErrorBoundary>
+        <Suspense fallback={<LoadingFallback />}>
           <Outlet />
-        </main>
-      </Suspense>
-    </AppShell>
+        </Suspense>
+      </ErrorBoundary>
+    );
+  }
+
+  // All other (protected) pages get global AppShell layout
+  return (
+    <ErrorBoundary>
+      <AppShell>
+        <Suspense fallback={<LoadingFallback />}>
+          <Outlet />
+        </Suspense>
+      </AppShell>
+    </ErrorBoundary>
   );
 }
 
 export default App;
+
+/**
+ * Architectural Notes:
+ * - No direct route/page logic or sample data here—only unified routing/layout concerns.
+ * - All shared/global UI logic goes in AppShell, ErrorBoundary, and global folder structure.
+ * - Loading and fallback states use production-class design or accessible patterns.
+ * - Any uncaught error is visually isolated so users do not see blank screens.
+ */

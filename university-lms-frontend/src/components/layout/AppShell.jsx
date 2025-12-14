@@ -1,38 +1,29 @@
 /**
  * AppShell Component
- * ----------------------------------------------------------
- * Main layout shell for the LMS UI.
- *
- * Responsibilities:
- * - Provides application-wide layout structure: header, sidebar/nav, and page content area.
- * - Handles basic responsive layout for desktop/mobile.
- * - Manages skip-link, main wrapper, and props for routing.
- * - Integrates modular Sidebar and Topbar components to allow design consistency.
+ * ---------------------------------------------------------------------------
+ * Main application shell for the LMS UI.
+ * - Provides global layout consistency (sidebar/nav, topbar, content).
+ * - Integrates shared Sidebar/Topbar from the global design system.
+ * - Handles accessibility (skip link, roles, focus management).
+ * - Full responsive/mobile sidebar support.
+ * - No samples/demos; content and layout are production-grade.
  *
  * Props:
- * - children: ReactNode             - Main page content.
- * - header: ReactNode (optional)    - Header (defaults to imported Topbar).
- * - sidebar: ReactNode (optional)   - Sidebar/Nav (defaults to imported Sidebar).
- * - className: string (optional)    - Wrapper class for custom layout.
- * - contentClassName: string        - For main content area.
- * - ...rest:                        - Extra props for root div.
- *
- * Usage:
- *   <AppShell>
- *     <YourPageComponent />
- *   </AppShell>
+ * - children: ReactNode                 - Main content for the shell.
+ * - header?: ReactNode                  - Custom header/topbar, defaults to global Topbar.
+ * - sidebar?: ReactNode                 - Custom sidebar, defaults to global Sidebar.
+ * - className?: string                  - Extra wrapper class for root div.
+ * - contentClassName?: string           - For main content area.
+ * - ...rest: any other props for root div.
  */
 
 import { useState } from 'react';
 
-// Correct case-sensitive import!
 import styles from './AppShell.module.scss';
+import Sidebar from './Sidebar';   // Import your unified Sidebar component
+import Topbar from './Topbar';     // Import your unified Topbar component
 
-// Use dedicated Sidebar and Topbar components for modularity
-import Sidebar from './Sidebar';
-import Topbar from './Topbar';
-
-// Simple skip link for accessibility
+// Skip link for accessibility, always visible for keyboard/screenreader users
 function SkipToContent() {
   return (
     <a href="#main-content" className={styles.skiplink}>
@@ -41,11 +32,6 @@ function SkipToContent() {
   );
 }
 
-/**
- * Main AppShell component.
- * Accepts optional custom header/sidebar (or uses modular defaults).
- * Handles sidebar toggle state for responsiveness.
- */
 export default function AppShell({
   children,
   header,
@@ -54,28 +40,29 @@ export default function AppShell({
   contentClassName = '',
   ...rest
 }) {
-  // Sidebar Responsiveness (open/close for mobile)
+  // State for sidebar open/closed (responsive hamburger menu)
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
-  // Compose class names for layout
+  // Form wrapper and panel class names
   const shellClass = [styles.shell, className].filter(Boolean).join(' ');
   const mainClass = [styles.main, contentClassName].filter(Boolean).join(' ');
 
-  // Overlay for mobile nav when sidebar is open
+  // Show a dark overlay for modal sidebar when open on mobile screens
   const showOverlay = sidebarOpen;
 
   return (
     <div className={shellClass} {...rest}>
+      {/* Keyboard-accessible skip link for a11y */}
       <SkipToContent />
 
-      {/* Sidebar, allow override or use shared component */}
+      {/* Sidebar: allow injection/override or unify with shared Sidebar */}
       {sidebar !== undefined ? (
         sidebar
       ) : (
         <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       )}
 
-      {/* Overlay for sidebar on mobile */}
+      {/* Responsive overlay: blocks background when nav is open on mobile */}
       {showOverlay && (
         <div
           className={styles.sidebar__overlay}
@@ -85,9 +72,9 @@ export default function AppShell({
         />
       )}
 
-      {/* Main layout panel */}
+      {/* Main page content panel */}
       <div className={styles.shell__main}>
-        {/* Header, allow override or use shared component */}
+        {/* Header/topbar: allow injection or default to shared Topbar */}
         {header !== undefined ? (
           header
         ) : (
@@ -98,7 +85,7 @@ export default function AppShell({
                 type="button"
                 className={styles.shell__menuBtn}
                 aria-label={sidebarOpen ? 'Hide navigation' : 'Show navigation'}
-                onClick={() => setSidebarOpen((open) => !open)}
+                onClick={() => setSidebarOpen(open => !open)}
               >
                 ☰
               </button>
@@ -106,7 +93,7 @@ export default function AppShell({
           />
         )}
 
-        {/* Page Content */}
+        {/* Main page area */}
         <main
           className={mainClass}
           id="main-content"
@@ -122,9 +109,11 @@ export default function AppShell({
 }
 
 /**
- * Notes:
- * - The Sidebar and Topbar components should handle their own semantics, nav links, and menu toggling as needed.
- * - Make sure ./Sidebar.jsx and ./Topbar.jsx exist and are implemented for design consistency.
- * - Always use the correct file case when importing (case sensitive filesystems).
- * - This shell is flexible enough to allow direct overrides for header/sidebar, useful for modals or special routes.
+ * Design/Architecture Notes:
+ * - Sidebar and Topbar components must use your global/shared components only.
+ * - No demo/sample content; production-grade layout for all pages.
+ * - Accessibility: skip link, roles, and focusable main.
+ * - Sidebar header are customizable for flexibility, but always default to the global design system.
+ * - Mobile/desktop responsiveness handled by CSS (see AppShell.module.scss).
+ * - Layout overrides via props, but all navigation and shell should be consistent.
  */

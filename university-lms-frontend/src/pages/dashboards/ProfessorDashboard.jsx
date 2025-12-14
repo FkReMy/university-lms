@@ -16,12 +16,13 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
+import styles from './ProfessorDashboard.module.scss';
+
 import GradeDistributionChart from '@/components/analytics/GradeDistributionChart';
+import Badge from '@/components/ui/badge';    // design-system Badge
 import Card from '@/components/ui/card';      // design-system Card
 import Table from '@/components/ui/table';    // design-system Table
-import Badge from '@/components/ui/badge';    // design-system Badge
 
-import styles from './ProfessorDashboard.module.scss';
 
 export default function ProfessorDashboard() {
   // Example dashboard state (replace with real API fetches)

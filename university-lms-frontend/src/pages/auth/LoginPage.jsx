@@ -7,9 +7,10 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import styles from './LoginPage.module.scss';
+
 import { useAuth } from '@/hooks/useAuth';
 import { ROUTES } from '@/lib/constants';
-import styles from './LoginPage.module.scss';
 
 export default function LoginPage() {
   const [username, setUsername] = useState('');

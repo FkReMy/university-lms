@@ -1,32 +1,24 @@
 /**
  * PageHeader Component
- * ----------------------------------------------------------
- * Consistent section/page header bar for LMS UI.
- *
- * Responsibilities:
- * - Shows page or section title with optional subtitle, icon, and action area.
- * - Can render right-side actions (buttons, menus, etc).
- * - Flexible for cards, modal headers, or major page titles.
+ * ------------------------------------------------------------------------
+ * A production-grade, unified header bar for pages and major sections.
+ * - Uses only global design-system styles/components (never local/inline logic).
+ * - Allows configurable headlines, subtitles, icons, and right-aligned actions.
+ * - Flexible for main app pages, modals, cards, or dashboards.
+ * - Accessible, clean, and team-scalable.
  *
  * Props:
  * - title: string | ReactNode (required)     - Main headline/title.
  * - subtitle: string | ReactNode (optional)  - Smaller text under headline.
- * - icon: ReactNode (optional)               - Icon or illustration left of headline.
- * - actions: ReactNode (optional)            - Right-aligned actions (buttons, menus, etc).
- * - children: ReactNode (optional)           - Insert extra content below (e.g., filter bar).
- * - className: string (optional)             - Extra wrapper class.
- * - style: object (optional)                 - Inline CSS.
- * - ...rest: any other props for <header>.
- *
- * Usage:
- *   <PageHeader
- *     title="Assignments"
- *     subtitle="All for this semester"
- *     icon={<BookIcon />}
- *     actions={<Button>Add</Button>}
- *   />
+ * - icon: ReactNode (optional)               - Icon/illustration (brand/global icons).
+ * - actions: ReactNode (optional)            - Right-aligned actions (unified Buttons, Dropdowns, etc.).
+ * - children: ReactNode (optional)           - Extra content below (filters, stats, controls).
+ * - className: string (optional)
+ * - style: object (optional)
+ * - ...rest: Spread to root <header> element.
  */
 
+import PropTypes from 'prop-types';
 import styles from './PageHeader.module.scss';
 
 export default function PageHeader({
@@ -71,3 +63,21 @@ export default function PageHeader({
     </header>
   );
 }
+
+PageHeader.propTypes = {
+  title: PropTypes.oneOfType([PropTypes.string, PropTypes.node]).isRequired,
+  subtitle: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
+  icon: PropTypes.node,
+  actions: PropTypes.node,
+  children: PropTypes.node,
+  className: PropTypes.string,
+  style: PropTypes.object,
+};
+
+/**
+ * Production/Architecture Notes:
+ *  - All button, icon, and dropdown components passed here must be the global/unified UI system (never ad hoc).
+ *  - Accessible, semantic, and themable via PageHeader.module.scss.
+ *  - Never contains sample, local, or demo logic.
+ *  - Allows stateless flexible injection of extra controls/content by wrapping in children.
+ */

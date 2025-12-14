@@ -14,8 +14,9 @@
  */
 
 import { useEffect, useState, useRef } from "react";
-import Input from "../../components/ui/input";
+
 import Button from "../../components/ui/button";
+import Input from "../../components/ui/input";
 
 import styles from "./ProfileSettingsPage.module.scss";
 
