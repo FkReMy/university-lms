@@ -1,0 +1,136 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Pyre type checker
+.pyre/
+
+# Environments
+.env
+.env.*
+.venv
+venv/
+ENV/
+env/
+env.bak/
+venv.bak/
+
+# IDEs and editors
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# Mac and Linux file system
+.DS_Store
+.AppleDouble
+.LSOverride
+*.orig
+
+# SFTP Config
+.sftpConfig.json
+
+# Docker
+docker/**/*.pid
+docker/*.sock
+docker/mysql/
+docker/postgres/
+docker/data/
+docker/redis/
+# Custom Docker Compose build artifacts
+docker/*.bak
+
+# Database
+*.sqlite3
+*.db
+*.db-journal
+
+# Alembic
+alembic/versions/*.pyc
+alembic/versions/__pycache__/
+
+# Logs
+logs/
+*.log
+
+# Uploaded files (media and attachments)
+uploads/
+media/
+static/uploads/
+
+# Production keys and secrets
+*.key
+*.pem
+*.crt
+secrets/
+config/secrets/
+app/core/secrets/
+
+# Ignore local settings files and overrides
+.settings/
+local_settings.py
+
+# Ignore generated API docs (if any)
+docs/_build/
+# Ignore auto-generated docs/coverage
+docs/build/
+docs/html/
+docs/api/
+docs/coverage/
+
+# Virtualenv (redundant to above but common)
+.envrc
+
+# Backup files
+*.bak
+*.tmp
+
+# Test artifacts, never commit test DBs
+test_outputs/
+test.db
+
+# Node (in case any frontend or docs tooling is here)
+node_modules/
+
+# __END__

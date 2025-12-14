@@ -1,0 +1,82 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:16
+    container_name: lms_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-lms}
+      POSTGRES_USER: ${POSTGRES_USER:-lms_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-strong_db_password}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - lms_db_data:/var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER:-lms_user}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7
+    container_name: lms_redis
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - lms_redis_data:/data
+    ports:
+      - "6379:6379"
+
+  backend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.backend
+    container_name: lms_backend
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+psycopg2://${POSTGRES_USER:-lms_user}:${POSTGRES_PASSWORD:-strong_db_password}@db:5432/${POSTGRES_DB:-lms}
+      REDIS_URL: redis://redis:6379/0
+      # Add other secrets and environment config via .env
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    volumes:
+      - ./app:/app/app:cached
+      - lms_uploads:/uploads    # Secure uploads path inside backend container
+    ports:
+      - "8000:8000"
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+
+  migration:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.migration
+    container_name: lms_migration
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+psycopg2://${POSTGRES_USER:-lms_user}:${POSTGRES_PASSWORD:-strong_db_password}@db:5432/${POSTGRES_DB:-lms}
+    command: ["alembic", "upgrade", "head"]
+    volumes:
+      - ./alembic:/app/alembic
+      - ./app:/app/app
+      - lms_db_data:/var/lib/postgresql/data/pgdata
+
+volumes:
+  lms_db_data:
+  lms_redis_data:
+  lms_uploads:
+
+networks:
+  default:
+    driver: bridge

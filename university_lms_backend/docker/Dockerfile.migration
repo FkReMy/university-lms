@@ -1,0 +1,39 @@
+# ------------------------------------------------
+# University LMS Backend - Alembic Migration Image
+# ------------------------------------------------
+# This Dockerfile builds a minimal image to run database migrations only.
+# - Runs alembic upgrade head (usually via docker-compose or CI/CD)
+# - Shares dependencies and code structure with the backend image.
+# - No sample/demo/test logic included. All production.
+
+FROM python:3.11-slim AS migration
+
+WORKDIR /app
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+# Install OS and PostgreSQL dependencies for alembic, psycopg2
+RUN apt-get update && apt-get install -y \
+    gcc \
+    libpq-dev \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN pip install --upgrade pip
+
+COPY requirement.txt /app/requirement.txt
+RUN pip install --no-cache-dir -r requirement.txt
+
+# Copy only migration/code needed for alembic upgrades
+COPY alembic /app/alembic
+COPY app/models /app/app/models
+COPY app/core /app/app/core
+COPY app/config.py /app/app/config.py
+
+# Copy alembic config and env if not inside alembic dir
+COPY alembic.ini /app/alembic.ini
+
+# Alembic will use envvars and config files as in production
+ENTRYPOINT ["alembic"]
+CMD ["upgrade", "head"]
