@@ -1,59 +1,110 @@
 /**
- * Quiz realtime channel helper built on top of the WebSocket client.
- *
- * Responsibilities:
- * - Subscribe to quiz-related events from the server.
- * - Provide semantic helpers for common event types.
- *
- * Assumptions:
- * - The server emits messages like: { type, payload }
- * - Example types:
- *   - "quiz:published"    -> payload: { quizId, courseId, offeringId, sectionId, publishedAt }
- *   - "quiz:updated"      -> payload: { quizId, fields } (fields changed)
- *   - "quiz:attemptStarted" -> payload: { quizId, attemptId, studentId, startedAt }
- *   - "quiz:attemptSubmitted" -> payload: { quizId, attemptId, studentId, submittedAt, scorePreview }
- *   - "quiz:graded"       -> payload: { quizId, attemptId, studentId, score, gradedAt }
+ * QuizChannel (LMS Production Real-Time Quizzes)
+ * ----------------------------------------------------------------------------
+ * WebSocket-based real-time helpers for quiz event subscription and dispatch.
+ * - Subscribes/unsubscribes to standardized quiz-related server events.
+ * - Sends quiz events (for interactive, collaborative, or sync scenarios).
+ * - All code is unified, robust, and suitable for global LMS usage.
  *
  * Usage:
  *   import { connectSocket } from './socketClient';
  *   import {
  *     onQuizPublished,
  *     onQuizUpdated,
+ *     onQuizAttemptStarted,
  *     onQuizAttemptSubmitted,
+ *     onQuizGraded,
  *     sendQuizEvent,
+ *     notifyAttemptStart,
+ *     notifyAttemptSubmit,
  *   } from './quizChannel';
  *
  *   connectSocket();
- *   const off = onQuizPublished((payload) => console.log('New quiz', payload));
- *   // later: off();
+ *   const off = onQuizPublished(payload => { ... });
+ *   // off() to unsubscribe.
  */
 
 import { addListener, removeListener, sendMessage } from './socketClient';
 
-// Generic subscribe helper
+/**
+ * Subscribe to a specific quiz-related event type.
+ * @param {string} type - WebSocket event type string (e.g., "quiz:published").
+ * @param {function} handler - Callback invoked with payload.
+ * @returns {function} Unsubscribe function.
+ */
 function on(type, handler) {
   addListener(type, handler);
   return () => removeListener(type, handler);
 }
 
-// Public subscriptions for common quiz events
+/**
+ * Subscribe to quiz published events.
+ * @param {function} handler
+ * @returns {function}
+ */
 export const onQuizPublished = (handler) => on('quiz:published', handler);
+
+/**
+ * Subscribe to quiz updated events.
+ * @param {function} handler
+ * @returns {function}
+ */
 export const onQuizUpdated = (handler) => on('quiz:updated', handler);
+
+/**
+ * Subscribe to quiz attempt started events.
+ * @param {function} handler
+ * @returns {function}
+ */
 export const onQuizAttemptStarted = (handler) => on('quiz:attemptStarted', handler);
+
+/**
+ * Subscribe to quiz attempt submitted events.
+ * @param {function} handler
+ * @returns {function}
+ */
 export const onQuizAttemptSubmitted = (handler) => on('quiz:attemptSubmitted', handler);
+
+/**
+ * Subscribe to quiz graded events.
+ * @param {function} handler
+ * @returns {function}
+ */
 export const onQuizGraded = (handler) => on('quiz:graded', handler);
 
-// Send a generic quiz event (if client needs to notify server)
+/**
+ * Send a generic quiz event to the server (if interactive/notification required).
+ * @param {string} type - Event type (e.g. 'quiz:attemptStarted')
+ * @param {object} payload - Associated data
+ */
 export function sendQuizEvent(type, payload) {
   if (!type) return;
   sendMessage(type, payload);
 }
 
-// Example specialized senders (optional convenience)
+/**
+ * Notify the server that a quiz attempt has started.
+ * @param {string|number} quizId
+ * @param {string|number} attemptId
+ * @param {string|number} studentId
+ */
 export function notifyAttemptStart(quizId, attemptId, studentId) {
   sendQuizEvent('quiz:attemptStarted', { quizId, attemptId, studentId });
 }
 
+/**
+ * Notify the server that a quiz attempt has been submitted.
+ * @param {string|number} quizId
+ * @param {string|number} attemptId
+ * @param {string|number} studentId
+ */
 export function notifyAttemptSubmit(quizId, attemptId, studentId) {
   sendQuizEvent('quiz:attemptSubmitted', { quizId, attemptId, studentId });
 }
+
+/**
+ * Production/Architecture Notes:
+ * - All event types are named following global LMS real-time conventions.
+ * - Subscribe/unsubscribe are robust and idempotent.
+ * - No sample/demo logic; all usage and event shapes should match backend.
+ */
