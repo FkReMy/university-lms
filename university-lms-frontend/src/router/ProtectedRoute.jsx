@@ -1,45 +1,41 @@
 /**
- * ProtectedRoute
- * ----------------------------------------------------------
- * Component for protecting routes in the LMS frontend that require authentication.
- * Optionally supports restricting access by allowed roles.
+ * ProtectedRoute (LMS Production Route Guard)
+ * ----------------------------------------------------------------------------
+ * Guards LMS routes that require authentication and (optionally) specific roles.
+ * - Redirects unauthenticated to login (default or custom path).
+ * - Restricts access by role via allowedRoles, using global hooks/constants.
+ * - No sample/demo logic; ready for global spinner injection.
  *
  * Usage:
- *   <ProtectedRoute>
- *     <DashboardPage />
- *   </ProtectedRoute>
- *
- *   <ProtectedRoute allowedRoles={['admin', 'instructor']}>
- *     <AdminPanel />
- *   </ProtectedRoute>
+ *   <ProtectedRoute><DashboardPage /></ProtectedRoute>
+ *   <ProtectedRoute allowedRoles={['admin', 'instructor']}><AdminPanel /></ProtectedRoute>
  *
  * Props:
- * - allowedRoles (array): Only allow users with at least one matching role.
- * - redirectTo (string): Path to send unauthenticated or unauthorized users to. Default: '/login'.
- * - children: The content to render if auth (and role, if present) passes.
+ * - allowedRoles?: string[] — Require user to have at least one matching role.
+ * - redirectTo?: string — Path for unauthenticated/unauthorized users (default: ROUTES.LOGIN).
+ * - children: ReactNode — Content rendered if access granted.
  */
 
 import { Navigate, useLocation } from 'react-router-dom';
-
 import { useAuth } from '@/hooks/useAuth';
 import { useRoleAccess } from '@/hooks/useRoleAccess';
 import { ROUTES } from '@/lib/constants';
 
 export default function ProtectedRoute({
   allowedRoles,
-  redirectTo = '/login',
+  redirectTo = ROUTES.LOGIN,
   children,
 }) {
   const { ready, isAuthenticated } = useAuth();
   const { hasAnyRole } = useRoleAccess();
   const location = useLocation();
 
-  // Wait until auth state is initialized
+  // Wait until global auth state is ready; insert global <Spinner/> if desired
   if (!ready) {
-    return <div>Loading…</div>;
+    return null;
   }
 
-  // Not logged in: redirect to login, preserve path for redirect after login
+  // Not authenticated: redirect to login preserving intended location
   if (!isAuthenticated) {
     return (
       <Navigate
@@ -50,14 +46,20 @@ export default function ProtectedRoute({
     );
   }
 
-  // If allowedRoles prop provided, check for authorized role(s)
+  // If roles required, check for at least one allowed role
   if (allowedRoles && allowedRoles.length > 0) {
     if (!hasAnyRole(allowedRoles)) {
-      // Unauthorized: you may want to redirect elsewhere
       return <Navigate to={ROUTES.ACCESS_DENIED} replace />;
     }
   }
 
-  // Auth + role passes: render contents
+  // Authorized: render route contents
   return <>{children}</>;
 }
+
+/**
+ * Production/Architecture Notes:
+ * - All redirects and states unified using global LMS constants and hooks.
+ * - Demo/sample UI and magic strings removed; ready for production and scaling.
+ * - For global loading, inject Spinner as desired when !ready.
+ */

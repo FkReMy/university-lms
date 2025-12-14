@@ -1,10 +1,17 @@
-// Numeric formatting helpers for consistent UI display across the LMS.
-// These utilities are intentionally small, side-effect free, and return
-// empty strings when input is invalid so UI components can render gracefully.
+/**
+ * Global Numeric Formatting Utilities (LMS)
+ * ----------------------------------------------------------------------------
+ * Provides consistent, production-ready numeric/currency/percent/compact formatters for all UI.
+ * - Returns empty string "" for invalid inputs, so all consuming components are robust.
+ * - No sample/demo code—importable anywhere in the app.
+ */
 
 /**
  * Safely coerce a value to a finite number.
- * Returns `null` when the result is NaN or not finite.
+ * Returns `null` if value is NaN or not finite.
+ *
+ * @param {number|string} value
+ * @returns {number|null}
  */
 function toFiniteNumber(value) {
   const num = Number(value);
@@ -12,16 +19,16 @@ function toFiniteNumber(value) {
 }
 
 /**
- * Format a number as a currency string (default: USD).
- * Returns an empty string for invalid input.
+ * Format a number as currency (default: USD).
+ * Returns "" for invalid input.
  *
- * @param {number|string} value - The numeric value to format.
- * @param {Intl.NumberFormatOptions} [options] - Additional Intl options to override defaults.
+ * @param {number|string} value      The value to format.
+ * @param {Intl.NumberFormatOptions} [options] Additional format options.
+ * @returns {string}
  */
 export function formatCurrency(value, options = {}) {
   const num = toFiniteNumber(value);
   if (num === null) return '';
-
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
@@ -31,14 +38,12 @@ export function formatCurrency(value, options = {}) {
 }
 
 /**
- * Format a percentage from a decimal (0–1) or whole number.
- * Examples:
- *  - 0.42  -> "42.0%"
- *  - 42    -> "42.0%"
- * Returns an empty string for invalid input.
+ * Format a percent from decimal (0-1) or whole integer.
+ * Returns "" for invalid input.
  *
- * @param {number|string} value - Decimal or whole-number percentage.
- * @param {number} [fractionDigits=1] - Number of decimal places to keep.
+ * @param {number|string} value  Value to format (e.g., 0.75 or 75)
+ * @param {number} [fractionDigits=1]  Number of digits after decimal
+ * @returns {string}
  */
 export function formatPercent(value, fractionDigits = 1) {
   if (value === null || value === undefined || value === '') return '';
@@ -50,19 +55,25 @@ export function formatPercent(value, fractionDigits = 1) {
 }
 
 /**
- * Compact format for large integers (e.g., 1.2K, 3.4M).
- * Returns an empty string for invalid input.
+ * Compact notation for large integers, e.g., 1200 => "1.2K"
+ * Returns "" for invalid input.
  *
- * @param {number|string} value - The numeric value to format.
- * @param {Intl.NumberFormatOptions} [options] - Additional Intl options to override defaults.
+ * @param {number|string} value
+ * @param {Intl.NumberFormatOptions} [options]
+ * @returns {string}
  */
 export function formatCompact(value, options = {}) {
   const num = toFiniteNumber(value);
   if (num === null) return '';
-
   return new Intl.NumberFormat('en', {
     notation: 'compact',
     maximumFractionDigits: 1,
     ...options,
   }).format(num);
 }
+
+/**
+ * Production/Architecture Notes:
+ * - All formatters are global, pure, and side-effect-free.
+ * - No demo/sample code, and all results are safe for direct UI use.
+ */

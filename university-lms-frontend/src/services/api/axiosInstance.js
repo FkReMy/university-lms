@@ -1,24 +1,29 @@
 /**
- * Centralized Axios instance for the LMS frontend.
- * - Sets a base URL from Vite env (VITE_API_BASE_URL) with a sensible fallback.
- * - Injects the Authorization header when a token is available.
- * - Provides small helpers to set/clear/read the token in localStorage.
- * - Normalizes response handling (returns `response.data`).
- * - Surfaces network/timeout errors with clearer messages.
+ * Centralized Axios Instance (LMS Production Service)
+ * ----------------------------------------------------------------------------
+ * Provides global configured Axios instance for API requests.
+ * - Sets base URL using env variable or defaults to '/api'
+ * - Injects Authorization header from global auth store
+ * - Unwraps .data on responses and handles global errors
+ * - Includes helpers for token management in localStorage
+ * - No demo/sample logic
  */
 
 import axios from 'axios';
-
 import { useAuthStore } from '@/store/authStore';
 
 // -----------------------------------------------------------------------------
-// Config
+// Axios Config
 // -----------------------------------------------------------------------------
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '/api';
-const DEFAULT_TIMEOUT_MS = 20_000; // adjust as needed
+const API_BASE_URL = typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_BASE_URL
+  ? import.meta.env.VITE_API_BASE_URL
+  : '/api';
+
+const DEFAULT_TIMEOUT_MS = 20_000; // 20s
 
 // -----------------------------------------------------------------------------
-// Token helpers (lightweight; swap for a more robust auth store if needed)
+// Token Helpers
+// Use these for custom integration or non-Zustand contexts
 // -----------------------------------------------------------------------------
 const TOKEN_KEY = 'access_token';
 
@@ -35,7 +40,7 @@ export function setAuthToken(token) {
     if (token) localStorage.setItem(TOKEN_KEY, token);
     else localStorage.removeItem(TOKEN_KEY);
   } catch {
-    /* noop */
+    // do nothing
   }
 }
 
@@ -44,25 +49,23 @@ export function clearAuthToken() {
 }
 
 // -----------------------------------------------------------------------------
-// Axios instance
+// Create Axios Instance
 // -----------------------------------------------------------------------------
 const axiosInstance = axios.create({
   baseURL: API_BASE_URL,
   timeout: DEFAULT_TIMEOUT_MS,
-  withCredentials: true, // include cookies if your backend uses them; toggle if not needed
+  withCredentials: true, // Set to true if backend sets secure HTTP-only cookies
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
 // -----------------------------------------------------------------------------
-// Request interceptor: attach Authorization from authStore if present
-// Note: Using getState() to access Zustand store outside React component context
+// Request Interceptor: Inject Bearer token from store dynamically
 // -----------------------------------------------------------------------------
 axiosInstance.interceptors.request.use(
   (config) => {
-    // Get token from auth store using Zustand's getState() method
-    // This is safe to use outside of React components
+    // Global: always get token from central auth store (Zustand)
     const token = useAuthStore.getState().token;
     if (token && !config.headers.Authorization) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -73,21 +76,19 @@ axiosInstance.interceptors.request.use(
 );
 
 // -----------------------------------------------------------------------------
-// Response interceptor: unwrap data and provide clearer errors
+// Response Interceptor: Unwrap .data, handle session and network errors
 // -----------------------------------------------------------------------------
 axiosInstance.interceptors.response.use(
   (response) => response.data,
   (error) => {
-    // Handle 401 Unauthorized - logout user
+    // 401 handling: logout if state indicates an active session
     if (error.response?.status === 401) {
       const authStore = useAuthStore.getState();
       if (authStore.isAuthenticated) {
         authStore.logout();
       }
       error.message = 'Session expired. Please log in again.';
-    }
-    // Normalize network/timeouts
-    else if (error.code === 'ECONNABORTED') {
+    } else if (error.code === 'ECONNABORTED') {
       error.message = 'Request timed out. Please try again.';
     } else if (!error.response) {
       error.message = 'Network error. Check your connection and try again.';
@@ -97,3 +98,10 @@ axiosInstance.interceptors.response.use(
 );
 
 export default axiosInstance;
+
+/**
+ * Production/Architecture Notes:
+ * - All centralized API requests and errors are normalized here.
+ * - Auth store integration allows logout/rehydration on critical errors.
+ * - Safe and globally importable for every LMS app/service.
+ */

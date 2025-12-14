@@ -1,27 +1,24 @@
+/**
+ * Assignment API Client (LMS Production Service)
+ * ----------------------------------------------------------------------------
+ * Central global client for assignments, submissions, grading, and file uploads.
+ * - Uses a single axiosInstance (should be configured for auth, interceptors, baseURL).
+ * - Endpoints are parameterized and production-ready for scalable backend use.
+ * - Comments specify typical backend route shapes for maintainability.
+ * - No sample/demo logic.
+ */
+
 import axiosInstance from './axiosInstance';
 
-/**
- * Assignment API client.
- * Covers assignments, submissions, grading, and related file uploads.
- * Adjust endpoint paths to match your backend routing.
- *
- * Suggested backend routes (example):
- * - Assignments:        GET/POST      /assignments
- *                        GET/PUT/DEL   /assignments/:assignmentId
- * - Submissions:        GET/POST      /assignments/:assignmentId/submissions
- *                        GET/PUT/DEL   /assignments/:assignmentId/submissions/:submissionId
- * - Grading:            POST          /assignments/:assignmentId/submissions/:submissionId/grade
- * - Assignment files:   POST/DEL      /assignments/:assignmentId/files(/:fileId)
- * - Submission files:   POST/DEL      /assignments/:assignmentId/submissions/:submissionId/files(/:fileId)
- */
 const assignmentApi = {
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
   // Assignments
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
 
   /**
    * List assignments with optional filters/pagination.
    * @param {Object} params e.g., { page, limit, courseId, offeringId, sectionId, search, status, dueBefore, dueAfter }
+   * @returns {Promise}
    */
   list(params = {}) {
     return axiosInstance.get('/assignments', { params });
@@ -29,14 +26,17 @@ const assignmentApi = {
 
   /**
    * Get a single assignment by ID.
+   * @param {string|number} assignmentId
+   * @returns {Promise}
    */
   get(assignmentId) {
     return axiosInstance.get(`/assignments/${assignmentId}`);
   },
 
   /**
-   * Create an assignment.
+   * Create a new assignment.
    * @param {Object} payload e.g., { title, description, courseId, offeringId, sectionId, dueDate, maxPoints }
+   * @returns {Promise}
    */
   create(payload) {
     return axiosInstance.post('/assignments', payload);
@@ -44,6 +44,9 @@ const assignmentApi = {
 
   /**
    * Update an assignment.
+   * @param {string|number} assignmentId
+   * @param {Object} payload
+   * @returns {Promise}
    */
   update(assignmentId, payload) {
     return axiosInstance.put(`/assignments/${assignmentId}`, payload);
@@ -51,27 +54,33 @@ const assignmentApi = {
 
   /**
    * Delete an assignment.
+   * @param {string|number} assignmentId
+   * @returns {Promise}
    */
   remove(assignmentId) {
     return axiosInstance.delete(`/assignments/${assignmentId}`);
   },
 
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
   // Submissions
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
 
   /**
-   * List submissions for an assignment.
+   * List submissions for an assignment with optional filters.
+   * @param {string|number} assignmentId
    * @param {Object} params e.g., { page, limit, studentId, status }
+   * @returns {Promise}
    */
   listSubmissions(assignmentId, params = {}) {
-    return axiosInstance.get(`/assignments/${assignmentId}/submissions`, {
-      params,
-    });
+    return axiosInstance.get(`/assignments/${assignmentId}/submissions`, { params });
   },
 
   /**
-   * Get a single submission (may include answers/files depending on backend).
+   * Get a specific submission, including detail fields.
+   * @param {string|number} assignmentId
+   * @param {string|number} submissionId
+   * @param {Object} params
+   * @returns {Promise}
    */
   getSubmission(assignmentId, submissionId, params = {}) {
     return axiosInstance.get(
@@ -81,15 +90,21 @@ const assignmentApi = {
   },
 
   /**
-   * Create a submission (student submit).
+   * Create a new submission for an assignment (by student).
+   * @param {string|number} assignmentId
    * @param {Object} payload e.g., { studentId, text, links, fileIds }
+   * @returns {Promise}
    */
   createSubmission(assignmentId, payload) {
     return axiosInstance.post(`/assignments/${assignmentId}/submissions`, payload);
   },
 
   /**
-   * Update a submission (if edits are allowed).
+   * Update a submission (if edits are allowed by backend).
+   * @param {string|number} assignmentId
+   * @param {string|number} submissionId
+   * @param {Object} payload
+   * @returns {Promise}
    */
   updateSubmission(assignmentId, submissionId, payload) {
     return axiosInstance.put(
@@ -99,7 +114,10 @@ const assignmentApi = {
   },
 
   /**
-   * Delete a submission (or mark withdrawn).
+   * Delete (withdraw) a submission.
+   * @param {string|number} assignmentId
+   * @param {string|number} submissionId
+   * @returns {Promise}
    */
   removeSubmission(assignmentId, submissionId) {
     return axiosInstance.delete(
@@ -107,13 +125,16 @@ const assignmentApi = {
     );
   },
 
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
   // Grading
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
 
   /**
-   * Grade or update grade/feedback for a submission.
+   * Grade (or update grade/feedback) for a submission.
+   * @param {string|number} assignmentId
+   * @param {string|number} submissionId
    * @param {Object} payload e.g., { score, feedback, gradedAt, graderId }
+   * @returns {Promise}
    */
   gradeSubmission(assignmentId, submissionId, payload) {
     return axiosInstance.post(
@@ -122,13 +143,15 @@ const assignmentApi = {
     );
   },
 
-  // ---------------------------------------------------------------------------
-  // Assignment-level files (resources/attachments)
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
+  // Assignment-level Files (resources/attachments)
+  // ===========================================================================
 
   /**
    * Upload a file attached to the assignment (instructions, templates, etc.).
-   * @param {FormData} formData include file fields per backend expectation.
+   * @param {string|number} assignmentId
+   * @param {FormData} formData (must include file fields per backend API)
+   * @returns {Promise}
    */
   uploadAssignmentFile(assignmentId, formData) {
     return axiosInstance.post(
@@ -139,19 +162,25 @@ const assignmentApi = {
   },
 
   /**
-   * Delete an assignment-level file.
+   * Delete an assignment-level file by ID.
+   * @param {string|number} assignmentId
+   * @param {string|number} fileId
+   * @returns {Promise}
    */
   removeAssignmentFile(assignmentId, fileId) {
     return axiosInstance.delete(`/assignments/${assignmentId}/files/${fileId}`);
   },
 
-  // ---------------------------------------------------------------------------
-  // Submission files (student uploads)
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
+  // Submission Files (student uploads)
+  // ===========================================================================
 
   /**
-   * Upload a file for a specific submission.
-   * @param {FormData} formData include file fields per backend expectation.
+   * Upload a file attached to a specific submission.
+   * @param {string|number} assignmentId
+   * @param {string|number} submissionId
+   * @param {FormData} formData
+   * @returns {Promise}
    */
   uploadSubmissionFile(assignmentId, submissionId, formData) {
     return axiosInstance.post(
@@ -162,7 +191,11 @@ const assignmentApi = {
   },
 
   /**
-   * Delete a file from a submission.
+   * Delete a file from a submission by fileId.
+   * @param {string|number} assignmentId
+   * @param {string|number} submissionId
+   * @param {string|number} fileId
+   * @returns {Promise}
    */
   removeSubmissionFile(assignmentId, submissionId, fileId) {
     return axiosInstance.delete(
@@ -172,3 +205,10 @@ const assignmentApi = {
 };
 
 export default assignmentApi;
+
+/**
+ * Production/Architecture Notes:
+ * - All endpoints are parameterized and backend-ready.
+ * - Import axiosInstance from global service (must be configured for auth/interceptors).
+ * - No example/sample logic; suitable for all production flows.
+ */

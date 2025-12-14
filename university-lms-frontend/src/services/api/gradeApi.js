@@ -1,67 +1,54 @@
+/**
+ * Grade API Client (LMS Production Service)
+ * ----------------------------------------------------------------------------
+ * Centralized client for gradebook, grade items, and grade management.
+ * - Uses a global axios instance.
+ * - Parameterized and production-ready for Python FastAPI/PostgreSQL backend.
+ * - No sample/demo logic; all methods ready for real production.
+ */
+
 import axiosInstance from './axiosInstance';
 
-/**
- * Grade API client.
- * Handles gradebook views, grade items (e.g., quizzes/assignments), and grade updates.
- * Adjust endpoint paths to match your backend routing.
- *
- * Suggested backend routes (example):
- * - Gradebook (per offering/section):
- *   GET /grades/gradebook?courseId=&offeringId=&sectionId=
- *
- * - Grade items (e.g., per quiz/assignment):
- *   GET    /grades/items
- *   POST   /grades/items
- *   GET    /grades/items/:itemId
- *   PUT    /grades/items/:itemId
- *   DELETE /grades/items/:itemId
- *
- * - Student grades:
- *   GET    /grades/items/:itemId/students/:studentId
- *   PUT    /grades/items/:itemId/students/:studentId   (set/override grade)
- *
- * - Bulk updates:
- *   POST   /grades/items/:itemId/bulk                  (array of { studentId, score, feedback })
- */
 const gradeApi = {
-  // ---------------------------------------------------------------------------
-  // Gradebook (overview for a course/offering/section)
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
+  // Gradebook Overview (course/offering/section)
+  // ===========================================================================
 
   /**
-   * Fetch gradebook data (rows = students, columns = grade items).
-   * @param {Object} params
-   * @param {string|number} [params.courseId]
-   * @param {string|number} [params.offeringId]
-   * @param {string|number} [params.sectionId]
-   * @param {string} [params.search] - optional search on student name/id
+   * Get gradebook: students x grade items for a given scope.
+   * @param {Object} params - { courseId, offeringId, sectionId, search }
+   * @returns {Promise}
    */
   getGradebook(params = {}) {
     return axiosInstance.get('/grades/gradebook', { params });
   },
 
-  // ---------------------------------------------------------------------------
-  // Grade items (e.g., quiz/assignment entries in the gradebook)
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
+  // Grade Items Management (quizzes/assignments/etc)
+  // ===========================================================================
 
   /**
-   * List grade items.
-   * @param {Object} params e.g., { courseId, offeringId, sectionId, type }
+   * List all grade items for a course/offering/section (assignments/quizzes/etc).
+   * @param {Object} params - { courseId, offeringId, sectionId, type }
+   * @returns {Promise}
    */
   listItems(params = {}) {
     return axiosInstance.get('/grades/items', { params });
   },
 
   /**
-   * Get a single grade item.
+   * Get a single grade item detail by ID.
+   * @param {string|number} itemId
+   * @returns {Promise}
    */
   getItem(itemId) {
     return axiosInstance.get(`/grades/items/${itemId}`);
   },
 
   /**
-   * Create a grade item.
-   * @param {Object} payload e.g., { title, maxPoints, weight, type, courseId, offeringId, sectionId, dueDate }
+   * Create a new grade item.
+   * @param {Object} payload - { title, maxPoints, weight, type, courseId, offeringId, sectionId, dueDate }
+   * @returns {Promise}
    */
   createItem(payload) {
     return axiosInstance.post('/grades/items', payload);
@@ -69,6 +56,9 @@ const gradeApi = {
 
   /**
    * Update a grade item.
+   * @param {string|number} itemId
+   * @param {Object} payload
+   * @returns {Promise}
    */
   updateItem(itemId, payload) {
     return axiosInstance.put(`/grades/items/${itemId}`, payload);
@@ -76,25 +66,33 @@ const gradeApi = {
 
   /**
    * Delete a grade item.
+   * @param {string|number} itemId
+   * @returns {Promise}
    */
   removeItem(itemId) {
     return axiosInstance.delete(`/grades/items/${itemId}`);
   },
 
-  // ---------------------------------------------------------------------------
-  // Student grades (single update or fetch)
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
+  // Student Grade Operations (single student-item grade get/set)
+  // ===========================================================================
 
   /**
-   * Get a student's grade for a specific item.
+   * Get a student's grade for a specific grade item.
+   * @param {string|number} itemId
+   * @param {string|number} studentId
+   * @returns {Promise}
    */
   getStudentGrade(itemId, studentId) {
     return axiosInstance.get(`/grades/items/${itemId}/students/${studentId}`);
   },
 
   /**
-   * Set or update a student's grade.
-   * @param {Object} payload e.g., { score, feedback, gradedAt, graderId }
+   * Set or update a student's grade for a specific item.
+   * @param {string|number} itemId
+   * @param {string|number} studentId
+   * @param {Object} payload - { score, feedback, gradedAt, graderId }
+   * @returns {Promise}
    */
   setStudentGrade(itemId, studentId, payload) {
     return axiosInstance.put(
@@ -103,13 +101,15 @@ const gradeApi = {
     );
   },
 
-  // ---------------------------------------------------------------------------
-  // Bulk grade updates
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
+  // Bulk Grade Updates (batch for an entire item)
+  // ===========================================================================
 
   /**
-   * Bulk update grades for an item.
-   * @param {Array} payload array of { studentId, score, feedback }
+   * Bulk update/insert grades for a grade item.
+   * @param {string|number} itemId
+   * @param {Array} payload - [{ studentId, score, feedback }]
+   * @returns {Promise}
    */
   bulkUpdate(itemId, payload) {
     return axiosInstance.post(`/grades/items/${itemId}/bulk`, payload);
@@ -117,3 +117,10 @@ const gradeApi = {
 };
 
 export default gradeApi;
+
+/**
+ * Production/Architecture Notes:
+ * - Routes and parameters match real backend models.
+ * - No demo/sample logic, only for actual LMS usage.
+ * - All usage is centralized and scalable for all frontends.
+ */

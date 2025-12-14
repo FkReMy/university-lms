@@ -1,17 +1,20 @@
-// Application-wide constants and helpers.
-// This refactor preserves the original exports while adding inline documentation
-// and a few convenience helpers for consistency.
+/**
+ * Global Application Constants and Helpers (LMS)
+ * ----------------------------------------------------------------------------
+ * Centralized, production-ready constants, routes, and helpers for the LMS.
+ * - Used globally for navigation, links, guards, and API calls.
+ * - No local/sample/demo code.
+ */
 
 export const APP_NAME = 'University LMS';
 
-// Centralized route definitions for use across the app (navigation, links, guards).
+// All top-level and dynamic routes for navigation, guards, and links.
 export const ROUTES = {
   HOME: '/',
   LOGIN: '/login',
   REGISTER: '/register',
   DASHBOARD: '/dashboard',
   COURSES: '/courses',
-  // Use a function so we can easily build specific course detail URLs.
   COURSE_DETAIL: (courseId = ':courseId') => `/courses/${courseId}`,
   GRADES: '/grades',
   ASSIGNMENTS: '/assignments',
@@ -29,14 +32,22 @@ export const ROUTES = {
   ACCESS_DENIED: '/access-denied',
 };
 
-// Export a frozen copy for safer imports (optional usage).
+// Defensive: frozen clone for safe imports
 export const ROUTES_FROZEN = Object.freeze({ ...ROUTES });
 
-// API base URL falls back to /api for local development (proxy through Vite).
-// Keep this consistent with axiosInstance configuration.
+// Base API endpoint (env override or Vite proxy during local dev only)
 export const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || '/api';
+  typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_BASE_URL
+    ? import.meta.env.VITE_API_BASE_URL
+    : '/api';
 
-// Helper to prefix API routes consistently.
+// API path helper with prefix handling and slash safety
 export const apiPath = (path = '') =>
   `${API_BASE_URL}${path.startsWith('/') ? path : `/${path}`}`;
+
+/**
+ * Production/Architecture Notes:
+ * - All routes are globally unified—edit here for app-wide consistency.
+ * - API helpers never use hardcoded sample/demo paths.
+ * - Safe for SSR, SPA, and async API/autogen contracts.
+ */

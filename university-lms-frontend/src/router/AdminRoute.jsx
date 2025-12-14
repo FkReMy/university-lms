@@ -1,35 +1,33 @@
 /**
- * AdminRoute
- * ----------------------------------------------------------
- * Route guard component for LMS routes that require admin access.
- * Redirects users who are not authenticated or do not have the 'admin' role.
- *
- * Usage:
- *   <AdminRoute>
- *     <AdminDashboard />
- *   </AdminRoute>
+ * AdminRoute (LMS Production Route Guard)
+ * ----------------------------------------------------------------------------
+ * Unified route guard for routes requiring "admin" access.
+ * - Redirects unauthenticated to login (or other route), and non-admins to /unauthorized.
+ * - Uses global auth and role access hooks for consistency.
+ * - No sample/demo logic.
  *
  * Props:
- * - redirectTo (string): path to navigate to if not authorized. Default: '/login'.
- * - children: React node(s) to render if admin access is granted.
+ * - redirectTo (string): Path to navigate if not authorized. Default '/login'.
+ * - children: ReactNode(s) to render when admin access is granted.
  */
 
 import { Navigate, useLocation } from 'react-router-dom';
-
 import { useAuth } from '@/hooks/useAuth';
 import { useRoleAccess } from '@/hooks/useRoleAccess';
+import { ROUTES } from '@/lib/constants';
 
-export default function AdminRoute({ redirectTo = '/login', children }) {
+export default function AdminRoute({ redirectTo = ROUTES.LOGIN, children }) {
   const { ready, isAuthenticated } = useAuth();
   const { hasRole } = useRoleAccess();
   const location = useLocation();
 
-  // Wait for auth state hydration
+  // Wait for auth state hydration before rendering/checking roles.
   if (!ready) {
-    return <div>Loading…</div>;
+    // Optionally use a global Spinner/Loader for unified UX
+    return null;
   }
 
-  // User not authenticated: redirect to login
+  // If not authenticated, redirect to login (or custom route)
   if (!isAuthenticated) {
     return (
       <Navigate
@@ -40,11 +38,18 @@ export default function AdminRoute({ redirectTo = '/login', children }) {
     );
   }
 
-  // User authenticated but not admin: redirect to unauthorized page (optionally customize)
+  // If authenticated but not admin, redirect to unauthorized.
   if (!hasRole('admin')) {
-    return <Navigate to="/unauthorized" replace />;
+    return <Navigate to={ROUTES.ACCESS_DENIED} replace />;
   }
 
-  // User is admin: render children
+  // Authorized as admin: render children.
   return <>{children}</>;
 }
+
+/**
+ * Production/Architecture Notes:
+ * - Uses centralized hooks and global route constants. No usage of demo/sample logic.
+ * - Unified allowed/denied UX throughout all LMS admin routing.
+ * - All redirects and checks are type-safe and globally refactorable.
+ */

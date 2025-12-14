@@ -1,9 +1,17 @@
-// Common form validators for the LMS frontend.
-// These are pure, synchronous helpers designed to work with typical form libs
-// (react-hook-form, Formik, custom hooks). They return booleans and avoid
-// throwing so the caller can decide how to surface errors.
+/**
+ * Global Synchronous Form Validators (LMS)
+ * ----------------------------------------------------------------------------
+ * Centralized pure helpers for validation logic.
+ * - Returns booleans only (never throws).
+ * - Suitable for all form libs (react-hook-form, Formik, custom hooks).
+ * - No sample/demo logic. All checks are prod-stable.
+ */
 
-/** True when the value is present (non-empty string/array or any non-nullish). */
+/**
+ * True when value is present: non-empty string, filled array, or non-nullish.
+ * @param {*} value
+ * @returns {boolean}
+ */
 export function isRequired(value) {
   if (value === null || value === undefined) return false;
   if (typeof value === 'string') return value.trim().length > 0;
@@ -11,19 +19,33 @@ export function isRequired(value) {
   return true;
 }
 
-/** Validate minimum length for strings/numbers (after trimming). */
+/**
+ * Validate minimum trimmed length for string/number value.
+ * @param {*} value
+ * @param {number} min
+ * @returns {boolean}
+ */
 export function minLength(value, min = 3) {
   if (value === null || value === undefined) return false;
   return String(value).trim().length >= min;
 }
 
-/** Validate maximum length for strings/numbers (after trimming). */
+/**
+ * Validate maximum trimmed length for string/number value.
+ * @param {*} value
+ * @param {number} max
+ * @returns {boolean}
+ */
 export function maxLength(value, max = 255) {
   if (value === null || value === undefined) return false;
   return String(value).trim().length <= max;
 }
 
-/** Basic email pattern check (case-insensitive). */
+/**
+ * Basic email format validation (case insensitive).
+ * @param {*} value
+ * @returns {boolean}
+ */
 export function isEmail(value) {
   if (!value) return false;
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/i;
@@ -31,8 +53,12 @@ export function isEmail(value) {
 }
 
 /**
- * Strong password: length >= min, contains upper, lower, number, and symbol.
- * Adjust the regexes if your policy changes.
+ * Strong password checker:
+ * - Minimum length, and must contain upper/lower/number/symbol.
+ * - Adjust regex policies for your security guidelines.
+ * @param {string} value
+ * @param {number} min
+ * @returns {boolean}
  */
 export function isStrongPassword(value, min = 8) {
   if (!value || typeof value !== 'string') return false;
@@ -42,16 +68,24 @@ export function isStrongPassword(value, min = 8) {
   const hasLower = /[a-z]/.test(trimmed);
   const hasNumber = /\d/.test(trimmed);
   const hasSymbol = /[^A-Za-z0-9]/.test(trimmed);
-
   return hasLength && hasUpper && hasLower && hasNumber && hasSymbol;
 }
 
-/** Strict equality comparison (useful for confirm-password fields). */
+/**
+ * Strict equality (useful for confirm password fields).
+ * @param {*} value
+ * @param {*} other
+ * @returns {boolean}
+ */
 export function matches(value, other) {
   return value === other;
 }
 
-/** URL validator using the URL constructor (catches most invalid inputs). */
+/**
+ * URL validation using try/catch and URL constructor.
+ * @param {*} value
+ * @returns {boolean}
+ */
 export function isUrl(value) {
   if (!value) return false;
   try {
@@ -61,3 +95,10 @@ export function isUrl(value) {
     return false;
   }
 }
+
+/**
+ * Production/Architecture Notes:
+ * - Designed for use in global form validation, always returns a boolean.
+ * - Can be composed in any form/hooks library for all field types.
+ * - No demo/sample code, only import real logic in production UI.
+ */

@@ -1,20 +1,25 @@
-// Date utility helpers for consistent date handling across the app.
-// These functions are intentionally small and side-effect free.
+/**
+ * Centralized Date Utilities (LMS)
+ * ----------------------------------------------------------------------------
+ * Production-ready, side-effect free date helpers.
+ * - Unifies date parsing/formatting across the app.
+ * - All functions stable, no sample/demo logic.
+ */
 
-// Normalize input into a Date or return null if falsy/invalid.
+// Convert input into a valid Date object or return null for invalid/falsy.
 export function toDate(value) {
   if (!value) return null;
   const date = value instanceof Date ? value : new Date(value);
   return Number.isNaN(date.getTime()) ? null : date;
 }
 
-// Format as ISO string (UTC). Returns empty string if invalid.
+// Format a date as ISO string (UTC), or empty string for invalid.
 export function formatDateISO(value) {
   const date = toDate(value);
   return date ? date.toISOString() : '';
 }
 
-// Human-readable short date, e.g., "Jan 5, 2025".
+// Format as short human date, e.g., "Jan 5, 2025".
 export function formatDateShort(value) {
   const date = toDate(value);
   if (!date) return '';
@@ -25,7 +30,7 @@ export function formatDateShort(value) {
   });
 }
 
-// Human-readable date/time, e.g., "Jan 5, 2025, 3:15 PM".
+// Format as readable date and time, e.g., "Jan 5, 2025, 3:15 PM".
 export function formatDateTime(value) {
   const date = toDate(value);
   if (!date) return '';
@@ -38,7 +43,7 @@ export function formatDateTime(value) {
   });
 }
 
-// Return a new Date offset by the given number of days.
+// Return a new Date offset by the given number of days, or null if invalid.
 export function addDays(value, days = 0) {
   const date = toDate(value);
   if (!date) return null;
@@ -47,7 +52,7 @@ export function addDays(value, days = 0) {
   return copy;
 }
 
-// Temporal helpers
+// Returns true if the given date is in the past.
 export function isPast(value) {
   const date = toDate(value);
   if (!date) return false;
@@ -55,6 +60,7 @@ export function isPast(value) {
   return date.getTime() < now.getTime();
 }
 
+// Returns true if the given date is today (local calendar).
 export function isToday(value) {
   const date = toDate(value);
   if (!date) return false;
@@ -66,9 +72,16 @@ export function isToday(value) {
   );
 }
 
+// Returns true if the given date is in the future.
 export function isFuture(value) {
   const date = toDate(value);
   if (!date) return false;
   const now = new Date();
   return date.getTime() > now.getTime();
 }
+
+/**
+ * Production/Architecture Notes:
+ * - All helpers are pure, side-effect free, and unified globally.
+ * - No sample/demo logic—functions are importable anywhere for consistent UX.
+ */

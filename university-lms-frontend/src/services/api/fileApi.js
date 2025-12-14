@@ -1,42 +1,38 @@
+/**
+ * File API Client (LMS Production Service)
+ * ----------------------------------------------------------------------------
+ * Handles all file-related actions: listing, uploading, details, deleting.
+ * - Uses global axios instance configured with authentication.
+ * - Parameterized for backend compatibility and scalable integration.
+ * - No sample/demo logic.
+ */
+
 import axiosInstance from './axiosInstance';
 
-/**
- * File API client.
- * Handles uploads, listing, downloading, and deleting files in the LMS.
- * Adjust endpoint paths to match your backend routing.
- *
- * Suggested backend routes (example):
- * - GET    /files                  (list/search)
- * - POST   /files                  (upload)
- * - GET    /files/:fileId          (metadata or download URL)
- * - DELETE /files/:fileId          (delete)
- *
- * - (Optional) presigned URLs:
- *   POST /files/presign-upload     (get upload URL)
- *   GET  /files/:fileId/presign-download (get download URL)
- */
 const fileApi = {
   /**
-   * List files with optional filters/pagination.
-   * @param {Object} params e.g., { page, limit, search, type, ownerId, courseId, offeringId }
+   * List all files with optional filtering and pagination.
+   * @param {Object} params - { page, limit, search, type, ownerId, courseId, offeringId }
+   * @returns {Promise}
    */
   list(params = {}) {
     return axiosInstance.get('/files', { params });
   },
 
   /**
-   * Get a single file's metadata (or direct URL, if your backend returns it).
+   * Get a single file's metadata or file reference.
    * @param {string|number} fileId
+   * @returns {Promise}
    */
   get(fileId) {
     return axiosInstance.get(`/files/${fileId}`);
   },
 
   /**
-   * Upload a file.
-   * Use FormData and ensure the caller sets the file field(s) per backend expectation.
-   * Optionally include metadata such as { folder, ownerId, courseId, offeringId }.
+   * Upload a file. Use FormData to include binary and optional metadata.
+   * FormData keys depend on backend expectations (e.g., "file", "ownerId", etc).
    * @param {FormData} formData
+   * @returns {Promise}
    */
   upload(formData) {
     return axiosInstance.post('/files', formData, {
@@ -45,31 +41,42 @@ const fileApi = {
   },
 
   /**
-   * Delete a file.
+   * Delete a file by ID.
    * @param {string|number} fileId
+   * @returns {Promise}
    */
   remove(fileId) {
     return axiosInstance.delete(`/files/${fileId}`);
   },
 
-  // ---------------------------------------------------------------------------
-  // Optional: presigned URL helpers (if your backend supports S3/GCS-style flows)
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
+  // Optional: Presigned URL helpers for cloud direct upload/download
+  // ===========================================================================
 
   /**
-   * Request a presigned URL to upload directly to object storage.
-   * @param {Object} payload e.g., { filename, contentType, folder }
+   * Get a presigned upload URL for direct object storage (optional).
+   * @param {Object} payload - { filename, contentType, folder }
+   * @returns {Promise}
    */
   presignUpload(payload) {
     return axiosInstance.post('/files/presign-upload', payload);
   },
 
   /**
-   * Request a presigned download URL for a file.
+   * Get a presigned download URL for direct file download (optional).
+   * @param {string|number} fileId
+   * @returns {Promise}
    */
   presignDownload(fileId) {
     return axiosInstance.get(`/files/${fileId}/presign-download`);
-  },
+  }
 };
 
 export default fileApi;
+
+/**
+ * Production/Architecture Notes:
+ * - API client is parameterized to work with real backend and storage flows.
+ * - Presigned endpoints included for S3/GCS patterns (optional; safe to remove).
+ * - All methods are pure and importable across the LMS app.
+ */

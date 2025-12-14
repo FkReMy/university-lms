@@ -1,18 +1,18 @@
+/**
+ * User API Client (LMS Production Service)
+ * ----------------------------------------------------------------------------
+ * Centralizes user management: CRUD, roles, and password operations.
+ * - Uses global axios instance for all requests (must be configured for auth).
+ * - Parameterized and production ready; no sample/demo logic.
+ */
+
 import axiosInstance from './axiosInstance';
 
-/**
- * User API client.
- * Centralizes CRUD and role updates for users.
- * Adjust endpoint paths to match your backend.
- */
 const userApi = {
   /**
-   * List users with optional pagination/filters.
-   * @param {Object} params
-   * @param {number} [params.page] - Page number (1-based).
-   * @param {number} [params.limit] - Page size.
-   * @param {string} [params.search] - Name/email search.
-   * @param {string} [params.role] - Filter by role (e.g., 'Admin', 'Professor').
+   * List users with optional filters and pagination.
+   * @param {Object} params - { page, limit, search, role }
+   * @returns {Promise}
    */
   list(params = {}) {
     return axiosInstance.get('/users', { params });
@@ -20,6 +20,8 @@ const userApi = {
 
   /**
    * Get a single user by ID.
+   * @param {string|number} userId
+   * @returns {Promise}
    */
   get(userId) {
     return axiosInstance.get(`/users/${userId}`);
@@ -27,21 +29,27 @@ const userApi = {
 
   /**
    * Create a new user.
-   * @param {Object} payload - e.g., { email, firstName, lastName, role, ... }
+   * @param {Object} payload - { email, firstName, lastName, role, ... }
+   * @returns {Promise}
    */
   create(payload) {
     return axiosInstance.post('/users', payload);
   },
 
   /**
-   * Update an existing user.
+   * Update user details.
+   * @param {string|number} userId
+   * @param {Object} payload
+   * @returns {Promise}
    */
   update(userId, payload) {
     return axiosInstance.put(`/users/${userId}`, payload);
   },
 
   /**
-   * Delete a user.
+   * Delete a user by ID.
+   * @param {string|number} userId
+   * @returns {Promise}
    */
   remove(userId) {
     return axiosInstance.delete(`/users/${userId}`);
@@ -50,19 +58,29 @@ const userApi = {
   /**
    * Update roles for a user.
    * @param {string|number} userId
-   * @param {string[]|string} roles - e.g., ['Admin'] or 'Student'
+   * @param {string[]|string} roles - For setting one or many roles.
+   * @returns {Promise}
    */
   updateRoles(userId, roles) {
     return axiosInstance.put(`/users/${userId}/roles`, { roles });
   },
 
   /**
-   * Optional: change password (if your backend supports admin-driven resets).
+   * Change user password (optionally for admin-driven resets).
+   * @param {string|number} userId
+   * @param {Object} payload - { password: 'newPassword' }
+   * @returns {Promise}
    */
   changePassword(userId, payload) {
-    // payload could be { password: 'newPass123' }
     return axiosInstance.post(`/users/${userId}/password`, payload);
-  },
+  }
 };
 
 export default userApi;
+
+/**
+ * Production/Architecture Notes:
+ * - Central resource for all user CRUD and admin actions.
+ * - All endpoints parameterized for robust backend/production use.
+ * - No example/sample data handling.
+ */
