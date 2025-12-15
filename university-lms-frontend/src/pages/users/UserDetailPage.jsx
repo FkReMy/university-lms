@@ -5,8 +5,8 @@
  * - Shows personal info: full name, email, role badge, status badge, join date.
  * - Activity summary: current/completed/enrolled courses.
  * - Unified UI: all badges/buttons use the global design system.
- * - No sample/demo logic, purely API-driven.
- * - Ready for further extension: edit, deactivate, etc.
+ * - Purely API-driven and robust against schema changes.
+ * - No sample/demo logic; ready for extension.
  *
  * Usage:
  *   <Route path="/admin/users/:userId" element={<UserDetailPage />} />
@@ -23,6 +23,23 @@ import Button from '@/components/ui/button';
 import enrollmentApi from '@/services/api/enrollmentApi';
 import userApi from '@/services/api/userApi';
 
+/**
+ * Extracts a user role name string for display, supporting:
+ * - A string: e.g., "student"
+ * - An object: { name: "Student" }
+ * - An object: { role_name: "Student" }
+ * - role_id (number): returns "Unknown"
+ */
+function extractRoleName(role) {
+  if (!role) return "Unknown";
+  if (typeof role === "string") return role;
+  if (typeof role === "object") {
+    if (role.name) return role.name;
+    if (role.role_name) return role.role_name;
+  }
+  return "Unknown";
+}
+
 export default function UserDetailPage() {
   const { userId } = useParams();
 
@@ -36,7 +53,7 @@ export default function UserDetailPage() {
     async function fetchData() {
       setLoading(true);
       try {
-        // Backend returns {full_name, email, status, created_at, role_name, ...}
+        // Backend production: {full_name, email, status, created_at, role, ...}
         const u = await userApi.get(userId);
         const enr = await enrollmentApi.listForUser(userId);
         if (isMounted) {
@@ -74,15 +91,22 @@ export default function UserDetailPage() {
     return <Badge variant={variant}>{status ? (status.charAt(0).toUpperCase() + status.slice(1)) : 'Unknown'}</Badge>;
   }
 
-  // Unified role badge (production: always use backend-sent role_name)
-  function roleBadge(roleName) {
-    let variant = 'secondary';
-    if (/student/i.test(roleName)) variant = 'primary';
-    else if (/professor|instructor/i.test(roleName)) variant = 'success';
-    else if (/associate/i.test(roleName)) variant = 'warning';
-    else if (/admin/i.test(roleName)) variant = 'info';
-    return <Badge variant={variant}>{roleName ? (roleName.charAt(0).toUpperCase() + roleName.slice(1)) : 'Role'}</Badge>;
+  /**
+   * Unified role badge.
+   * Robust: supports role strings ("student"), objects ({name, role_name}), or missing/null values.
+   */
+  function roleBadge(role) {
+    const name = extractRoleName(role);
+    let variant = "secondary";
+    if (/student/i.test(name)) variant = "primary";
+    else if (/professor|instructor/i.test(name)) variant = "success";
+    else if (/associate/i.test(name)) variant = "warning";
+    else if (/admin/i.test(name)) variant = "info";
+    return <Badge variant={variant}>{name.charAt(0).toUpperCase() + name.slice(1)}</Badge>;
   }
+
+  // Normalize role using backend schema. Accepts flexible input for future proofing.
+  const roleValue = user && ("role" in user ? user.role : user.role_name);
 
   return (
     <div className={styles.userDetailPage}>
@@ -95,7 +119,7 @@ export default function UserDetailPage() {
           <header className={styles.userDetailPage__header}>
             <h1 className={styles.userDetailPage__title}>
               {user.full_name}
-              {roleBadge(user.role_name)}
+              {roleBadge(roleValue)}
               {statusBadge(user.status)}
             </h1>
             <div className={styles.userDetailPage__infoRow}>
@@ -110,7 +134,7 @@ export default function UserDetailPage() {
           {/* Enrollments/teaching info */}
           <section className={styles.userDetailPage__section}>
             <h2 className={styles.userDetailPage__sectionTitle}>
-              {user.role_name === 'student'
+              {/student/i.test(extractRoleName(roleValue))
                 ? 'Current Courses'
                 : 'Courses Teaching/Assisting'}
             </h2>
@@ -121,7 +145,7 @@ export default function UserDetailPage() {
                 <thead>
                   <tr>
                     <th>Course</th>
-                    {user.role_name !== 'student' && <th>Role</th>}
+                    {!/student/i.test(extractRoleName(roleValue)) && <th>Role</th>}
                     <th>Status</th>
                     <th>Grade</th>
                     <th>Instructor</th>
@@ -131,7 +155,7 @@ export default function UserDetailPage() {
                   {enrollments.map((enr) => (
                     <tr key={enr.id}>
                       <td>{enr.course}</td>
-                      {user.role_name !== 'student' && <td>{enr.role ?? '—'}</td>}
+                      {!/student/i.test(extractRoleName(roleValue)) && <td>{enr.role ?? '—'}</td>}
                       <td>{statusBadge(enr.status)}</td>
                       <td>{enr.grade ?? '—'}</td>
                       <td>{enr.instructor}</td>
@@ -148,7 +172,6 @@ export default function UserDetailPage() {
               type="button"
               size="sm"
               variant="outline"
-              // onClick={() => ... future edit ...}
             >
               Edit Info
             </Button>
@@ -158,7 +181,6 @@ export default function UserDetailPage() {
               size="sm"
               variant="outline"
               disabled={user.status !== 'active'}
-              // onClick={() => ... future deactivate ...}
             >
               Deactivate
             </Button>
@@ -171,8 +193,8 @@ export default function UserDetailPage() {
 
 /**
  * Production Notes:
- * - All state/data is fetched from production API (user/courses).
- * - Only references API fields present in unified backend schema.
- * - No sample/demo values; unified badges and buttons.
- * - Ready for future mutation/expansion logic (edit, deactivate, etc).
+ * - Handles all role input variants (string, object, missing) to prevent runtime errors.
+ * - Only references production API fields, and robust to backend schema changes.
+ * - Unified use of global badge and button UI components.
+ * - Ready for admin/user expansion and additional actions.
  */
