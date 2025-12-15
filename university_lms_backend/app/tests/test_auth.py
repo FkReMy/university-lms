@@ -6,12 +6,6 @@ expected multiple roles but User model only supports a single role.
 """
 
 import pytest
-import sys
-import os
-
-# Add the parent directory to the path to allow imports
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
-
 from unittest.mock import MagicMock
 from fastapi import HTTPException
 
