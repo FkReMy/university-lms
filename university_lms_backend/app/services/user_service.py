@@ -23,6 +23,12 @@ class UserService:
     Handles CRUD and business logic for user records.
     All model <-> schema mappings use unified conventions.
     """
+    
+    # Define valid User model fields for filtering schema data
+    USER_MODEL_FIELDS = {
+        'username', 'email', 'password_hash', 'first_name', 'last_name',
+        'is_active', 'is_verified', 'role_id', 'specialization_id'
+    }
 
     @staticmethod
     def get_by_id(db: Session, user_id: int) -> Optional[UserSchema]:
@@ -59,7 +65,9 @@ class UserService:
         status = user_data.pop("status", "active")
         user_data["is_active"] = (status == "active")
         # Remove any extra keys not present in the model
-        user_obj = User(**user_data)
+        # Only keep fields that exist in the User model
+        filtered_data = {k: v for k, v in user_data.items() if k in UserService.USER_MODEL_FIELDS}
+        user_obj = User(**filtered_data)
         db.add(user_obj)
         db.commit()
         db.refresh(user_obj)
@@ -84,7 +92,8 @@ class UserService:
             status = update_data.pop("status")
             update_data["is_active"] = (status == "active")
         # Remove any extra unexpected keys for the model
-        for field, value in update_data.items():
+        filtered_data = {k: v for k, v in update_data.items() if k in UserService.USER_MODEL_FIELDS}
+        for field, value in filtered_data.items():
             setattr(user_obj, field, value)
         db.commit()
         db.refresh(user_obj)
