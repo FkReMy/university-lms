@@ -37,11 +37,12 @@ class UserService:
         Split full_name into first_name and last_name.
         If full_name is None or empty, returns empty strings.
         If only one name is provided, it becomes the first_name.
+        Splits on any whitespace (spaces, tabs, newlines, etc.).
         """
         if not full_name or not full_name.strip():
             return "", ""
         
-        parts = full_name.strip().split(None, 1)  # Split on whitespace, max 2 parts
+        parts = full_name.strip().split(None, 1)  # None means split on any whitespace, max 2 parts
         if len(parts) == 1:
             return parts[0], ""
         return parts[0], parts[1]
@@ -83,16 +84,11 @@ class UserService:
         user_data["is_active"] = (status == "active")
         
         # Split full_name into first_name and last_name
+        # full_name is now required by the schema, but we handle None defensively
         full_name = user_data.pop("full_name", None)
-        if full_name:
-            first_name, last_name = UserService._split_full_name(full_name)
-            user_data["first_name"] = first_name
-            user_data["last_name"] = last_name
-        else:
-            # If no full_name provided, database will fail due to nullable=False
-            # Set empty strings as fallback (will still fail at DB level if constraints exist)
-            user_data["first_name"] = ""
-            user_data["last_name"] = ""
+        first_name, last_name = UserService._split_full_name(full_name)
+        user_data["first_name"] = first_name
+        user_data["last_name"] = last_name
         
         # Remove any extra keys not present in the model
         # Only keep fields that exist in the User model
