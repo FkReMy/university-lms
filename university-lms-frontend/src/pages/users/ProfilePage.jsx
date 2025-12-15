@@ -169,7 +169,7 @@ export default function ProfilePage() {
                 </div>
                 <div className={styles.profilePage__infoRow}>
                   <span className={styles.profilePage__label}>Member Since:</span>{" "}
-                  {formatDate(user.memberSince)}
+                  {formatDate(user.created_at)}
                 </div>
                 <Button
                   type="button"
