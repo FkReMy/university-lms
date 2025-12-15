@@ -9,7 +9,6 @@ Creates and configures the FastAPI app.
 - Provides a single `create_app()` factory for both ASGI servers and CLI tools.
 """
 
-import os
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
@@ -67,7 +66,7 @@ def create_app(environment: str = None) -> FastAPI:
     def healthcheck():
         return {"status": "ok"}
 
-    # Register global/root routers for all production API domains
+    # Register API routers under /api/v1
     app.include_router(auth_router, prefix="/api/v1/auth", tags=["Auth"])
     app.include_router(users_router, prefix="/api/v1/users", tags=["Users"])
     app.include_router(roles_router, prefix="/api/v1/roles", tags=["Roles"])
@@ -90,15 +89,11 @@ def create_app(environment: str = None) -> FastAPI:
     app.include_router(files_router, prefix="/api/v1/files", tags=["Files"])
     app.include_router(notifications_router, prefix="/api/v1/notifications", tags=["Notifications"])
 
-    # Production users: add error handlers, startup/shutdown hooks, background tasks, etc here as needed.
-    # e.g.:
-    # @app.on_event("startup")
-    # async def startup_event():
-    #     pass
+    # Add production-ready error handlers, event hooks, background tasks here as needed.
 
     return app
 
-# For direct run (not required in typical production, but safe for dev)
+# Entry point for running with `python -m app.main` (for dev only)
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("app.main:create_app", host="0.0.0.0", port=8000, factory=True)
