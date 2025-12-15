@@ -6,7 +6,6 @@ expected multiple roles but User model only supports a single role.
 """
 
 import pytest
-from unittest.mock import MagicMock
 from fastapi import HTTPException
 
 try:
