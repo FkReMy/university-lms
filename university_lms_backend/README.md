@@ -94,8 +94,11 @@ pip install -r requirements.txt
 ```bash
 cp .env.example .env
 
-# Edit .env and set DATABASE_URL
-# Example: postgresql+psycopg2://user:password@localhost:5432/lms_db
+# Edit .env and update the required values:
+# 1. Set POSTGRES_PASSWORD (replace 'REPLACE_WITH_STRONG_PASSWORD')
+# 2. Set JWT_SECRET_KEY (use a secure random string)
+# 3. Configure email settings for your SMTP provider
+# Note: DATABASE_URL is already configured for localhost - no changes needed!
 ```
 
 #### Database Setup
