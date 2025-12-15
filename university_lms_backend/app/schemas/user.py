@@ -128,15 +128,21 @@ class UserInDBBase(UserBase):
         Extract and normalize fields from SQLAlchemy model instance.
         Maps is_active to status for frontend compatibility.
         """
-        # Check if this is coming from an ORM model
+        # Check if this is coming from an ORM model (has __dict__ attribute)
         if hasattr(values, '__dict__'):
             # Extract is_active and map to status if status not already present
-            if hasattr(values, 'is_active') and 'status' not in values.__dict__:
+            values_dict = values.__dict__
+            if hasattr(values, 'is_active') and 'status' not in values_dict:
                 is_active = getattr(values, 'is_active', True)
                 # Create a new dict with all attributes
-                new_values = dict(values.__dict__)
+                new_values = dict(values_dict)
                 new_values['status'] = 'active' if is_active else 'inactive'
                 return new_values
+        # If values is already a dict, check for is_active
+        elif isinstance(values, dict):
+            if 'is_active' in values and 'status' not in values:
+                is_active = values.get('is_active', True)
+                values['status'] = 'active' if is_active else 'inactive'
         return values
 
     model_config = {
