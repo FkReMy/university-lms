@@ -68,7 +68,7 @@ class UserUpdate(BaseModel):
     phone: Optional[str] = None
     password: Optional[str] = None
     status: Optional[str] = Field(
-        None, 
+        None,
         description="Account status; only 'active' or 'inactive' are supported for compatibility."
     )
     profile_image_path: Optional[str] = None
@@ -100,3 +100,13 @@ class UserInDB(UserInDBBase):
     Internal DB schema for user records; may include sensitive/internal-use fields.
     """
     hashed_password: Optional[str] = Field(None, description="Hashed password for internal storage")
+
+
+# Alias for API response models
+UserResponse = User
+
+class UserStatusUpdate(BaseModel):
+    """
+    Schema for updating user activation status.
+    """
+    is_active: bool = Field(..., description="Set user to active or inactive status")
