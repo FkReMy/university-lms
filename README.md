@@ -1,119 +1,121 @@
+```markdown
 # University LMS
 
-**University LMS** is a fully-featured, production-grade Learning Management System designed to streamline and unify the management of academic workflows, courses, users, and assessments in higher education environments.
+**University LMS** is a production-grade, full-stack Learning Management System. This **monorepo** contains both the React frontend and FastAPI backend needed to run the full application.
 
-## Features
+It streamlines academic workflows, such as course management, student enrollment, grading, and assessments.
 
-- User, Role, and Permission Management (Students, Professors, Associates, Admin)
-- Department and Specialization Management
-- Courses, Course Offering, Section Groups, and Room Scheduling
-- Student Enrollment and Section Assignments
-- Quiz Management (creation, grading, attempts, analytics)
-- File Upload and Resource Management
-- High-quality RESTful API and modular architecture
+---
 
-## System Architecture
+## 📂 Project Structure
 
-- **Backend:** Python FastAPI, SQLAlchemy (modular, service-oriented)
-- **Database:** Production-ready RDBMS (e.g., PostgreSQL, MySQL, SQLite for dev/test)
-- **Testing:** Pytest, Factory-based Faker Data Population
-- **Dependency Management:** PEP-compliant, clean global components enforcing consistency across the system
-
-## Getting Started
-
-### Prerequisites
-
-- Python 3.9+
-- pip (Python package manager)
-- [Optional for production] PostgreSQL or MySQL database running
-
-### Installation
-
-1. **Clone the repository:**
-    ```bash
-    git clone https://github.com/<your-organization>/university-lms.git
-    cd university-lms
-    ```
-
-2. **Create and activate virtual environment:**
-    ```bash
-    python -m venv venv
-    source venv/bin/activate   # On Windows: venv\Scripts\activate
-    ```
-
-3. **Install dependencies:**
-    ```bash
-    pip install -r requirements.txt
-    ```
-
-### Database Setup
-
-1. **Configure your database URL:**  
-   Edit your environment variables or `.env` file:
-    ```
-    DATABASE_URL=postgresql://username:password@localhost/university_lms
-    # For SQLite (development): sqlite:///./app.db
-    ```
-
-2. **Initialize database schema:**
-    ```bash
-    alembic upgrade head
-    ```
-
-3. **(Optional) Populate test data for development:**
-    ```bash
-    pytest --setup-show
-    ```
-    > This uses high-volume, realistic data population via system-wide Faker utility.
-
-### Running the Application
-
-```bash
-uvicorn app.main:app --reload
-```
-
-- Visit [http://localhost:8000/docs](http://localhost:8000/docs) for the automatic, interactive OpenAPI documentation.
-
-## Testing
-
-- Run the full test suite (with automatic fixture-based fake data population):
-    ```bash
-    pytest
-    ```
-
-## Folder Structure
+The project consists of two main applications that must both be set up.
 
 ```
 university-lms/
-├── app/
-│   ├── api/               # API routers and route definitions
-│   ├── core/              # Config, security, and utility modules
-│   ├── database.py        # Database session and engine
-│   ├── models/            # Global ORM models for all entities
-│   ├── schemas/           # Pydantic schemas for request/response validation
-│   ├── services/          # Business logic and data access layers (global/unified)
-│   ├── tests/             # Pytest suites, fakerdb population, conftest, etc.
-│   └── main.py            # Application entry point (FastAPI app)
-├── alembic/               # Database migration folder
-├── requirements.txt
-└── README.md
+├── university-lms-frontend/    # 🎨 Frontend (React + Vite)
+│   ├── src/                    # Pages, components, and state management
+│   └── README.md               # Frontend-specific docs
+│
+├── university_lms_backend/     # ⚙️ Backend (FastAPI)
+│   ├── app/                    # API routes, models, and logic
+│   └── README.md               # Backend-specific docs
+│
+└── README.md                   # 📄 Root documentation (this file)
 ```
 
-## Production Readiness
+## 🚀 Key Features
 
-- Modularized using global components, unified via single source-of-truth models and schemas
-- No demo/sample/test artifacts in production code
-- Full dependency injection and override-ready architecture for test/mocking/integration
-- Extensively commented for maintainability and clarity
+- **Role-Based Access Control (RBAC)**: Separate portals for Students, Professors, Teaching Associates, and Admins.
+- **Academic Management**: Departments, Specializations, Courses, and Sections.
+- **Assessment Engine**: Quizzes and assignments with auto/manual grading.
+- **Resource Management**: Secure file uploads and course materials.
+- **Scheduling**: Room booking and conflict-free timetables.
 
-## Contributing
+## 🛠 Tech Stack
 
-- Adhere to existing code style, modularization, and use **global models/components**.
-- All new features require tests and schema documentation.
-- Open pull requests with clear, actionable descriptions.
+| Component  | Technology             | Description                                           |
+|------------|------------------------|-------------------------------------------------------|
+| Frontend   | React 18 + Vite        | Modern, high-performance user interface               |
+| State      | Zustand                | Lightweight global state management                   |
+| Backend    | Python 3.11+ + FastAPI | Async, high-performance API framework                  |
+| Database   | PostgreSQL 16          | Robust relational database                            |
+| ORM        | SQLAlchemy 2.0         | Powerful SQL toolkit and Object-Relational Mapper     |
+| Auth       | JWT + Argon2id         | Secure authentication and password hashing            |
 
-## License
+## 🏁 Getting Started
 
+Run the backend first, then the frontend in separate terminals.
 
----
-**University LMS** &copy; 2025-present Global Academic Solutions Inc. All rights reserved.
+### Prerequisites
+
+- Node.js v18+ and npm
+- Python v3.9+ and pip
+- PostgreSQL (local or Docker)
+
+### 1️⃣ Backend Setup
+
+```bash
+cd university_lms_backend
+
+# Create and activate virtual environment
+python -m venv venv
+
+# Windows
+venv\Scripts\activate
+# macOS/Linux
+# source venv/bin/activate
+
+pip install -r requirements.txt
+
+# Configure .env
+cp .env.example .env
+# Edit .env → set DATABASE_URL (e.g., postgresql://user:password@localhost/dbname)
+
+# Apply migrations
+alembic upgrade head
+
+# (Optional) Seed test data
+pytest --setup-show
+
+# Run server (http://localhost:8000)
+uvicorn app.main:app --reload
+```
+
+### 2️⃣ Frontend Setup
+
+```bash
+cd university-lms-frontend
+
+npm install
+
+# Configure .env
+cp .env.example .env
+# Verify VITE_API_BASE_URL=http://localhost:8000/api
+
+# Start dev server (usually http://localhost:5173)
+npm run dev
+```
+
+## 🧪 Running Tests
+
+### Backend
+
+```bash
+cd university_lms_backend
+pytest
+```
+
+### Frontend (build check)
+
+```bash
+cd university-lms-frontend
+npm run build
+```
+
+## 📄 License
+
+University LMS © 2025–present Global Academic Solutions Inc.
+```
+
+Copy everything above (including the triple backticks if your editor shows them) and save it as a file named `README.md` on your computer. This is the complete Markdown content ready to use.
