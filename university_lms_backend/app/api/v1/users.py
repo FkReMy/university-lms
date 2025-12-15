@@ -1,89 +1,155 @@
 """
-Users API Router (Production Version)
--------------------------------------
-Provides user-related API endpoints.
-- Uses unified, global schema and naming conventions.
-- Avoids sample/demo code.
+Users API Router (Production)
+-----------------------------
+Handles user CRUD, profile management, and admin functions for the University LMS backend.
+
+- All endpoints leverage unified global schemas and services.
+- Access policy: users may see/update their own info; admins may manage all users.
+- No demos, samples, or test code.
 """
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Optional
 
-from app.core.security import get_current_active_user, get_db
-from app.services.user_service import UserService
 from app.schemas.user import (
+    User as UserResponse,
     UserCreate,
     UserUpdate,
-    User as UserResponse,  # Use global schema, not a non-existent UserResponse
 )
+from app.services.user_service import UserService
+from app.core.auth import get_current_user
 
-router = APIRouter(
-    prefix="/users",
-    tags=["users"]
+router = APIRouter()
+
+
+@router.get(
+    "/",
+    response_model=List[UserResponse],
+    summary="List all users (admin only)",
 )
-
-
-@router.get("/", response_model=List[UserResponse])
-def list_users(
-    skip: int = 0,
-    limit: int = 100,
-    db: Session = Depends(get_db)
+async def list_users(
+    search: Optional[str] = None,
+    current_user=Depends(get_current_user),
 ):
     """
-    Retrieve all users in paginated form.
+    List all users. Admins only.
     """
-    return UserService.get_all(db, skip=skip, limit=limit)
+    if not current_user.is_admin:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required.")
+    return UserService.list_users(search=search)
 
 
-@router.get("/{user_id}", response_model=UserResponse)
-def get_user(
+@router.get(
+    "/me",
+    response_model=UserResponse,
+    summary="Get current user's profile"
+)
+async def get_me(current_user=Depends(get_current_user)):
+    """
+    Retrieve the profile of the currently authenticated user.
+    """
+    return UserService.get_by_id(current_user.user_id)
+
+
+@router.get(
+    "/{user_id}",
+    response_model=UserResponse,
+    summary="Get a user by ID (admin or self)"
+)
+async def get_user(
     user_id: int,
-    db: Session = Depends(get_db),
+    current_user=Depends(get_current_user),
 ):
     """
-    Retrieve a user by their unique ID.
+    Fetch profile for given user_id (admin or self).
     """
-    user = UserService.get_by_id(db, user_id)
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    return user
+    if not (current_user.is_admin or current_user.user_id == user_id):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized.")
+    return UserService.get_by_id(user_id)
 
 
-@router.post("/", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
-def create_user(
-    user_in: UserCreate,
-    db: Session = Depends(get_db)
+@router.post(
+    "/",
+    response_model=UserResponse,
+    status_code=status.HTTP_201_CREATED,
+    summary="Create a user (admin only)",
+)
+async def create_user(
+    user_create: UserCreate,
+    current_user=Depends(get_current_user),
 ):
     """
-    Create a new user using provided schema.
+    Admin-only: Create a new user account.
     """
-    return UserService.create(db, user_in)
+    if not current_user.is_admin:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required.")
+    return UserService.create(user_create)
 
 
-@router.put("/{user_id}", response_model=UserResponse)
-def update_user(
+@router.patch(
+    "/me",
+    response_model=UserResponse,
+    summary="Update own user info"
+)
+async def update_me(
+    user_update: UserUpdate,
+    current_user=Depends(get_current_user),
+):
+    """
+    User may update their own profile.
+    """
+    return UserService.update(current_user.user_id, user_update)
+
+
+@router.patch(
+    "/{user_id}",
+    response_model=UserResponse,
+    summary="Update a user by ID (admin or self)"
+)
+async def update_user(
     user_id: int,
-    user_in: UserUpdate,
-    db: Session = Depends(get_db)
+    user_update: UserUpdate,
+    current_user=Depends(get_current_user),
 ):
     """
-    Update an existing user record.
+    Admin may update any user, or user may update own profile.
     """
-    user = UserService.update(db, user_id, user_in)
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    return user
+    if not (current_user.is_admin or current_user.user_id == user_id):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized.")
+    return UserService.update(user_id, user_update)
 
 
-@router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_user(
+@router.patch(
+    "/{user_id}/status",
+    response_model=UserResponse,
+    summary="Update user status (admin only)"
+)
+async def update_user_status(
     user_id: int,
-    db: Session = Depends(get_db)
+    is_active: bool,
+    current_user=Depends(get_current_user),
 ):
     """
-    Delete a user by their unique ID.
+    Admin can activate, deactivate, or suspend a user account.
     """
-    deleted = UserService.delete(db, user_id)
-    if not deleted:
-        raise HTTPException(status_code=404, detail="User not found")
+    if not current_user.is_admin:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required.")
+    return UserService.set_status(user_id, is_active)
+
+
+@router.delete(
+    "/{user_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Delete (deactivate) a user (admin only)"
+)
+async def delete_user(
+    user_id: int,
+    current_user=Depends(get_current_user),
+):
+    """
+    Admin-only: Delete or deactivate a user (soft-delete).
+    """
+    if not current_user.is_admin:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required.")
+    UserService.delete(user_id)
+    return None
