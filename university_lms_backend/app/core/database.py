@@ -75,6 +75,7 @@ class _LazyEngine:
 class _LazySessionLocal:
     """Lazy proxy for SessionLocal that initializes on first access."""
     def __call__(self, *args, **kwargs):
+        """Create a new database session (backward compatibility wrapper)."""
         return get_session_local()(*args, **kwargs)
     
     def __getattr__(self, name):
