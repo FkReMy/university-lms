@@ -9,10 +9,11 @@ Centralizes all application and infrastructure settings.
 """
 
 import os
-from typing import List, Optional
+from typing import List, Optional, Union
 from functools import lru_cache
 
-from pydantic import BaseSettings, Field, AnyHttpUrl, validator
+from pydantic_settings import BaseSettings
+from pydantic import Field, AnyHttpUrl, field_validator
 
 class Settings(BaseSettings):
     # Core Project and Environment
@@ -58,7 +59,7 @@ class Settings(BaseSettings):
     REDIS_URL: str = "redis://redis:6379/0"
 
     # Security / CORS
-    ALLOWED_ORIGINS: str = "http://localhost:5173"
+    ALLOWED_ORIGINS: Union[str, List[str]] = "http://localhost:5173"
     ALLOWED_METHODS: str = "GET,POST,PUT,PATCH,DELETE,OPTIONS"
     ALLOWED_HEADERS: str = "Authorization,Content-Type"
 
@@ -70,12 +71,13 @@ class Settings(BaseSettings):
     # ENABLE_AI_GRADING: bool = False
     # ENABLE_ANALYTICS: bool = False
 
-    class Config:
-        # Use dotenv (.env) files and the current environment
-        env_file = ".env"
-        case_sensitive = True
+    model_config = {
+        "env_file": ".env",
+        "case_sensitive": True
+    }
 
-    @validator("ALLOWED_ORIGINS", pre=True)
+    @field_validator("ALLOWED_ORIGINS", mode="before")
+    @classmethod
     def parse_origins(cls, v):
         # Accept comma-separated string, return as list (for CORS)
         if isinstance(v, str):

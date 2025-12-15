@@ -10,6 +10,7 @@ asyncpg==0.29.0                # Async Postgres driver for SQLAlchemy
 psycopg2-binary==2.9.9         # Sync Postgres adapter (CLI, scripts)
 alembic==1.13.1                # Database migrations
 pydantic==2.7.1                # Models & validation
+pydantic-settings==2.2.1       # Settings management (Pydantic v2)
 python-dotenv==1.0.1           # Environment variable management
 passlib[argon2]==1.7.4         # Password hashing (Argon2id)
 pyjwt==2.8.0                   # JWT token encoding/decoding

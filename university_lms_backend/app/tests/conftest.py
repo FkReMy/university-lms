@@ -12,8 +12,9 @@ import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from app.database import Base, get_db
-from app.main import app
+from app.models.base import Base
+from app.core.database import get_db
+from app.main import create_app
 
 # Configure testing database URL - must be an isolated, ephemeral DB for tests.
 TEST_DATABASE_URL = "sqlite:///./test.db"  # Adjust as needed for CI/CD or better isolation
@@ -64,6 +65,7 @@ def client(db_session):
         finally:
             pass
 
+    app = create_app()
     app.dependency_overrides[get_db] = override_get_db
 
     from fastapi.testclient import TestClient

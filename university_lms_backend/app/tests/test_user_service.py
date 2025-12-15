@@ -165,3 +165,126 @@ class TestUserServiceStatusMapping:
             assert 'full_name' not in set_field_names, "full_name should be filtered out"
             assert 'phone' not in set_field_names, "phone should be filtered out"
             assert 'status' not in set_field_names, "status should be mapped, not set directly"
+
+
+class TestUserSchemaRoleSerialization:
+    """Test that role field is properly serialized from User model"""
+
+    def test_from_orm_extracts_role_name(self):
+        """Test that UserSchema.from_orm properly extracts role name from relationship"""
+        from app.schemas.user import User as UserSchema
+        from app.models.user import User
+        from app.models.role import Role
+        
+        # Create a mock Role object
+        mock_role = Role(role_id=1, name="student", description="Student role")
+        
+        # Create a mock User object with role relationship
+        mock_user = User(
+            user_id=1,
+            username="testuser",
+            email="test@example.com",
+            password_hash="hashed",
+            first_name="Test",
+            last_name="User",
+            is_active=True,
+            is_verified=False,
+            role_id=1,
+        )
+        # Simulate the relationship
+        mock_user.role = mock_role
+        
+        # Act - Convert to schema
+        user_schema = UserSchema.from_orm(mock_user)
+        
+        # Assert - Role should be extracted as string name
+        assert user_schema.role == "student", f"Expected role='student', got role='{user_schema.role}'"
+
+    def test_from_orm_handles_missing_role(self):
+        """Test that UserSchema.from_orm handles None role gracefully"""
+        from app.schemas.user import User as UserSchema
+        from app.models.user import User
+        
+        # Create a mock User object without role
+        mock_user = User(
+            user_id=1,
+            username="testuser",
+            email="test@example.com",
+            password_hash="hashed",
+            first_name="Test",
+            last_name="User",
+            is_active=True,
+            is_verified=False,
+            role_id=None,
+        )
+        mock_user.role = None
+        
+        # Act - Convert to schema
+        user_schema = UserSchema.from_orm(mock_user)
+        
+        # Assert - Role should be None
+        assert user_schema.role is None, f"Expected role=None, got role='{user_schema.role}'"
+
+    def test_from_orm_extracts_full_name(self):
+        """Test that UserSchema.from_orm properly extracts full_name from first/last names"""
+        from app.schemas.user import User as UserSchema
+        from app.models.user import User
+        
+        # Create a mock User object
+        mock_user = User(
+            user_id=1,
+            username="testuser",
+            email="test@example.com",
+            password_hash="hashed",
+            first_name="John",
+            last_name="Doe",
+            is_active=True,
+            is_verified=False,
+        )
+        
+        # Act - Convert to schema
+        user_schema = UserSchema.from_orm(mock_user)
+        
+        # Assert - full_name should be computed from first_name + last_name
+        assert user_schema.full_name == "John Doe", f"Expected full_name='John Doe', got full_name='{user_schema.full_name}'"
+
+    def test_from_orm_maps_is_active_to_status(self):
+        """Test that UserSchema.from_orm maps is_active boolean to status string"""
+        from app.schemas.user import User as UserSchema
+        from app.models.user import User
+        
+        # Create a mock User object with is_active=True
+        mock_user_active = User(
+            user_id=1,
+            username="activeuser",
+            email="active@example.com",
+            password_hash="hashed",
+            first_name="Active",
+            last_name="User",
+            is_active=True,
+            is_verified=False,
+        )
+        
+        # Act
+        user_schema_active = UserSchema.from_orm(mock_user_active)
+        
+        # Assert
+        assert user_schema_active.status == "active", f"Expected status='active', got status='{user_schema_active.status}'"
+        
+        # Test with is_active=False
+        mock_user_inactive = User(
+            user_id=2,
+            username="inactiveuser",
+            email="inactive@example.com",
+            password_hash="hashed",
+            first_name="Inactive",
+            last_name="User",
+            is_active=False,
+            is_verified=False,
+        )
+        
+        # Act
+        user_schema_inactive = UserSchema.from_orm(mock_user_inactive)
+        
+        # Assert
+        assert user_schema_inactive.status == "inactive", f"Expected status='inactive', got status='{user_schema_inactive.status}'"

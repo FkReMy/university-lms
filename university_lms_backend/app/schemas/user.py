@@ -9,8 +9,8 @@ Pydantic schemas for the User model, governing validation and serialization of u
 - role: included and normalized (may be string, object, or role_id for frontend flexibility).
 """
 
-from pydantic import BaseModel, EmailStr, Field
-from typing import Optional, Union
+from pydantic import BaseModel, EmailStr, Field, field_validator, model_validator
+from typing import Optional, Union, Any
 from datetime import datetime
 
 class UserBase(BaseModel):
@@ -103,8 +103,51 @@ class UserInDBBase(UserBase):
     updated_at: Optional[datetime] = None
     last_login: Optional[datetime] = Field(None, description="Timestamp of the last user login")
 
-    class Config:
-        orm_mode = True
+    @field_validator('role', mode='before')
+    @classmethod
+    def extract_role_name(cls, v):
+        """
+        Extract role name from Role object relationship.
+        Handles: Role object with 'name' attribute, dict with 'name', or plain string/int.
+        """
+        if v is None:
+            return None
+        # If it's a Role object (from SQLAlchemy relationship)
+        if hasattr(v, 'name'):
+            return v.name
+        # If it's already a dict with name
+        if isinstance(v, dict) and 'name' in v:
+            return v['name']
+        # If it's a string or int, return as is
+        return v
+
+    @model_validator(mode='before')
+    @classmethod
+    def extract_model_fields(cls, values: Any) -> Any:
+        """
+        Extract and normalize fields from SQLAlchemy model instance.
+        Maps is_active to status for frontend compatibility.
+        """
+        # Check if this is coming from an ORM model (has __dict__ attribute)
+        if hasattr(values, '__dict__'):
+            # Extract is_active and map to status if status not already present
+            values_dict = values.__dict__
+            if hasattr(values, 'is_active') and 'status' not in values_dict:
+                is_active = getattr(values, 'is_active', True)
+                # Create a new dict with all attributes
+                new_values = dict(values_dict)
+                new_values['status'] = 'active' if is_active else 'inactive'
+                return new_values
+        # If values is already a dict, check for is_active
+        elif isinstance(values, dict):
+            if 'is_active' in values and 'status' not in values:
+                is_active = values.get('is_active', True)
+                values['status'] = 'active' if is_active else 'inactive'
+        return values
+
+    model_config = {
+        "from_attributes": True
+    }
 
 
 class User(UserInDBBase):

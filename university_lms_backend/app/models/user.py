@@ -9,6 +9,7 @@ Represents a system user in the University LMS (student, professor, admin, etc.)
 
 from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey, func
 from sqlalchemy.orm import relationship
+from sqlalchemy.ext.hybrid import hybrid_property
 from app.models.base import Base
 
 class User(Base):
@@ -24,10 +25,13 @@ class User(Base):
     password_hash = Column(String(256), nullable=False)
     first_name = Column(String(64), nullable=False)
     last_name = Column(String(64), nullable=False)
+    phone = Column(String(20), nullable=True)
+    profile_image_path = Column(String(512), nullable=True)
     is_active = Column(Boolean, nullable=False, default=True)
     is_verified = Column(Boolean, nullable=False, default=False)
     role_id = Column(Integer, ForeignKey("roles.role_id", ondelete="SET NULL"), nullable=True, index=True)
     specialization_id = Column(Integer, ForeignKey("specializations.specialization_id", ondelete="SET NULL"), nullable=True, index=True)
+    last_login = Column(DateTime(timezone=True), nullable=True)
 
     created_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
     updated_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
@@ -41,6 +45,13 @@ class User(Base):
     grades = relationship("Grade", back_populates="student", cascade="all, delete-orphan")
     notifications = relationship("Notification", back_populates="user", cascade="all, delete-orphan")
     uploaded_files = relationship("UploadedFile", back_populates="user", cascade="all, delete-orphan")
+
+    @hybrid_property
+    def full_name(self):
+        """Computed property combining first_name and last_name for schema compatibility."""
+        if self.first_name and self.last_name:
+            return f"{self.first_name} {self.last_name}"
+        return self.first_name or self.last_name or ""
 
     def __repr__(self):
         return (
