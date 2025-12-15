@@ -12,33 +12,26 @@ Provides database session management and connection pooling for the University L
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 from typing import Generator
+from functools import lru_cache
 from app.config import get_settings
 from app.models.base import Base
 
-# Global variables for engine and session factory (initialized lazily)
-_engine = None
-_SessionLocal = None
-
+@lru_cache(maxsize=1)
 def get_engine():
-    """Get or create the database engine (lazy initialization)."""
-    global _engine
-    if _engine is None:
-        settings = get_settings()
-        _engine = create_engine(
-            settings.DATABASE_URL,
-            pool_pre_ping=True,  # Verify connections before using them
-            pool_size=10,
-            max_overflow=20
-        )
-    return _engine
+    """Get or create the database engine (lazy initialization, thread-safe singleton)."""
+    settings = get_settings()
+    return create_engine(
+        settings.DATABASE_URL,
+        pool_pre_ping=True,  # Verify connections before using them
+        pool_size=10,
+        max_overflow=20
+    )
 
+@lru_cache(maxsize=1)
 def get_session_local():
-    """Get or create the SessionLocal factory (lazy initialization)."""
-    global _SessionLocal
-    if _SessionLocal is None:
-        engine = get_engine()
-        _SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-    return _SessionLocal
+    """Get or create the SessionLocal factory (lazy initialization, thread-safe singleton)."""
+    engine = get_engine()
+    return sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 def get_db() -> Generator[Session, None, None]:
     """
@@ -72,6 +65,14 @@ class _LazyEngine:
     def __getattr__(self, name):
         """Forward attribute access to the actual engine instance."""
         return getattr(get_engine(), name)
+    
+    def __repr__(self):
+        """Return representation of the underlying engine."""
+        return repr(get_engine())
+    
+    def __str__(self):
+        """Return string representation of the underlying engine."""
+        return str(get_engine())
 
 class _LazySessionLocal:
     """Lazy proxy for SessionLocal that initializes on first access."""
@@ -82,6 +83,14 @@ class _LazySessionLocal:
     def __getattr__(self, name):
         """Forward attribute access to the actual SessionLocal factory."""
         return getattr(get_session_local(), name)
+    
+    def __repr__(self):
+        """Return representation of the underlying SessionLocal factory."""
+        return repr(get_session_local())
+    
+    def __str__(self):
+        """Return string representation of the underlying SessionLocal factory."""
+        return str(get_session_local())
 
 engine = _LazyEngine()
 SessionLocal = _LazySessionLocal()
