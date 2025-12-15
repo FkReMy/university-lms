@@ -81,7 +81,8 @@ def require_role(required_roles: list):
     async def role_dependency(
         current_user: User = Depends(get_current_user)
     ):
-        user_roles = {role.name for role in current_user.roles}
+        # User has a single role relationship, not multiple roles
+        user_roles = {current_user.role.name} if current_user.role else set()
         if not any(role in user_roles for role in required_roles):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
