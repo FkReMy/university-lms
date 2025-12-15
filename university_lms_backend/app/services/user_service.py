@@ -1,11 +1,11 @@
 """
 User Service (Production)
 -------------------------
-Service layer for managing User entities and implementing all associated business logic.
+Service layer for managing User entities, providing CRUD operations and business logic
+for users within the LMS.
 
-- Uses global models and schemas for data integrity and consistency.
-- Explicit mapping between Pydantic and ORM models (solving status/is_active mismatch).
-- Strictly avoids sample/demo code, follows production patterns.
+- No sample, demo, or test code.
+- Utilizes global models, schemas, and unified conventions.
 """
 
 from sqlalchemy.orm import Session
@@ -15,12 +15,13 @@ from app.models.user import User
 from app.schemas.user import (
     UserCreate,
     UserUpdate,
-    User as UserSchema,
 )
+from app.schemas.user import User as UserSchema
 
 class UserService:
     """
-    Handles CRUD and business logic for users.
+    Handles CRUD and business logic for user records.
+    All model <-> schema mappings use unified conventions.
     """
 
     @staticmethod
@@ -50,10 +51,11 @@ class UserService:
     @staticmethod
     def create(db: Session, user_in: UserCreate) -> UserSchema:
         """
-        Create and persist a new user record, mapping the status field to is_active.
+        Create and persist a new user record.
+        Maps 'status' from the schema to the model's 'is_active' boolean field.
         """
         user_data = user_in.dict()
-        # Convert status string to is_active boolean
+        # Map schema field 'status' (string) to model field 'is_active' (bool)
         status = user_data.pop("status", "active")
         user_data["is_active"] = (status == "active")
         user_obj = User(**user_data)
@@ -69,14 +71,15 @@ class UserService:
         user_in: UserUpdate
     ) -> Optional[UserSchema]:
         """
-        Update an existing user record with provided fields, mapping status as needed.
+        Update an existing user record with provided fields.
+        Handles the mapping between 'status' and 'is_active' if present.
         """
         user_obj = db.query(User).filter(User.user_id == user_id).first()
         if not user_obj:
             return None
         update_data = user_in.dict(exclude_unset=True)
+        # If 'status' is present, map to 'is_active'
         if "status" in update_data:
-            # Map status string to is_active boolean
             status = update_data.pop("status")
             update_data["is_active"] = (status == "active")
         for field, value in update_data.items():
