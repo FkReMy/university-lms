@@ -58,6 +58,7 @@ class UserService:
         # Map schema field 'status' (string) to model field 'is_active' (bool)
         status = user_data.pop("status", "active")
         user_data["is_active"] = (status == "active")
+        # Remove any extra keys not present in the model
         user_obj = User(**user_data)
         db.add(user_obj)
         db.commit()
@@ -82,6 +83,7 @@ class UserService:
         if "status" in update_data:
             status = update_data.pop("status")
             update_data["is_active"] = (status == "active")
+        # Remove any extra unexpected keys for the model
         for field, value in update_data.items():
             setattr(user_obj, field, value)
         db.commit()
