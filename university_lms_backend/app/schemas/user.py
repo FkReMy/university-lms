@@ -9,8 +9,8 @@ Pydantic schemas for the User model, governing validation and serialization of u
 - role: included and normalized (may be string, object, or role_id for frontend flexibility).
 """
 
-from pydantic import BaseModel, EmailStr, Field
-from typing import Optional, Union
+from pydantic import BaseModel, EmailStr, Field, validator, root_validator
+from typing import Optional, Union, Any
 from datetime import datetime
 
 class UserBase(BaseModel):
@@ -102,6 +102,40 @@ class UserInDBBase(UserBase):
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
     last_login: Optional[datetime] = Field(None, description="Timestamp of the last user login")
+
+    @validator('role', pre=True, always=True)
+    def extract_role_name(cls, v):
+        """
+        Extract role name from Role object relationship.
+        Handles: Role object with 'name' attribute, dict with 'name', or plain string/int.
+        """
+        if v is None:
+            return None
+        # If it's a Role object (from SQLAlchemy relationship)
+        if hasattr(v, 'name'):
+            return v.name
+        # If it's already a dict with name
+        if isinstance(v, dict) and 'name' in v:
+            return v['name']
+        # If it's a string or int, return as is
+        return v
+
+    @root_validator(pre=True)
+    def extract_model_fields(cls, values: Any) -> Any:
+        """
+        Extract and normalize fields from SQLAlchemy model instance.
+        Maps is_active to status for frontend compatibility.
+        """
+        # Check if this is coming from an ORM model
+        if hasattr(values, '__dict__'):
+            # Extract is_active and map to status if status not already present
+            if hasattr(values, 'is_active') and 'status' not in values.__dict__:
+                is_active = getattr(values, 'is_active', True)
+                # Create a new dict with all attributes
+                new_values = dict(values.__dict__)
+                new_values['status'] = 'active' if is_active else 'inactive'
+                return new_values
+        return values
 
     class Config:
         orm_mode = True

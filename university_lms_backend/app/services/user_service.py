@@ -27,6 +27,7 @@ class UserService:
     # Define valid User model fields for filtering schema data
     USER_MODEL_FIELDS = {
         'username', 'email', 'password_hash', 'first_name', 'last_name',
+        'phone', 'profile_image_path', 'last_login',
         'is_active', 'is_verified', 'role_id', 'specialization_id'
     }
 
