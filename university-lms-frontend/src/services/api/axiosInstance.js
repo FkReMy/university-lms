@@ -10,7 +10,6 @@
  */
 
 import axios from 'axios';
-
 import { useAuthStore } from '@/store/authStore';
 
 // -----------------------------------------------------------------------------
@@ -105,5 +104,6 @@ export default axiosInstance;
  * Production/Architecture Notes:
  * - All centralized API requests and errors are normalized here.
  * - Auth store integration allows logout/rehydration on critical errors.
+ * - Uses '/api/v1' as default route prefix to match backend.
  * - Safe and globally importable for every LMS app/service.
  */
