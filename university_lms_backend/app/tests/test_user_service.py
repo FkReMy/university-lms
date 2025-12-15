@@ -5,8 +5,7 @@ Tests to verify the fix for the status field mismatch between UserCreate schema
 and User model. Ensures proper mapping from status (string) to is_active (boolean).
 """
 
-import pytest
-from unittest.mock import Mock, MagicMock, patch
+from unittest.mock import MagicMock, patch
 from app.services.user_service import UserService
 from app.schemas.user import UserCreate, UserUpdate
 
@@ -35,7 +34,7 @@ class TestUserServiceStatusMapping:
                 MockUserSchema.from_orm.return_value = mock_schema
                 
                 # Act
-                result = UserService.create(db_session, user_data)
+                _ = UserService.create(db_session, user_data)
                 
                 # Assert - Verify User was called with is_active=True, not status='active'
                 call_kwargs = MockUser.call_args[1]
@@ -63,7 +62,7 @@ class TestUserServiceStatusMapping:
                 MockUserSchema.from_orm.return_value = mock_schema
                 
                 # Act
-                result = UserService.create(db_session, user_data)
+                _ = UserService.create(db_session, user_data)
                 
                 # Assert
                 call_kwargs = MockUser.call_args[1]
@@ -93,7 +92,7 @@ class TestUserServiceStatusMapping:
                 MockUserSchema.from_orm.return_value = mock_schema
                 
                 # Act
-                result = UserService.create(db_session, user_data)
+                _ = UserService.create(db_session, user_data)
                 
                 # Assert - Verify extra fields are not passed to User model
                 call_kwargs = MockUser.call_args[1]
@@ -119,11 +118,11 @@ class TestUserServiceStatusMapping:
             MockUserSchema.from_orm.return_value = mock_schema
             
             # Act
-            result = UserService.update(db_session, user_id, update_data)
+            _ = UserService.update(db_session, user_id, update_data)
             
             # Assert - Verify setattr was called with is_active=True, not status
             # Check all setattr calls
-            setattr_calls = [call for call in mock_user.mock_calls if call[0] == '']
+            _ = [call for call in mock_user.mock_calls if call[0] == '']
             # We're looking for attribute setting which happens through __setattr__
             # Instead, let's verify is_active was set
             assert mock_user.__setattr__.called or hasattr(mock_user, 'is_active')
@@ -159,7 +158,7 @@ class TestUserServiceStatusMapping:
             
             with patch.object(mock_user.__class__, '__setattr__', track_setattr):
                 # Act
-                result = UserService.update(db_session, user_id, update_data)
+                _ = UserService.update(db_session, user_id, update_data)
             
             # Assert - Verify extra fields were not set
             set_field_names = [name for name, _ in setattr_calls]
