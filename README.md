@@ -1,4 +1,3 @@
-```markdown
 # University LMS
 
 **University LMS** is a production-grade, full-stack Learning Management System. This **monorepo** contains both the React frontend and FastAPI backend needed to run the full application.
@@ -116,6 +115,3 @@ npm run build
 ## 📄 License
 
 University LMS © 2025–present Global Academic Solutions Inc.
-```
-
-Copy everything above (including the triple backticks if your editor shows them) and save it as a file named `README.md` on your computer. This is the complete Markdown content ready to use.
