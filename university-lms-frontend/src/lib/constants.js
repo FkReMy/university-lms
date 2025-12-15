@@ -39,7 +39,7 @@ export const ROUTES_FROZEN = Object.freeze({ ...ROUTES });
 export const API_BASE_URL =
   typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_BASE_URL
     ? import.meta.env.VITE_API_BASE_URL
-    : '/api';
+    : '/api/v1';
 
 // API path helper with prefix handling and slash safety
 export const apiPath = (path = '') =>
