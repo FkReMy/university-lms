@@ -9,7 +9,7 @@ Pydantic schemas for the User model, governing validation and serialization of u
 - role: included and normalized (may be string, object, or role_id for frontend flexibility).
 """
 
-from pydantic import BaseModel, EmailStr, Field, validator, root_validator
+from pydantic import BaseModel, EmailStr, Field, field_validator, model_validator
 from typing import Optional, Union, Any
 from datetime import datetime
 
@@ -103,7 +103,8 @@ class UserInDBBase(UserBase):
     updated_at: Optional[datetime] = None
     last_login: Optional[datetime] = Field(None, description="Timestamp of the last user login")
 
-    @validator('role', pre=True, always=True)
+    @field_validator('role', mode='before')
+    @classmethod
     def extract_role_name(cls, v):
         """
         Extract role name from Role object relationship.
@@ -120,7 +121,8 @@ class UserInDBBase(UserBase):
         # If it's a string or int, return as is
         return v
 
-    @root_validator(pre=True)
+    @model_validator(mode='before')
+    @classmethod
     def extract_model_fields(cls, values: Any) -> Any:
         """
         Extract and normalize fields from SQLAlchemy model instance.
@@ -137,8 +139,9 @@ class UserInDBBase(UserBase):
                 return new_values
         return values
 
-    class Config:
-        orm_mode = True
+    model_config = {
+        "from_attributes": True
+    }
 
 
 class User(UserInDBBase):
