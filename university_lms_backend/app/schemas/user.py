@@ -21,7 +21,7 @@ class UserBase(BaseModel):
     """
     username: str = Field(..., description="Globally unique username")
     email: EmailStr = Field(..., description="User email address (must be unique)")
-    full_name: Optional[str] = Field(None, description="User's full name")
+    full_name: str = Field(..., description="User's full name (will be split into first_name and last_name)")
     phone: Optional[str] = Field(None, description="User's contact phone number")
     status: Optional[str] = Field(
         "active",
