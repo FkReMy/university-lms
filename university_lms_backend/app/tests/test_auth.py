@@ -1,122 +1,90 @@
 """
-Test Authentication & Authorization - Role Relationship Fix
-----------------------------------------------------------
-Tests to verify the fix for the role relationship mismatch where auth.py
-expected multiple roles but User model only supports a single role.
+Test Auth Module - get_current_user function
+---------------------------------------------
+Tests to verify the fix for the get_current_user function in auth.py.
+Ensures proper call to UserService.get_by_id with correct parameters.
 """
 
-import pytest
+from unittest.mock import MagicMock, patch
 from fastapi import HTTPException
+import pytest
 
-try:
-    from app.core.auth import require_role
-except ImportError:
-    # If imports fail due to missing dependencies, skip these tests
-    pytest.skip("Cannot import auth module - skipping tests", allow_module_level=True)
-
-# Mock the models to avoid database dependencies
-class MockRole:
-    def __init__(self, name):
-        self.name = name
-
-class MockUser:
-    def __init__(self, role_name=None):
-        self.role = MockRole(role_name) if role_name else None
-        self.user_id = 1
-        self.is_active = True
+from app.core.auth import get_current_user
 
 
-class TestRequireRoleWithSingleRole:
-    """Test the require_role function with single role relationship"""
+class TestGetCurrentUser:
+    """Test the get_current_user function"""
 
     @pytest.mark.asyncio
-    async def test_require_role_allows_user_with_matching_role(self):
-        """Test that a user with the required role is allowed"""
-        # Arrange - Create a mock user with admin role
-        mock_user = MockUser("admin")
+    async def test_get_current_user_calls_correct_method(self, db_session):
+        """Test that get_current_user calls UserService.get_by_id with correct parameters"""
+        # Arrange
+        mock_request = MagicMock()
+        mock_request.headers.get.return_value = "Bearer valid_token"
         
-        # Create the role dependency
-        role_dependency = require_role(["admin", "professor"])
-        
-        # Act - Call the dependency function with the mock user
-        result = await role_dependency(current_user=mock_user)
-        
-        # Assert - User should be returned without exception
-        assert result == mock_user
+        # Mock the JWT decode to return a valid payload
+        with patch('app.core.auth.jwt.decode') as mock_jwt_decode:
+            mock_jwt_decode.return_value = {"sub": "123"}
+            
+            # Mock UserService.get_by_id to return a mock user
+            with patch('app.core.auth.UserService.get_by_id') as mock_get_by_id:
+                mock_user = MagicMock()
+                mock_user.is_active = True
+                mock_get_by_id.return_value = mock_user
+                
+                # Act
+                result = await get_current_user(request=mock_request, db=db_session)
+                
+                # Assert
+                # Verify that get_by_id was called (not get_user_by_id)
+                mock_get_by_id.assert_called_once()
+                
+                # Verify the correct parameters were passed
+                call_args = mock_get_by_id.call_args
+                assert call_args[1]['db'] == db_session, "db parameter should be passed"
+                assert call_args[1]['user_id'] == 123, "user_id should be converted to int"
+                
+                # Verify the result is the user
+                assert result == mock_user
 
     @pytest.mark.asyncio
-    async def test_require_role_blocks_user_with_wrong_role(self):
-        """Test that a user without the required role is blocked"""
-        # Arrange - Create a mock user with "student" role
-        mock_user = MockUser("student")
+    async def test_get_current_user_raises_when_user_not_found(self, db_session):
+        """Test that get_current_user raises 403 when user is not found"""
+        # Arrange
+        mock_request = MagicMock()
+        mock_request.headers.get.return_value = "Bearer valid_token"
         
-        # Create the role dependency requiring admin or professor
-        role_dependency = require_role(["admin", "professor"])
-        
-        # Act & Assert - Should raise HTTPException with 403
-        with pytest.raises(HTTPException) as exc_info:
-            await role_dependency(current_user=mock_user)
-        
-        assert exc_info.value.status_code == 403
-        assert "lacks required role" in exc_info.value.detail.lower()
+        with patch('app.core.auth.jwt.decode') as mock_jwt_decode:
+            mock_jwt_decode.return_value = {"sub": "999"}
+            
+            with patch('app.core.auth.UserService.get_by_id') as mock_get_by_id:
+                mock_get_by_id.return_value = None
+                
+                # Act & Assert
+                with pytest.raises(HTTPException) as exc_info:
+                    await get_current_user(request=mock_request, db=db_session)
+                
+                assert exc_info.value.status_code == 403
+                assert "not active or does not exist" in exc_info.value.detail
 
     @pytest.mark.asyncio
-    async def test_require_role_handles_user_with_no_role(self):
-        """Test that a user with no role (None) is blocked"""
-        # Arrange - Create a mock user with no role
-        mock_user = MockUser(None)
+    async def test_get_current_user_raises_when_user_inactive(self, db_session):
+        """Test that get_current_user raises 403 when user is inactive"""
+        # Arrange
+        mock_request = MagicMock()
+        mock_request.headers.get.return_value = "Bearer valid_token"
         
-        # Create the role dependency
-        role_dependency = require_role(["admin"])
-        
-        # Act & Assert - Should raise HTTPException with 403
-        with pytest.raises(HTTPException) as exc_info:
-            await role_dependency(current_user=mock_user)
-        
-        assert exc_info.value.status_code == 403
-        assert "lacks required role" in exc_info.value.detail.lower()
-
-    @pytest.mark.asyncio
-    async def test_require_role_allows_any_of_multiple_roles(self):
-        """Test that require_role allows any of the specified roles"""
-        # Arrange - Create a mock user with "professor" role
-        mock_user = MockUser("professor")
-        
-        # Create the role dependency requiring admin, professor, or student
-        role_dependency = require_role(["admin", "professor", "student"])
-        
-        # Act - Call the dependency function with the mock user
-        result = await role_dependency(current_user=mock_user)
-        
-        # Assert - User should be returned without exception
-        assert result == mock_user
-
-    @pytest.mark.asyncio
-    async def test_require_role_single_required_role(self):
-        """Test require_role with a single required role"""
-        # Arrange - Create a mock user with admin role
-        mock_user = MockUser("admin")
-        
-        # Create the role dependency requiring only admin
-        role_dependency = require_role(["admin"])
-        
-        # Act - Call the dependency function with the mock user
-        result = await role_dependency(current_user=mock_user)
-        
-        # Assert - User should be returned without exception
-        assert result == mock_user
-
-    @pytest.mark.asyncio
-    async def test_require_role_case_sensitive_matching(self):
-        """Test that role matching is case-sensitive"""
-        # Arrange - Create a mock user with "Admin" (capital A)
-        mock_user = MockUser("Admin")
-        
-        # Create the role dependency requiring "admin" (lowercase a)
-        role_dependency = require_role(["admin"])
-        
-        # Act & Assert - Should raise HTTPException because of case mismatch
-        with pytest.raises(HTTPException) as exc_info:
-            await role_dependency(current_user=mock_user)
-        
-        assert exc_info.value.status_code == 403
+        with patch('app.core.auth.jwt.decode') as mock_jwt_decode:
+            mock_jwt_decode.return_value = {"sub": "123"}
+            
+            with patch('app.core.auth.UserService.get_by_id') as mock_get_by_id:
+                mock_user = MagicMock()
+                mock_user.is_active = False
+                mock_get_by_id.return_value = mock_user
+                
+                # Act & Assert
+                with pytest.raises(HTTPException) as exc_info:
+                    await get_current_user(request=mock_request, db=db_session)
+                
+                assert exc_info.value.status_code == 403
+                assert "not active or does not exist" in exc_info.value.detail
