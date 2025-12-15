@@ -70,6 +70,7 @@ def init_db():
 class _LazyEngine:
     """Lazy proxy for engine that initializes on first access."""
     def __getattr__(self, name):
+        """Forward attribute access to the actual engine instance."""
         return getattr(get_engine(), name)
 
 class _LazySessionLocal:
@@ -79,6 +80,7 @@ class _LazySessionLocal:
         return get_session_local()(*args, **kwargs)
     
     def __getattr__(self, name):
+        """Forward attribute access to the actual SessionLocal factory."""
         return getattr(get_session_local(), name)
 
 engine = _LazyEngine()
