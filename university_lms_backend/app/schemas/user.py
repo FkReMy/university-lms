@@ -6,17 +6,18 @@ Pydantic schemas for the User model, governing validation and serialization of u
 - No sample, demo, or test code.
 - Follows global schema conventions for a unified and maintainable architecture.
 - Status field matches underlying database: only "active" (is_active=True) and "inactive" (is_active=False) are represented.
+- role: included and normalized (may be string, object, or role_id for frontend flexibility).
 """
 
 from pydantic import BaseModel, EmailStr, Field
-from typing import Optional
+from typing import Optional, Union
 from datetime import datetime
-
 
 class UserBase(BaseModel):
     """
     Shared schema for user creation, update, and read.
     Status: Only "active" or "inactive" supported, mapped to is_active bool in DB.
+    Role: string, id, or minimal object allowed; always present for frontend consumption.
     """
     username: str = Field(..., description="Globally unique username")
     email: EmailStr = Field(..., description="User email address (must be unique)")
@@ -27,14 +28,29 @@ class UserBase(BaseModel):
         description="Account status; only 'active' or 'inactive' supported for compatibility with database"
     )
     profile_image_path: Optional[str] = Field(None, description="Path to profile image file")
+    role: Optional[Union[str, dict, int]] = Field(
+        None, description="User's role - typically a string, but may be an object or id for robust integration."
+    )
 
     @staticmethod
     def from_model(user_obj):
         """
         Utility to create schema from SQLAlchemy model instance,
-        handling status mapping from is_active boolean.
+        handling status mapping from is_active boolean, and normalizing role.
         """
         status = "active" if getattr(user_obj, "is_active", True) else "inactive"
+        # try to extract a role (string, dict or id)
+        role_val = None
+        if hasattr(user_obj, "role"):
+            if hasattr(user_obj.role, "name"):
+                role_val = user_obj.role.name
+            elif isinstance(user_obj.role, dict):
+                if "name" in user_obj.role:
+                    role_val = user_obj.role["name"]
+                else:
+                    role_val = user_obj.role
+            else:
+                role_val = user_obj.role
         return User(
             user_id=user_obj.user_id,
             username=user_obj.username,
@@ -46,7 +62,7 @@ class UserBase(BaseModel):
             created_at=getattr(user_obj, "created_at", None),
             updated_at=getattr(user_obj, "updated_at", None),
             last_login=getattr(user_obj, "last_login", None),
-            role=getattr(user_obj, "role", None),  # role object, e.g. {'id': x, 'name': 'Student'}
+            role=role_val,
         )
 
 
@@ -61,6 +77,7 @@ class UserUpdate(BaseModel):
     """
     Fields for updating user records (all optional for PATCH semantics).
     - Status should only be "active" or "inactive" for compatibility.
+    - Accepts role update in the same flexible format as UserBase.
     """
     username: Optional[str] = None
     email: Optional[EmailStr] = None
@@ -72,6 +89,9 @@ class UserUpdate(BaseModel):
         description="Account status; only 'active' or 'inactive' are supported for compatibility."
     )
     profile_image_path: Optional[str] = None
+    role: Optional[Union[str, dict, int]] = Field(
+        None, description="User's role (optional on update, flexible type)"
+    )
 
 
 class UserInDBBase(UserBase):
@@ -82,7 +102,6 @@ class UserInDBBase(UserBase):
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
     last_login: Optional[datetime] = Field(None, description="Timestamp of the last user login")
-    role: Optional[dict] = Field(None, description="Role object {id, name} or similar")
 
     class Config:
         orm_mode = True
@@ -90,7 +109,7 @@ class UserInDBBase(UserBase):
 
 class User(UserInDBBase):
     """
-    API schema for reading user records.
+    API schema for reading user records. Unified from global components.
     """
     pass
 
