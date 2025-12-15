@@ -88,3 +88,20 @@ class TestGetCurrentUser:
                 
                 assert exc_info.value.status_code == 403
                 assert "not active or does not exist" in exc_info.value.detail
+
+    @pytest.mark.asyncio
+    async def test_get_current_user_raises_when_user_id_not_numeric(self, db_session):
+        """Test that get_current_user raises 401 when user_id in JWT is not numeric"""
+        # Arrange
+        mock_request = MagicMock()
+        mock_request.headers.get.return_value = "Bearer valid_token"
+        
+        with patch('app.core.auth.jwt.decode') as mock_jwt_decode:
+            mock_jwt_decode.return_value = {"sub": "invalid_user_id"}
+            
+            # Act & Assert
+            with pytest.raises(HTTPException) as exc_info:
+                await get_current_user(request=mock_request, db=db_session)
+            
+            assert exc_info.value.status_code == 401
+            assert "Token payload invalid" in exc_info.value.detail
