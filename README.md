@@ -69,7 +69,8 @@ pip install -r requirements.txt
 
 # Configure .env
 cp .env.example .env
-# Edit .env → set DATABASE_URL (e.g., postgresql://user:password@localhost/dbname)
+# Edit .env → Update POSTGRES_PASSWORD and JWT_SECRET_KEY
+# DATABASE_URL is already configured for localhost (no changes needed for local dev)
 
 # Apply migrations
 alembic upgrade head
