@@ -51,7 +51,7 @@ export default function UserManagementPage() {
     () =>
       users.filter(u => {
         const matchesSearch =
-          u.name?.toLowerCase().includes(search.toLowerCase()) ||
+          u.full_name?.toLowerCase().includes(search.toLowerCase()) ||
           u.email?.toLowerCase().includes(search.toLowerCase());
         const matchesRole = role === "all" || u.role === role;
         return matchesSearch && matchesRole;
@@ -147,7 +147,7 @@ export default function UserManagementPage() {
             <tbody>
               {filteredUsers.map(user => (
                 <tr key={user.id}>
-                  <td>{user.name}</td>
+                  <td>{user.full_name}</td>
                   <td>{user.email}</td>
                   <td>{roleBadge(user.role)}</td>
                   <td>{user.enrolled}</td>

@@ -44,7 +44,7 @@ export default function ProfilePage() {
         const cs = await enrollmentApi.listMine();
         if (isMounted) {
           setUser(u || {});
-          setForm({ name: u?.name || '', email: u?.email || '' });
+          setForm({ name: u?.full_name || '', email: u?.email || '' });
           setCourses(Array.isArray(cs) ? cs : []);
         }
       } catch {
@@ -69,7 +69,7 @@ export default function ProfilePage() {
 
   function handleCancel(e) {
     e.preventDefault();
-    setForm({ name: user.name, email: user.email });
+    setForm({ name: user.full_name, email: user.email });
     setEditing(false);
     setSuccessMsg('');
     setErrorMsg('');
@@ -160,7 +160,7 @@ export default function ProfilePage() {
             ) : (
               <div>
                 <div className={styles.profilePage__infoRow}>
-                  <span className={styles.profilePage__label}>Name:</span> {user.name}
+                  <span className={styles.profilePage__label}>Name:</span> {user.full_name}
                   {roleBadge(user.role)} {statusBadge(user.status)}
                 </div>
                 <div className={styles.profilePage__infoRow}>
