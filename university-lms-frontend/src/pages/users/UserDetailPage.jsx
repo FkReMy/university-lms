@@ -118,6 +118,7 @@ export default function UserDetailPage() {
         <div className={styles.userDetailPage__container}>
           <header className={styles.userDetailPage__header}>
             <h1 className={styles.userDetailPage__title}>
+              {/* Use full_name from backend schema */}
               {user.full_name}
               {roleBadge(roleValue)}
               {statusBadge(user.status)}
@@ -128,6 +129,7 @@ export default function UserDetailPage() {
             </div>
             <div className={styles.userDetailPage__infoRow}>
               <span className={styles.userDetailPage__label}>Member Since:</span>{' '}
+              {/* Use created_at from backend, not memberSince */}
               <span>{formatDate(user.created_at)}</span>
             </div>
           </header>
@@ -193,8 +195,9 @@ export default function UserDetailPage() {
 
 /**
  * Production Notes:
- * - Handles all role input variants (string, object, missing) to prevent runtime errors.
- * - Only references production API fields, and robust to backend schema changes.
+ * - Now references the correct backend field (created_at) for "Member Since" display.
+ * - Handles all role input variants and offers robust, minimal user display.
+ * - Only references production API fields, robust against backend changes.
  * - Unified use of global badge and button UI components.
  * - Ready for admin/user expansion and additional actions.
  */
