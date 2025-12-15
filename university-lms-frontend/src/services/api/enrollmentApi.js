@@ -20,6 +20,15 @@ const enrollmentApi = {
   },
 
   /**
+   * List enrollments for a specific student/user.
+   * @param {string|number} studentId
+   * @returns {Promise}
+   */
+  listForUser(studentId) {
+    return this.list({ studentId });
+  },
+
+  /**
    * Get details for a single enrollment by ID.
    * @param {string|number} enrollmentId
    * @returns {Promise}
