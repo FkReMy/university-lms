@@ -1,137 +1,89 @@
 """
-Users API Router (Production)
------------------------------
-Handles user CRUD, profile management, and admin functions for the University LMS.
-
-- All endpoints leverage unified schemas/services.
-- Role/ownership access policy: users may view/update their own info; admins may manage all users.
-- Fully production-ready: no samples, demos, or test code.
+Users API Router (Production Version)
+-------------------------------------
+Provides user-related API endpoints.
+- Uses unified, global schema and naming conventions.
+- Avoids sample/demo code.
 """
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from typing import List, Optional
+from sqlalchemy.orm import Session
+from typing import List
+
+from app.core.security import get_current_active_user, get_db
+from app.services.user_service import UserService
 from app.schemas.user import (
     UserCreate,
     UserUpdate,
-    UserResponse,
-    UserStatusUpdate,
+    User as UserResponse,  # Use global schema, not a non-existent UserResponse
 )
-from app.services.user_service import UserService
-from app.core.auth import get_current_user
 
-router = APIRouter()
-
-@router.get(
-    "/",
-    response_model=List[UserResponse],
-    summary="List all users (admin only)",
+router = APIRouter(
+    prefix="/users",
+    tags=["users"]
 )
-async def list_users(
-    search: Optional[str] = None,
-    current_user=Depends(get_current_user),
+
+
+@router.get("/", response_model=List[UserResponse])
+def list_users(
+    skip: int = 0,
+    limit: int = 100,
+    db: Session = Depends(get_db)
 ):
     """
-    List all users in the system (possible filters: search).
-    Only admins allowed.
+    Retrieve all users in paginated form.
     """
-    return await UserService.list_users(search=search, user=current_user)
+    return UserService.get_all(db, skip=skip, limit=limit)
 
-@router.get(
-    "/me",
-    response_model=UserResponse,
-    summary="Get current user's profile"
-)
-async def get_me(current_user=Depends(get_current_user)):
-    """
-    Retrieve the profile of the currently authenticated user.
-    """
-    return await UserService.get_user_by_id(user_id=current_user.id, user=current_user)
 
-@router.get(
-    "/{user_id}",
-    response_model=UserResponse,
-    summary="Get a user by ID (admin or owner)"
-)
-async def get_user(
-    user_id: str,
-    current_user=Depends(get_current_user),
+@router.get("/{user_id}", response_model=UserResponse)
+def get_user(
+    user_id: int,
+    db: Session = Depends(get_db),
 ):
     """
-    Fetch profile for given user_id (admin, or self).
+    Retrieve a user by their unique ID.
     """
-    return await UserService.get_user_by_id(user_id=user_id, user=current_user)
+    user = UserService.get_by_id(db, user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user
 
-@router.post(
-    "/",
-    response_model=UserResponse,
-    status_code=status.HTTP_201_CREATED,
-    summary="Create a user (admin only)",
-)
-async def create_user(
-    user_create: UserCreate,
-    current_user=Depends(get_current_user),
+
+@router.post("/", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
+def create_user(
+    user_in: UserCreate,
+    db: Session = Depends(get_db)
 ):
     """
-    Admin-only creation of a new user account.
+    Create a new user using provided schema.
     """
-    return await UserService.create_user(user_create=user_create, user=current_user)
+    return UserService.create(db, user_in)
 
-@router.patch(
-    "/me",
-    response_model=UserResponse,
-    summary="Update own user info"
-)
-async def update_me(
-    user_update: UserUpdate,
-    current_user=Depends(get_current_user),
+
+@router.put("/{user_id}", response_model=UserResponse)
+def update_user(
+    user_id: int,
+    user_in: UserUpdate,
+    db: Session = Depends(get_db)
 ):
     """
-    User may update their own profile.
+    Update an existing user record.
     """
-    return await UserService.update_user(user_id=current_user.id, user_update=user_update, user=current_user)
+    user = UserService.update(db, user_id, user_in)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user
 
-@router.patch(
-    "/{user_id}",
-    response_model=UserResponse,
-    summary="Update a user by ID (admin or owner)"
-)
-async def update_user(
-    user_id: str,
-    user_update: UserUpdate,
-    current_user=Depends(get_current_user),
+
+@router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_user(
+    user_id: int,
+    db: Session = Depends(get_db)
 ):
     """
-    Admin may update any user, or user may update own profile.
+    Delete a user by their unique ID.
     """
-    return await UserService.update_user(user_id=user_id, user_update=user_update, user=current_user)
-
-@router.patch(
-    "/{user_id}/status",
-    response_model=UserResponse,
-    summary="Update a users status (admin only)"
-)
-
-async def update_user_status(
-    user_id: str,
-    status_update: UserStatusUpdate,
-    current_user=Depends(get_current_user),
-):
-    """
-    Admin can activate, deactivate, or suspend a user account.
-    """
-    return await UserService.update_user_status(user_id=user_id, status_update=status_update, user=current_user)
-
-@router.delete(
-    "/{user_id}",
-    status_code=status.HTTP_204_NO_CONTENT,
-    summary="Delete (deactivate) a user (admin only)"
-)
-async def delete_user(
-    user_id: str,
-    current_user=Depends(get_current_user),
-):
-    """
-    Admin-only: Delete or deactivate a user (soft-delete recommended).
-    """
-    await UserService.delete_user(user_id=user_id, user=current_user)
-    return None
+    deleted = UserService.delete(db, user_id)
+    if not deleted:
+        raise HTTPException(status_code=404, detail="User not found")

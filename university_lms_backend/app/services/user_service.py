@@ -1,11 +1,11 @@
 """
 User Service (Production)
 -------------------------
-Service layer for managing User entities, providing CRUD operations and business logic
-for users within the LMS.
+Service layer for managing User entities and implementing all associated business logic.
 
-- No sample, demo, or test code.
-- Utilizes global models, schemas, and unified conventions.
+- Uses global models and schemas for data integrity and consistency.
+- Explicit mapping between Pydantic and ORM models (solving status/is_active mismatch).
+- Strictly avoids sample/demo code, follows production patterns.
 """
 
 from sqlalchemy.orm import Session
@@ -15,8 +15,8 @@ from app.models.user import User
 from app.schemas.user import (
     UserCreate,
     UserUpdate,
+    User as UserSchema,
 )
-from app.schemas.user import User as UserSchema
 
 class UserService:
     """
@@ -50,9 +50,13 @@ class UserService:
     @staticmethod
     def create(db: Session, user_in: UserCreate) -> UserSchema:
         """
-        Create and persist a new user record.
+        Create and persist a new user record, mapping the status field to is_active.
         """
-        user_obj = User(**user_in.dict())
+        user_data = user_in.dict()
+        # Convert status string to is_active boolean
+        status = user_data.pop("status", "active")
+        user_data["is_active"] = (status == "active")
+        user_obj = User(**user_data)
         db.add(user_obj)
         db.commit()
         db.refresh(user_obj)
@@ -65,12 +69,17 @@ class UserService:
         user_in: UserUpdate
     ) -> Optional[UserSchema]:
         """
-        Update an existing user record with provided fields.
+        Update an existing user record with provided fields, mapping status as needed.
         """
         user_obj = db.query(User).filter(User.user_id == user_id).first()
         if not user_obj:
             return None
-        for field, value in user_in.dict(exclude_unset=True).items():
+        update_data = user_in.dict(exclude_unset=True)
+        if "status" in update_data:
+            # Map status string to is_active boolean
+            status = update_data.pop("status")
+            update_data["is_active"] = (status == "active")
+        for field, value in update_data.items():
             setattr(user_obj, field, value)
         db.commit()
         db.refresh(user_obj)
