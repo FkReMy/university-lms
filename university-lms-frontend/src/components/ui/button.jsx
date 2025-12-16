@@ -54,19 +54,22 @@ function Spinner() {
 export default function Button({
   type = 'button',
   variant = 'primary',
+  size = 'md',
   loading = false,
   disabled = false,
   className = '',
   children,
   ...rest
 }) {
-  // Class composition: global base, variant, disabled, additional
+  // Class composition: global base, variant, size, disabled, additional
   const baseClass = styles.button;
   const variantClass = styles[`button--${variant}`] || '';
+  const sizeClass = styles[`button--${size}`] || '';
   const isDisabledClass = (loading || disabled) ? styles['is-disabled'] : '';
   const finalClassName = [
     baseClass,
     variantClass,
+    sizeClass,
     isDisabledClass,
     className,
   ].filter(Boolean).join(' ');
@@ -88,7 +91,8 @@ export default function Button({
 
 Button.propTypes = {
   type: PropTypes.oneOf(['button', 'submit', 'reset']),
-  variant: PropTypes.oneOf(['primary', 'secondary', 'danger', 'default']),
+  variant: PropTypes.oneOf(['primary', 'secondary', 'danger', 'default', 'outline']),
+  size: PropTypes.oneOf(['sm', 'md', 'lg']),
   loading: PropTypes.bool,
   disabled: PropTypes.bool,
   className: PropTypes.string,

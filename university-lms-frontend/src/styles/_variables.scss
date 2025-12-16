@@ -9,51 +9,68 @@
  */
 
 /* -------------------------------------------------------------------------- */
-/* Color palettes - Academic Theme                                            */
+/* Color palettes - Modern Academic Theme                                     */
 /* -------------------------------------------------------------------------- */
 /* 
- * Education-focused color palette designed to:
+ * Modern education-focused color palette designed to:
  * - Reduce visual fatigue during long study sessions
- * - Provide academic, trustworthy, and modern appearance
+ * - Provide academic, trustworthy, and contemporary appearance
  * - Maintain consistency across all pages and components
- * - Encourage longer engagement and repeat visits
+ * - Use vibrant, engaging colors that encourage interaction
+ * - Provide excellent contrast and accessibility
  */
 $colors-light: (
-  bg: #f8fafc,
+  bg: #f9fafb,
   surface: #ffffff,
   surface-elevated: #ffffff,
   border: #e5e7eb,
-  primary: #2563eb,
-  primary-soft: #e8f0fe,
-  primary-strong: #1e3a8a,
-  success: #22c55e,
+  primary: #3b82f6,
+  primary-soft: #dbeafe,
+  primary-strong: #1d4ed8,
+  secondary: #8b5cf6,
+  secondary-soft: #ede9fe,
+  accent: #06b6d4,
+  accent-soft: #cffafe,
+  success: #10b981,
+  success-soft: #d1fae5,
   warning: #f59e0b,
+  warning-soft: #fef3c7,
   danger: #ef4444,
-  info: #0ea5e9,
-  text: #111827,
-  text-soft: #4b5563,
-  text-muted: #6b7280,
-  bg-muted: #f8fafc,
-  bg-subtle: #ecfdf5
+  danger-soft: #fee2e2,
+  info: #3b82f6,
+  info-soft: #dbeafe,
+  text: #0f172a,
+  text-soft: #475569,
+  text-muted: #64748b,
+  bg-muted: #f1f5f9,
+  bg-subtle: #f8fafc
 );
 
 $colors-dark: (
   bg: #0f172a,
   surface: #1e293b,
-  surface-elevated: #1e293b,
+  surface-elevated: #293548,
   border: #334155,
   primary: #60a5fa,
-  primary-soft: rgba(37, 99, 235, 0.12),
+  primary-soft: rgba(96, 165, 250, 0.15),
   primary-strong: #93c5fd,
-  success: #22c55e,
-  warning: #f59e0b,
-  danger: #ef4444,
-  info: #0ea5e9,
+  secondary: #a78bfa,
+  secondary-soft: rgba(167, 139, 250, 0.15),
+  accent: #22d3ee,
+  accent-soft: rgba(34, 211, 238, 0.15),
+  success: #34d399,
+  success-soft: rgba(52, 211, 153, 0.15),
+  warning: #fbbf24,
+  warning-soft: rgba(251, 191, 36, 0.15),
+  danger: #f87171,
+  danger-soft: rgba(248, 113, 113, 0.15),
+  info: #60a5fa,
+  info-soft: rgba(96, 165, 250, 0.15),
   text: #f1f5f9,
-  text-soft: #94a3b8,
-  text-muted: #64748b,
+  text-soft: #cbd5e1,
+  text-muted: #94a3b8,
   bg-muted: rgba(255, 255, 255, 0.05),
-  bg-subtle: rgba(255, 255, 255, 0.02)
+  bg-subtle: rgba(255, 255, 255, 0.03)
 );
 
 /* -------------------------------------------------------------------------- */
@@ -67,10 +84,20 @@ $color-primary: map.get($colors-light, primary);
 $color-primary-soft: map.get($colors-light, primary-soft);
 $color-primary-strong: map.get($colors-light, primary-strong);
 
+$color-secondary: map.get($colors-light, secondary);
+$color-secondary-soft: map.get($colors-light, secondary-soft);
+
+$color-accent: map.get($colors-light, accent);
+$color-accent-soft: map.get($colors-light, accent-soft);
+
 $color-success: map.get($colors-light, success);
+$color-success-soft: map.get($colors-light, success-soft);
 $color-warning: map.get($colors-light, warning);
+$color-warning-soft: map.get($colors-light, warning-soft);
 $color-danger: map.get($colors-light, danger);
+$color-danger-soft: map.get($colors-light, danger-soft);
 $color-info: map.get($colors-light, info);
+$color-info-soft: map.get($colors-light, info-soft);
 
 $color-text: map.get($colors-light, text);
 $color-text-soft: map.get($colors-light, text-soft);
@@ -157,17 +184,23 @@ $radius-2xl: map.get($radii, 2xl);
 $radius-full: map.get($radii, full);
 
 /* -------------------------------------------------------------------------- */
-/* Shadows                                                                    */
+/* Shadows - Enhanced depth system                                            */
 /* -------------------------------------------------------------------------- */
 $shadows: (
-  sm: 0 1px 2px rgba(15, 23, 42, 0.05),
-  md: 0 4px 6px rgba(15, 23, 42, 0.08),
-  lg: 0 10px 15px rgba(15, 23, 42, 0.12)
+  xs: (0 1px 2px rgba(15, 23, 42, 0.04)),
+  sm: (0 1px 3px rgba(15, 23, 42, 0.08), 0 1px 2px rgba(15, 23, 42, 0.06)),
+  md: (0 4px 6px -1px rgba(15, 23, 42, 0.1), 0 2px 4px -1px rgba(15, 23, 42, 0.06)),
+  lg: (0 10px 15px -3px rgba(15, 23, 42, 0.15), 0 4px 6px -2px rgba(15, 23, 42, 0.08)),
+  xl: (0 20px 25px -5px rgba(15, 23, 42, 0.18), 0 10px 10px -5px rgba(15, 23, 42, 0.1)),
+  inner: (inset 0 2px 4px 0 rgba(15, 23, 42, 0.06))
 );
 
+$shadow-xs: map.get($shadows, xs);
 $shadow-sm: map.get($shadows, sm);
 $shadow-md: map.get($shadows, md);
 $shadow-lg: map.get($shadows, lg);
+$shadow-xl: map.get($shadows, xl);
+$shadow-inner: map.get($shadows, inner);
 
 /* -------------------------------------------------------------------------- */
 /* Transitions                                                                */
