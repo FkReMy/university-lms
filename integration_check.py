@@ -310,6 +310,9 @@ class IntegrationChecker:
         """Test if backend can be imported"""
         self.print_header("9. Backend Import Check")
         
+        # Save original sys.path to restore later
+        original_path = sys.path.copy()
+        
         try:
             # Try importing the FastAPI app
             sys.path.insert(0, str(self.backend_dir))
@@ -335,6 +338,9 @@ class IntegrationChecker:
             
         except Exception as e:
             self.print_check("Backend App Creation", "FAIL", str(e))
+        finally:
+            # Restore original sys.path
+            sys.path = original_path
     
     def check_frontend_build(self):
         """Test frontend build"""

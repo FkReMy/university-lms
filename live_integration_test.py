@@ -25,14 +25,20 @@ except ImportError:
 
 
 class LiveIntegrationTester:
+    # Configuration constants
+    DEFAULT_TIMEOUT = 5.0  # seconds
+    
     def __init__(self, backend_url: str = "http://localhost:8000", 
-                 frontend_url: str = "http://localhost:5173"):
+                 frontend_url: str = "http://localhost:5173",
+                 timeout: float = None):
         self.backend_url = backend_url
         self.frontend_url = frontend_url
+        self.timeout = timeout or self.DEFAULT_TIMEOUT
         self.results = {
             "timestamp": datetime.now().isoformat(),
             "backend_url": backend_url,
             "frontend_url": frontend_url,
+            "timeout": self.timeout,
             "tests": [],
             "summary": {"passed": 0, "failed": 0}
         }
@@ -68,7 +74,7 @@ class LiveIntegrationTester:
         """Test backend health endpoint"""
         try:
             async with httpx.AsyncClient() as client:
-                response = await client.get(f"{self.backend_url}/healthz", timeout=5.0)
+                response = await client.get(f"{self.backend_url}/healthz", timeout=self.timeout)
                 if response.status_code == 200:
                     data = response.json()
                     self.record_test(
@@ -97,7 +103,7 @@ class LiveIntegrationTester:
         """Test backend API documentation availability"""
         try:
             async with httpx.AsyncClient() as client:
-                response = await client.get(f"{self.backend_url}/docs", timeout=5.0)
+                response = await client.get(f"{self.backend_url}/docs", timeout=self.timeout)
                 if response.status_code == 200:
                     self.record_test(
                         "Backend API Docs",
@@ -121,7 +127,7 @@ class LiveIntegrationTester:
         """Test OpenAPI schema endpoint"""
         try:
             async with httpx.AsyncClient() as client:
-                response = await client.get(f"{self.backend_url}/openapi.json", timeout=5.0)
+                response = await client.get(f"{self.backend_url}/openapi.json", timeout=self.timeout)
                 if response.status_code == 200:
                     schema = response.json()
                     paths = len(schema.get("paths", {}))
@@ -155,7 +161,7 @@ class LiveIntegrationTester:
                         "Access-Control-Request-Method": "POST",
                         "Access-Control-Request-Headers": "Content-Type,Authorization"
                     },
-                    timeout=5.0
+                    timeout=self.timeout
                 )
                 
                 cors_headers = {
@@ -197,9 +203,9 @@ class LiveIntegrationTester:
                 try:
                     url = f"{self.backend_url}{path}"
                     if method == "GET":
-                        response = await client.get(url, timeout=5.0)
+                        response = await client.get(url, timeout=self.timeout)
                     else:
-                        response = await client.post(url, json={}, timeout=5.0)
+                        response = await client.post(url, json={}, timeout=self.timeout)
                     
                     # We expect 401/422 for most endpoints (no auth), not 404
                     if response.status_code in [200, 401, 422]:
@@ -231,7 +237,7 @@ class LiveIntegrationTester:
         """Test frontend availability"""
         try:
             async with httpx.AsyncClient() as client:
-                response = await client.get(self.frontend_url, timeout=5.0, follow_redirects=True)
+                response = await client.get(self.frontend_url, timeout=self.timeout, follow_redirects=True)
                 if response.status_code == 200:
                     # Check if it's actually HTML
                     content_type = response.headers.get("content-type", "")
@@ -272,7 +278,7 @@ class LiveIntegrationTester:
                 try:
                     response = await client.get(
                         f"{self.frontend_url}{asset}",
-                        timeout=5.0,
+                        timeout=self.timeout,
                         follow_redirects=True
                     )
                     if response.status_code == 200:
@@ -358,10 +364,16 @@ async def main():
         default="http://localhost:5173",
         help="Frontend URL (default: http://localhost:5173)"
     )
+    parser.add_argument(
+        "--timeout",
+        type=float,
+        default=5.0,
+        help="Request timeout in seconds (default: 5.0)"
+    )
     
     args = parser.parse_args()
     
-    tester = LiveIntegrationTester(args.backend, args.frontend)
+    tester = LiveIntegrationTester(args.backend, args.frontend, args.timeout)
     exit_code = await tester.run_all_tests()
     sys.exit(exit_code)
 
