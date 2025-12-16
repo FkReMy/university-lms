@@ -18,7 +18,8 @@ from app.schemas.auth import (
     AuthRefreshResponse,
     AuthPasswordChangeRequest,
     AuthPasswordResetRequest,
-    AuthPasswordResetConfirmRequest
+    AuthPasswordResetConfirmRequest,
+    UserInfo
 )
 from app.schemas.user import UserCreate
 from app.services.auth_service import AuthService
@@ -140,8 +141,6 @@ async def get_current_user_info(
     """
     Get information about the currently authenticated user.
     """
-    from app.schemas.auth import UserInfo
-    
     # Get role name if available
     role_name = None
     if current_user.role:

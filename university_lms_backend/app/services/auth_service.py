@@ -20,12 +20,15 @@ from app.schemas.auth import (
     AuthRefreshResponse,
     AuthPasswordChangeRequest,
     AuthPasswordResetRequest,
-    AuthPasswordResetConfirmRequest
+    AuthPasswordResetConfirmRequest,
+    UserInfo
 )
+from app.schemas.user import UserCreate
 from app.core.config import settings
 from app.core.security import verify_password, get_password_hash, create_access_token
 from app.core.database import get_db
 from app.repositories.user_repo import UserRepository
+from app.repositories.role_repo import RoleRepository
 
 
 class AuthService:
@@ -85,9 +88,6 @@ class AuthService:
         if user.role:
             role_name = user.role.name if hasattr(user.role, 'name') else str(user.role)
         
-        # Import UserInfo schema
-        from app.schemas.auth import UserInfo
-        
         # Create user info
         user_info = UserInfo(
             user_id=user.user_id,
@@ -110,9 +110,6 @@ class AuthService:
         """
         Register a new user and return JWT tokens for automatic login.
         """
-        from app.schemas.user import UserCreate
-        from app.schemas.auth import UserInfo
-        
         # Check if username already exists
         existing_user = UserRepository.get_by_username(db, user_data.username)
         if existing_user:
@@ -140,7 +137,6 @@ class AuthService:
         
         # Create the user with default "Student" role
         # First, get the Student role ID
-        from app.repositories.role_repo import RoleRepository
         student_role = RoleRepository.get_by_name(db, "Student")
         role_id = student_role.role_id if student_role else None
         
