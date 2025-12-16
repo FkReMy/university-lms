@@ -20,7 +20,7 @@ RUN apt-get update && apt-get install -y \
     libssl-dev \
     git \
     curl \
-    netcat \
+    netcat-openbsd \
     gzip \
     && rm -rf /var/lib/apt/lists/*
 
