@@ -103,7 +103,7 @@ def main():
                     text("""
                         INSERT INTO users 
                         (username, email, password_hash, first_name, last_name, role_id, is_active, is_verified, created_at, updated_at)
-                        VALUES (:username, :email, :password_hash, :first_name, :last_name, :role_id, 1, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+                        VALUES (:username, :email, :password_hash, :first_name, :last_name, :role_id, true, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
                     """),
                     {
                         "username": username,
