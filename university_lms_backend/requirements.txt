@@ -6,8 +6,8 @@
 fastapi==0.110.2               # ASGI Web Framework
 uvicorn[standard]==0.29.0      # ASGI server
 sqlalchemy==2.0.29             # Database ORM
-asyncpg==0.29.0                # Async Postgres driver for SQLAlchemy
-psycopg2-binary==2.9.9         # Sync Postgres adapter (CLI, scripts)
+asyncpg>=0.30.0                # Async Postgres driver for SQLAlchemy
+psycopg2-binary>=2.9.10         # Sync Postgres adapter (CLI, scripts)
 alembic==1.13.1                # Database migrations
 pydantic==2.7.1                # Models & validation
 pydantic-settings==2.2.1       # Settings management (Pydantic v2)
