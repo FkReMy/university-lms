@@ -9,6 +9,12 @@ Creates and configures the FastAPI app.
 - Provides a single `create_app()` factory for both ASGI servers and CLI tools.
 """
 
+import os
+import sys
+import subprocess
+from pathlib import Path
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
@@ -37,6 +43,47 @@ from app.api.v1.rooms import router as rooms_router
 from app.api.v1.files import router as files_router
 from app.api.v1.notifications import router as notifications_router
 
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """
+    Lifespan context manager for startup and shutdown events.
+    Runs database seeding on startup if SEED_ON_STARTUP environment variable is set.
+    """
+    # Startup: Run database seeding if enabled
+    if os.environ.get('SEED_ON_STARTUP', '').lower() in ('true', '1', 'yes'):
+        print("🌱 SEED_ON_STARTUP is enabled, running database seeding...")
+        try:
+            # Get the project root directory
+            project_root = Path(__file__).parent.parent
+            seed_script = project_root / "scripts" / "seed_database.py"
+            
+            if seed_script.exists():
+                # Run the seed script
+                result = subprocess.run(
+                    [sys.executable, str(seed_script)],
+                    cwd=str(project_root),
+                    capture_output=True,
+                    text=True
+                )
+                
+                if result.returncode == 0:
+                    print("✅ Database seeding completed successfully")
+                    print(result.stdout)
+                else:
+                    print(f"⚠️  Database seeding failed with exit code {result.returncode}")
+                    print(result.stderr)
+            else:
+                print(f"⚠️  Seed script not found at {seed_script}")
+        except Exception as e:
+            print(f"❌ Error running database seeding: {e}")
+    
+    yield  # Application runs here
+    
+    # Shutdown: Cleanup tasks if needed
+    pass
+
+
 def create_app(environment: str = None) -> FastAPI:
     """
     App factory that creates and configures the FastAPI app,
@@ -49,6 +96,7 @@ def create_app(environment: str = None) -> FastAPI:
         docs_url="/docs",
         redoc_url="/redoc",
         openapi_url="/openapi.json",
+        lifespan=lifespan,
     )
 
     # Set up CORS from settings
