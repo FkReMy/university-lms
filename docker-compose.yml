@@ -1,0 +1,93 @@
+version: '3.9'
+
+services:
+  # PostgreSQL Database
+  database:
+    image: postgres:16
+    container_name: university_lms_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-lms_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-strong_db_password}
+      POSTGRES_DB: ${POSTGRES_DB:-lms}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - db_data:/var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER:-lms_user}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - lms_network
+
+  # Redis Cache
+  redis:
+    image: redis:7
+    container_name: university_lms_redis
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - lms_network
+
+  # Backend API (FastAPI)
+  backend:
+    build:
+      context: ./university_lms_backend
+      dockerfile: docker/Dockerfile.backend
+    container_name: university_lms_backend
+    restart: unless-stopped
+    env_file:
+      - ./university_lms_backend/.env
+    environment:
+      DATABASE_URL: postgresql+psycopg2://${POSTGRES_USER:-lms_user}:${POSTGRES_PASSWORD:-strong_db_password}@database:5432/${POSTGRES_DB:-lms}
+      REDIS_URL: redis://redis:6379/0
+      ALLOWED_ORIGINS: http://localhost:5173,http://localhost:3000
+    depends_on:
+      database:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    volumes:
+      - ./university_lms_backend/app:/app/app:cached
+      - uploads:/uploads
+    ports:
+      - "8000:8000"
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+    networks:
+      - lms_network
+
+  # Database Migration
+  migration:
+    build:
+      context: ./university_lms_backend
+      dockerfile: docker/Dockerfile.migration
+    container_name: university_lms_migration
+    depends_on:
+      database:
+        condition: service_healthy
+    env_file:
+      - ./university_lms_backend/.env
+    environment:
+      DATABASE_URL: postgresql+psycopg2://${POSTGRES_USER:-lms_user}:${POSTGRES_PASSWORD:-strong_db_password}@database:5432/${POSTGRES_DB:-lms}
+    command: ["alembic", "upgrade", "head"]
+    volumes:
+      - ./university_lms_backend/alembic:/app/alembic
+      - ./university_lms_backend/app:/app/app
+    networks:
+      - lms_network
+
+volumes:
+  db_data:
+  redis_data:
+  uploads:
+
+networks:
+  lms_network:
+    driver: bridge
