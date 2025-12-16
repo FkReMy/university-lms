@@ -14,7 +14,7 @@ import styles from './RegisterPage.module.scss';
 
 import { ROUTES } from '@/lib/constants';
 // Optionally: import Button from '@/components/ui/button'; if you have a global button
-import userApi from '@/services/api/userApi'; // This must expose: create({ name, email, password })
+import authApi from '@/services/api/authApi'; // Use authApi for registration
 
 export default function RegisterPage() {
   const navigate = useNavigate();
@@ -42,10 +42,11 @@ export default function RegisterPage() {
 
     setSubmitting(true);
     try {
-      // Backend call: adjust payload to match your schema
-      await userApi.create({
-        firstName: form.name, // or split into first/last
+      // Backend call: register new user
+      await authApi.register({
+        username: form.email.split('@')[0], // Generate username from email
         email: form.email,
+        full_name: form.name,
         password: form.password,
       });
       setMessage('Account created! You can sign in now.');
