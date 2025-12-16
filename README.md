@@ -158,10 +158,6 @@ docker-compose run --rm backend pytest
 
 For local development without Docker, follow these steps:
 
-## 💻 Local Development Setup
-
-For local development without Docker, follow these steps:
-
 ### 1️⃣ Setup Local PostgreSQL Database
 
 Install PostgreSQL 16+ on your system, then create a database:
