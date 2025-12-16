@@ -13,37 +13,50 @@ Absolutely NO demo/sample/test logic here.
 
 import os
 from functools import lru_cache
-from pydantic import BaseSettings, Field
+from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import Field
 
 class Settings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore"
+    )
+    
+    # App metadata
+    PROJECT_NAME: str = Field(default="University LMS")
+    VERSION: str = Field(default="1.0.0")
+    
     # Security & JWT config
-    SECRET_KEY: str = Field(..., env="SECRET_KEY")
-    ALGORITHM: str = Field(default="HS256", env="JWT_ALGORITHM")
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = Field(default=60, env="ACCESS_TOKEN_EXPIRE_MINUTES")
-    REFRESH_TOKEN_EXPIRE_MINUTES: int = Field(default=60 * 24 * 7, env="REFRESH_TOKEN_EXPIRE_MINUTES")  # 1 week
+    SECRET_KEY: str = Field(default="INSECURE_DEV_SECRET_CHANGE_IN_PRODUCTION")
+    ALGORITHM: str = Field(default="HS256", alias="JWT_ALGORITHM")
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = Field(default=60)
+    REFRESH_TOKEN_EXPIRE_MINUTES: int = Field(default=60 * 24 * 7)  # 1 week
 
     # Database config
-    SQLALCHEMY_DATABASE_URI: str = Field(..., env="DATABASE_URL")
+    SQLALCHEMY_DATABASE_URI: str = Field(
+        default="sqlite:///./test.db",
+        alias="DATABASE_URL"
+    )
 
     # Allowed CORS origins
-    CORS_ORIGINS: str = Field(default="*", env="CORS_ORIGINS")
+    CORS_ORIGINS: str = Field(default="*")
+    ALLOWED_ORIGINS: str = Field(default="http://localhost:5173,http://localhost:3000")
+    ALLOWED_METHODS: str = Field(default="GET,POST,PUT,PATCH,DELETE,OPTIONS")
+    ALLOWED_HEADERS: str = Field(default="Authorization,Content-Type")
 
     # File upload limits, in bytes
-    MAX_UPLOAD_SIZE: int = Field(default=10485760, env="MAX_UPLOAD_SIZE")  # 10MB
+    MAX_UPLOAD_SIZE: int = Field(default=10485760)  # 10MB
 
     # Email/SMS notification (example keys, expand as needed)
-    EMAIL_FROM: str = Field(..., env="EMAIL_FROM")
-    EMAIL_SERVER: str = Field(..., env="EMAIL_SERVER")
-    EMAIL_PORT: int = Field(default=587, env="EMAIL_PORT")
-    EMAIL_USERNAME: str = Field(..., env="EMAIL_USERNAME")
-    EMAIL_PASSWORD: str = Field(..., env="EMAIL_PASSWORD")
+    EMAIL_FROM: str = Field(default="noreply@example.com")
+    EMAIL_SERVER: str = Field(default="localhost")
+    EMAIL_PORT: int = Field(default=587)
+    EMAIL_USERNAME: str = Field(default="")
+    EMAIL_PASSWORD: str = Field(default="")
 
     # Environment marker for audit/tracing
-    ENVIRONMENT: str = Field(default="production", env="ENVIRONMENT")
-
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
+    ENVIRONMENT: str = Field(default="production")
 
 # Singleton instance holder for the whole project
 @lru_cache()

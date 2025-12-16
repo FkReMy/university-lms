@@ -50,6 +50,35 @@ class Role(RoleInDBBase):
     """
     pass
 
+class RoleResponse(RoleInDBBase):
+    """
+    Response schema for role records returned by API endpoints.
+    """
+    pass
+
+class UserRoleAssignRequest(BaseModel):
+    """
+    Request schema for assigning a role to a user.
+    """
+    user_id: int = Field(..., description="User ID to assign the role to")
+    role_id: int = Field(..., description="Role ID to assign")
+
+class UserRoleRevokeRequest(BaseModel):
+    """
+    Request schema for revoking a role from a user.
+    """
+    user_id: int = Field(..., description="User ID to revoke the role from")
+    role_id: int = Field(..., description="Role ID to revoke")
+
+class UserRoleResponse(BaseModel):
+    """
+    Response schema for user-role assignment operations.
+    """
+    user_id: int = Field(..., description="User ID")
+    role_id: int = Field(..., description="Role ID")
+    role_name: Optional[str] = Field(None, description="Role name")
+    assigned_at: Optional[datetime] = Field(None, description="When the role was assigned")
+
 class RoleInDB(RoleInDBBase):
     """
     Internal DB schema for role records.
