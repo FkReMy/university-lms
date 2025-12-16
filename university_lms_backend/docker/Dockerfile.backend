@@ -20,7 +20,7 @@ RUN apt-get update && apt-get install -y \
     libssl-dev \
     git \
     curl \
-    netcat \
+    netcat-openbsd \
     gzip \
     && rm -rf /var/lib/apt/lists/*
 
@@ -28,10 +28,10 @@ RUN apt-get update && apt-get install -y \
 RUN pip install --upgrade pip
 
 # Copy Python requirements only first for layer caching
-COPY requirement.txt /app/requirement.txt
+COPY requirements.txt /app/requirements.txt
 
 # Install Python dependencies. Always --no-cache-dir in prod.
-RUN pip install --no-cache-dir -r requirement.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy backend source code into image
 COPY app /app/app
