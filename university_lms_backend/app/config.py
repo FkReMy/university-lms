@@ -61,7 +61,7 @@ class Settings(BaseSettings):
     REDIS_URL: str = "redis://localhost:6379/0"
 
     # Security / CORS
-    ALLOWED_ORIGINS: Union[str, List[str]] = "http://localhost:5173"
+    ALLOWED_ORIGINS: Union[str, List[str]] = "http://localhost:5173,http://localhost:5000,http://localhost:3000"
     ALLOWED_METHODS: str = "GET,POST,PUT,PATCH,DELETE,OPTIONS"
     ALLOWED_HEADERS: str = "Authorization,Content-Type"
 
