@@ -10,29 +10,31 @@
  */
 .badge {
   display: inline-block;
-  padding: 0.14em 0.72em;
+  padding: 0.25em 0.85em;
   min-width: 1.45em;
   min-height: 1.45em;
-  border-radius: 1em;
-  font-size: 0.98em;
-  font-weight: 500;
-  background: #e5e7eb; // fallback neutral
+  border-radius: 1.5em;
+  font-size: 0.875rem;
+  font-weight: 600;
+  background: #e5e7eb;
   color: #27272a;
-  letter-spacing: 0.03em;
-  line-height: 1.35;
+  letter-spacing: 0.02em;
+  line-height: 1.5;
   text-align: center;
   vertical-align: middle;
   white-space: nowrap;
   user-select: none;
-  transition: background 0.14s, color 0.14s;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid transparent;
 }
 
 /*
  * Info variant (default)
  */
 .badge--info {
-  background: #e0edff;
-  color: #1453b7; // blue
+  background: #e0e7ff;
+  color: #4338ca;
+  border-color: #c7d2fe;
 }
 
 /*
@@ -40,15 +42,17 @@
  */
 .badge--success {
   background: #d1fae5;
-  color: #15803d; // green
+  color: #15803d;
+  border-color: #a7f3d0;
 }
 
 /*
  * Warning variant
  */
 .badge--warning {
-  background: #fef9c3;
-  color: #b45309; // amber
+  background: #fef3c7;
+  color: #b45309;
+  border-color: #fde68a;
 }
 
 /*
@@ -56,7 +60,8 @@
  */
 .badge--error {
   background: #fee2e2;
-  color: #b91c1c; // red
+  color: #b91c1c;
+  border-color: #fecaca;
 }
 
 /*
@@ -64,5 +69,6 @@
  */
 .badge--neutral {
   background: #f3f4f6;
-  color: #374151; // gray
+  color: #374151;
+  border-color: #e5e7eb;
 }
