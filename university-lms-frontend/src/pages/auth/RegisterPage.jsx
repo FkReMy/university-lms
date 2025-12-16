@@ -10,7 +10,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
-import styles from './LoginPage.module.scss';
+import styles from './RegisterPage.module.scss';
 
 import { ROUTES } from '@/lib/constants';
 // Optionally: import Button from '@/components/ui/button'; if you have a global button
@@ -59,14 +59,14 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className={styles.loginPage}>
-      <div className={styles.loginPage__box}>
-        <h1 className={styles.loginPage__title}>Create your account</h1>
-        <form className={styles.loginPage__form} onSubmit={handleSubmit} autoComplete="on">
-          <label className={styles.loginPage__label}>
+    <div className={styles.registerPage}>
+      <div className={styles.registerPage__box}>
+        <h1 className={styles.registerPage__title}>Create your account</h1>
+        <form className={styles.registerPage__form} onSubmit={handleSubmit} autoComplete="on">
+          <label className={styles.registerPage__label}>
             Full name
             <input
-              className={styles.loginPage__input}
+              className={styles.registerPage__input}
               type="text"
               value={form.name}
               onChange={handleChange('name')}
@@ -74,10 +74,10 @@ export default function RegisterPage() {
               disabled={submitting}
             />
           </label>
-          <label className={styles.loginPage__label}>
+          <label className={styles.registerPage__label}>
             Email
             <input
-              className={styles.loginPage__input}
+              className={styles.registerPage__input}
               type="email"
               value={form.email}
               onChange={handleChange('email')}
@@ -85,10 +85,10 @@ export default function RegisterPage() {
               disabled={submitting}
             />
           </label>
-          <label className={styles.loginPage__label}>
+          <label className={styles.registerPage__label}>
             Password
             <input
-              className={styles.loginPage__input}
+              className={styles.registerPage__input}
               type="password"
               value={form.password}
               onChange={handleChange('password')}
@@ -97,10 +97,10 @@ export default function RegisterPage() {
               autoComplete="new-password"
             />
           </label>
-          <label className={styles.loginPage__label}>
+          <label className={styles.registerPage__label}>
             Confirm password
             <input
-              className={styles.loginPage__input}
+              className={styles.registerPage__input}
               type="password"
               value={form.confirm}
               onChange={handleChange('confirm')}
@@ -109,10 +109,10 @@ export default function RegisterPage() {
               autoComplete="new-password"
             />
           </label>
-          {error && <div className={styles.loginPage__errorMsg}>{error}</div>}
-          {message && <div className={styles.loginPage__successMsg}>{message}</div>}
+          {error && <div className={styles.registerPage__errorMsg}>{error}</div>}
+          {message && <div className={styles.registerPage__successMsg}>{message}</div>}
           <button
-            className={styles.loginPage__submit}
+            className={styles.registerPage__submit}
             type="submit"
             disabled={submitting}
           >
@@ -120,9 +120,9 @@ export default function RegisterPage() {
           </button>
           {/* To use the global Button component, replace <button> above */}
         </form>
-        <div className={styles.loginPage__footer}>
+        <div className={styles.registerPage__footer}>
           Already have an account?{' '}
-          <Link className={styles.loginPage__link} to={ROUTES.LOGIN}>
+          <Link className={styles.registerPage__link} to={ROUTES.LOGIN}>
             Sign in
           </Link>
         </div>

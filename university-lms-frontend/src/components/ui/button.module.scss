@@ -1,91 +1,34 @@
 /*
  * button.module.scss
  * ----------------------------------------------------------
- * Styles for the reusable Button component using CSS modules.
- * Includes variants, states, and spinner styling.
+ * Modern styles for the reusable Button component using CSS modules.
+ * Includes variants, states, sizes, and spinner styling with enhanced visuals.
  */
 
 /*
- * Base button styles
+ * Base button styles with improved transitions
  */
 .button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 0.5rem;
   font-family: inherit;
   font-size: 1rem;
-  font-weight: 500;
-  border-radius: 0.375rem; // 6px
-  border: 1px solid transparent;
-  padding: 0.5rem 1.25rem;
+  font-weight: 600;
+  border-radius: 0.75rem;
+  border: 2px solid transparent;
+  padding: 0.625rem 1.5rem;
   cursor: pointer;
-  transition: background 0.18s, color 0.18s, border 0.18s, opacity 0.12s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+  line-height: 1.5;
 
   &:disabled,
   &.is-disabled {
-    opacity: 0.7;
+    opacity: 0.6;
     cursor: not-allowed;
     pointer-events: none;
-  }
-}
-
-/*
- * Variant: Primary
- */
-.button--primary {
-  background: #2563eb; // blue-600
-  color: #fff;
-  border-color: transparent;
-
-  &:hover,
-  &:focus-visible {
-    background: #1d4ed8; // blue-700
-    color: #fff;
-  }
-}
-
-/*
- * Variant: Secondary
- */
-.button--secondary {
-  background: #fff;
-  color: #1f2937; // gray-800
-  border-color: #d1d5db; // gray-300
-
-  &:hover,
-  &:focus-visible {
-    background: #f9fafb; // gray-50
-    color: #1f2937; // gray-800
-  }
-}
-
-/*
- * Variant: Danger
- */
-.button--danger {
-  background: #dc2626; // red-600
-  color: #fff;
-  border-color: transparent;
-
-  &:hover,
-  &:focus-visible {
-    background: #b91c1c; // red-700
-    color: #fff;
-  }
-}
-
-/*
- * Variant: Default
- */
-.button--default {
-  background: #e5e7eb; // gray-200
-  color: #1f2937; // gray-800
-  border-color: transparent;
-
-  &:hover,
-  &:focus-visible {
-    background: #d1d5db; // gray-300
-    color: #111827; // gray-900
   }
 }
 
@@ -93,23 +36,102 @@
  * Size variants
  */
 .button--sm {
-  padding: 0.375rem 0.875rem;
+  padding: 0.5rem 1rem;
   font-size: 0.875rem;
+  border-radius: 0.5rem;
 }
 
 .button--md {
-  padding: 0.5rem 1.25rem;
+  padding: 0.625rem 1.5rem;
   font-size: 1rem;
+  border-radius: 0.75rem;
 }
 
 .button--lg {
-  padding: 0.75rem 1.75rem;
+  padding: 0.875rem 2rem;
   font-size: 1.125rem;
+  border-radius: 0.75rem;
 }
 
 /*
-  * Variant: Outline
-  */
+ * Variant: Primary - Vibrant gradient
+ */
+.button--primary {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3), 0 2px 4px -1px rgba(59, 130, 246, 0.2);
+
+  &:hover,
+  &:focus-visible {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.4), 0 4px 6px -2px rgba(59, 130, 246, 0.3);
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+/*
+ * Variant: Secondary - Subtle with border
+ */
+.button--secondary {
+  background: #fff;
+  color: #475569;
+  border-color: #e2e8f0;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+
+  &:hover,
+  &:focus-visible {
+    background: #f8fafc;
+    color: #1e293b;
+    border-color: #cbd5e1;
+    box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.1);
+  }
+}
+
+/*
+ * Variant: Danger - Red gradient
+ */
+.button--danger {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.3), 0 2px 4px -1px rgba(239, 68, 68, 0.2);
+
+  &:hover,
+  &:focus-visible {
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+    box-shadow: 0 10px 15px -3px rgba(239, 68, 68, 0.4), 0 4px 6px -2px rgba(239, 68, 68, 0.3);
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+/*
+ * Variant: Default - Neutral gray
+ */
+.button--default {
+  background: #f1f5f9;
+  color: #475569;
+  border-color: transparent;
+
+  &:hover,
+  &:focus-visible {
+    background: #e2e8f0;
+    color: #334155;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.1);
+  }
+}
+
+/*
+ * Variant: Outline - Transparent with colored border
+ */
 .button--outline {
   background: transparent;
   color: #3b82f6;
@@ -120,11 +142,12 @@
     background: #eff6ff;
     color: #2563eb;
     border-color: #2563eb;
+    box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.15);
   }
 }
 
 /*
- * Loading spinner styles
+ * Loading spinner styles with smooth animation
  */
 .button__spinner {
   display: inline-block;
@@ -132,7 +155,7 @@
   height: 1em;
   width: 1em;
   vertical-align: middle;
-  animation: spin 0.9s linear infinite;
+  animation: spin 0.8s linear infinite;
 }
 
 @keyframes spin {
