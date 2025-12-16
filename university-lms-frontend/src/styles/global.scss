@@ -73,16 +73,33 @@ body {
     transform $transition-fast;
   text-decoration: none;
   cursor: pointer;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+  }
 
   &--primary {
-    background: var(--primary);
+    background: linear-gradient(135deg, $color-primary 0%, darken($color-primary, 8%) 100%);
     color: #fff;
     box-shadow: var(--shadow-sm);
 
     &:hover {
-      background: $color-primary-strong;
+      background: linear-gradient(135deg, darken($color-primary, 8%) 0%, darken($color-primary, 15%) 100%);
       box-shadow: var(--shadow-md);
       transform: translateY(-1px);
+
+      &::before {
+        left: 100%;
+      }
     }
 
     &:focus-visible {
@@ -139,7 +156,7 @@ select {
 
   &:focus-visible {
     border-color: var(--primary);
-    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.12);
     transform: translateY(-1px);
   }
 
