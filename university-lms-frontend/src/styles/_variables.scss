@@ -9,43 +9,50 @@
  */
 
 /* -------------------------------------------------------------------------- */
-/* Color palettes                                                             */
+/* Color palettes - Academic Theme                                            */
 /* -------------------------------------------------------------------------- */
+/* 
+ * Education-focused color palette designed to:
+ * - Reduce visual fatigue during long study sessions
+ * - Provide academic, trustworthy, and modern appearance
+ * - Maintain consistency across all pages and components
+ * - Encourage longer engagement and repeat visits
+ */
 $colors-light: (
-  bg: #f9fafb,
+  bg: #f8fafc,
   surface: #ffffff,
   surface-elevated: #ffffff,
   border: #e5e7eb,
   primary: #2563eb,
-  primary-soft: #dbeafe,
-  primary-strong: #1d4ed8,
-  success: #16a34a,
+  primary-soft: #e8f0fe,
+  primary-strong: #1e3a8a,
+  success: #22c55e,
   warning: #f59e0b,
-  danger: #dc2626,
+  danger: #ef4444,
   info: #0ea5e9,
   text: #111827,
-  text-soft: #6b7280,
-  text-muted: #9ca3af,
-  bg-muted: #f3f4f6,
-  bg-subtle: #f9fafb
+  text-soft: #4b5563,
+  text-muted: #6b7280,
+  bg-muted: #f8fafc,
+  bg-subtle: #ecfdf5
 );
 
 $colors-dark: (
-  bg: #020617,
-  surface: #020617,
-  surface-elevated: #020617,
-  border: #1f2937,
+  bg: #0f172a,
+  surface: #1e293b,
+  surface-elevated: #1e293b,
+  border: #334155,
   primary: #60a5fa,
   primary-soft: rgba(37, 99, 235, 0.12),
-  primary-strong: #60a5fa,
-  success: #16a34a,
+  primary-strong: #93c5fd,
+  success: #22c55e,
   warning: #f59e0b,
-  danger: #dc2626,
+  danger: #ef4444,
   info: #0ea5e9,
-  text: #e5e7eb,
-  text-soft: #9ca3af,
-  text-muted: #6b7280,
-  bg-muted: rgba(255, 255, 255, 0.04),
+  text: #f1f5f9,
+  text-soft: #94a3b8,
+  text-muted: #64748b,
+  bg-muted: rgba(255, 255, 255, 0.05),
   bg-subtle: rgba(255, 255, 255, 0.02)
 );
 
