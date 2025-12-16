@@ -105,6 +105,7 @@ def create_app(environment: str = None) -> FastAPI:
         allow_origins=settings.ALLOWED_ORIGINS
             if isinstance(settings.ALLOWED_ORIGINS, list)
             else [settings.ALLOWED_ORIGINS],
+        allow_credentials=True,
         allow_methods=settings.ALLOWED_METHODS.split(","),
         allow_headers=settings.ALLOWED_HEADERS.split(","),
     )
