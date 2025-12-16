@@ -112,10 +112,18 @@
     0 2px 4px rgba(0, 0, 0, 0.1),
     0 4px 24px rgba(0, 0, 0, 0.15);
   letter-spacing: -0.025em;
-  background: linear-gradient(180deg, #ffffff 0%, rgba(255, 255, 255, 0.95) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  
+  /* Fallback for browsers without gradient text support */
+  @supports not (background-clip: text) {
+    color: #fff;
+  }
+  
+  @supports (background-clip: text) or (-webkit-background-clip: text) {
+    background: linear-gradient(180deg, #ffffff 0%, rgba(255, 255, 255, 0.95) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
 }
 
 .subtitle {
