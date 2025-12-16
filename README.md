@@ -113,6 +113,42 @@ cd university-lms-frontend
 npm run build
 ```
 
+## 🔗 Integration Check
+
+Verify full frontend and backend integration before deployment:
+
+### Static Integration Check (No services required)
+
+```bash
+# Quick check
+./run_integration_check.sh
+
+# Or directly with Python
+python3 integration_check.py
+```
+
+Validates:
+- Project structure and configuration
+- Backend API endpoints and models
+- Frontend services and components
+- CORS configuration
+- Authentication flow
+
+### Live Integration Test (Services must be running)
+
+Start backend and frontend in separate terminals, then run:
+
+```bash
+python3 live_integration_test.py
+
+# Or with custom URLs
+python3 live_integration_test.py --backend http://localhost:8000 --frontend http://localhost:5173
+```
+
+Tests actual connectivity between running services.
+
+📖 **See [INTEGRATION_CHECK_GUIDE.md](INTEGRATION_CHECK_GUIDE.md) for detailed documentation.**
+
 ## 📄 License
 
 University LMS © 2025–present Global Academic Solutions Inc.

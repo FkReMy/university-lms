@@ -1,0 +1,126 @@
+{
+  "timestamp": "2025-12-16T05:27:57.089075",
+  "checks": {
+    "Python Installation": {
+      "status": "PASS",
+      "message": "Python 3.12.3"
+    },
+    "Node.js Installation": {
+      "status": "PASS",
+      "message": "v20.19.6"
+    },
+    "npm Installation": {
+      "status": "PASS",
+      "message": "npm 10.8.2"
+    },
+    "Backend Directory": {
+      "status": "PASS",
+      "message": "/home/runner/work/university-lms/university-lms/university_lms_backend"
+    },
+    "Frontend Directory": {
+      "status": "PASS",
+      "message": "/home/runner/work/university-lms/university-lms/university-lms-frontend"
+    },
+    "Backend App Directory": {
+      "status": "PASS",
+      "message": "/home/runner/work/university-lms/university-lms/university_lms_backend/app"
+    },
+    "Frontend Src Directory": {
+      "status": "PASS",
+      "message": "/home/runner/work/university-lms/university-lms/university-lms-frontend/src"
+    },
+    "Backend Requirements": {
+      "status": "PASS",
+      "message": "22 packages defined"
+    },
+    "Backend Env Example": {
+      "status": "PASS",
+      "message": "27 variables documented"
+    },
+    "Backend Main File": {
+      "status": "PASS",
+      "message": "FastAPI app factory found"
+    },
+    "API Routers": {
+      "status": "PASS",
+      "message": "8/8 routers found"
+    },
+    "Database Models": {
+      "status": "PASS",
+      "message": "30 model files found"
+    },
+    "API Schemas": {
+      "status": "PASS",
+      "message": "34 schema files found"
+    },
+    "Frontend Package.json": {
+      "status": "PASS",
+      "message": "4 scripts, 5 dependencies"
+    },
+    "Vite Configuration": {
+      "status": "PASS",
+      "message": "vite.config.js found"
+    },
+    "Frontend Env Example": {
+      "status": "WARN",
+      "message": ".env.example not found - API URL may be hardcoded"
+    },
+    "Components": {
+      "status": "PASS",
+      "message": "35 files"
+    },
+    "Pages": {
+      "status": "PASS",
+      "message": "34 files"
+    },
+    "Services": {
+      "status": "PASS",
+      "message": "26 files"
+    },
+    "State Store": {
+      "status": "PASS",
+      "message": "6 files"
+    },
+    "API Service Files": {
+      "status": "PASS",
+      "message": "5/5 services found"
+    },
+    "Axios Configuration": {
+      "status": "PASS",
+      "message": "Axios instance properly configured"
+    },
+    "Backend App Creation": {
+      "status": "FAIL",
+      "message": "No module named 'fastapi'"
+    },
+    "Frontend Dependencies": {
+      "status": "WARN",
+      "message": "node_modules not found - run 'npm install'"
+    },
+    "CORS Origins": {
+      "status": "PASS",
+      "message": "ALLOWED_ORIGINS configured"
+    },
+    "CORS Methods": {
+      "status": "PASS",
+      "message": "ALLOWED_METHODS configured"
+    },
+    "Backend Auth Endpoints": {
+      "status": "PASS",
+      "message": "3/3 endpoints found"
+    },
+    "Frontend Auth API": {
+      "status": "PASS",
+      "message": "3/3 methods found"
+    },
+    "Frontend Auth Store": {
+      "status": "PASS",
+      "message": "authStore.js found"
+    }
+  },
+  "summary": {
+    "passed": 26,
+    "failed": 1,
+    "warnings": 2
+  }
+}
