@@ -51,6 +51,12 @@ class Enrollment(EnrollmentInDBBase):
     """
     pass
 
+class EnrollmentResponse(EnrollmentInDBBase):
+    """
+    Response schema returned by API endpoints.
+    """
+    pass
+
 class EnrollmentInDB(EnrollmentInDBBase):
     """
     Schema for returning enrollment records from DB operations.

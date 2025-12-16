@@ -58,6 +58,19 @@ class AssignmentSubmission(AssignmentSubmissionInDBBase):
     """
     pass
 
+class AssignmentSubmissionResponse(AssignmentSubmissionInDBBase):
+    """
+    Response schema returned by API endpoints.
+    """
+    pass
+
+class AssignmentSubmissionFeedbackRequest(BaseModel):
+    """
+    Request schema for providing feedback on assignment submissions.
+    """
+    grade: Optional[float] = Field(None, description="Grade for the submission")
+    feedback: Optional[str] = Field(None, description="Feedback/comments from the instructor")
+
 class AssignmentSubmissionInDB(AssignmentSubmissionInDBBase):
     """
     Schema for internal DB response.

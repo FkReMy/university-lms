@@ -60,6 +60,12 @@ class QuizAnswer(QuizAnswerInDBBase):
     """
     pass
 
+class QuizAnswerResponse(QuizAnswerInDBBase):
+    """
+    Response schema returned by API endpoints.
+    """
+    pass
+
 class QuizAnswerInDB(QuizAnswerInDBBase):
     """
     Internal DB schema for quiz answer records.

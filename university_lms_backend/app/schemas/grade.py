@@ -58,6 +58,12 @@ class Grade(GradeInDBBase):
     """
     pass
 
+class GradeResponse(GradeInDBBase):
+    """
+    Response schema returned by API endpoints.
+    """
+    pass
+
 class GradeInDB(GradeInDBBase):
     """
     Internal DB schema for grade records.

@@ -58,6 +58,12 @@ class Quiz(QuizInDBBase):
     """
     pass
 
+class QuizResponse(QuizInDBBase):
+    """
+    Response schema returned by API endpoints.
+    """
+    pass
+
 class QuizInDB(QuizInDBBase):
     """
     Internal DB schema for quiz records.

@@ -52,6 +52,12 @@ class Department(DepartmentInDBBase):
     """
     pass
 
+class DepartmentResponse(DepartmentInDBBase):
+    """
+    Response schema for department records returned by API endpoints.
+    """
+    pass
+
 class DepartmentInDB(DepartmentInDBBase):
     """
     Internal schema for department DB objects.

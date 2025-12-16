@@ -54,6 +54,12 @@ class Notification(NotificationInDBBase):
     """
     pass
 
+class NotificationResponse(NotificationInDBBase):
+    """
+    Response schema returned by API endpoints.
+    """
+    pass
+
 class NotificationInDB(NotificationInDBBase):
     """
     Schema for returning notifications internally from DB.

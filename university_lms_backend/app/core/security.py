@@ -10,6 +10,7 @@ Centralized, production-grade security helpers for the University LMS backend.
 
 from fastapi import HTTPException, status, UploadFile
 from typing import List
+from datetime import timedelta
 import secrets
 import string
 import re
@@ -72,6 +73,12 @@ def hash_password(password: str) -> str:
     hash_val = hashlib.pbkdf2_hmac('sha256', password.encode(), salt, 100000)
     return salt.hex() + ":" + hash_val.hex()
 
+def get_password_hash(password: str) -> str:
+    """
+    Alias for hash_password for consistency with common naming conventions.
+    """
+    return hash_password(password)
+
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """
     Verifies a plaintext password against a stored hash.
@@ -80,6 +87,24 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     salt, hash_val = hashed_password.split(":")
     test_hash = hashlib.pbkdf2_hmac('sha256', plain_password.encode(), bytes.fromhex(salt), 100000)
     return test_hash.hex() == hash_val
+
+def create_access_token(data: dict, expires_delta: timedelta = None) -> str:
+    """
+    Create a JWT access token with optional expiration.
+    """
+    from jose import jwt
+    from datetime import datetime, timedelta
+    from app.core.config import settings
+    
+    to_encode = data.copy()
+    if expires_delta:
+        expire = datetime.utcnow() + expires_delta
+    else:
+        expire = datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+    return encoded_jwt
 
 def generate_secure_token(length: int = 40) -> str:
     """

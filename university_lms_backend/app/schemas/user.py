@@ -157,6 +157,12 @@ class User(UserInDBBase):
     pass
 
 
+class UserResponse(UserInDBBase):
+    """
+    Response schema returned by API endpoints.
+    """
+    pass
+
 class UserInDB(UserInDBBase):
     """
     Internal DB schema for user records; may include sensitive/internal-use fields.

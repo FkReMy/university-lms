@@ -54,6 +54,12 @@ class Room(RoomInDBBase):
     """
     pass
 
+class RoomResponse(RoomInDBBase):
+    """
+    Response schema returned by API endpoints.
+    """
+    pass
+
 class RoomInDB(RoomInDBBase):
     """
     Internal DB schema for room records.
