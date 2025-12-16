@@ -29,9 +29,9 @@ class Student(Base):
     updated_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
 
     # Relationships
-    user = relationship("User", back_populates="student_profile")
-    specialization = relationship("Specialization")
-    enrollments = relationship("Enrollment", back_populates="student")
+    user = relationship("User", back_populates="student_profile", lazy='select')
+    specialization = relationship("Specialization", lazy='select')
+    # Note: enrollments are accessed through user.enrollments since Enrollment.student_id points to users.user_id
 
     def __repr__(self):
         return (
