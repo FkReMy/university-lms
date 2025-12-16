@@ -39,12 +39,16 @@ class User(Base):
     # Relationships
     role = relationship("Role", back_populates="users", lazy='select')
     student_profile = relationship("Student", back_populates="user", uselist=False, lazy='select')
+    admin_profile = relationship("Admin", back_populates="user", uselist=False, lazy='select')
     professor_roles = relationship("Professor", back_populates="user", cascade="all, delete-orphan", lazy='select')
+    associate_teacher_roles = relationship("AssociateTeacher", back_populates="user", cascade="all, delete-orphan", lazy='select')
     specialization = relationship("Specialization", back_populates="students", lazy='select')
     enrollments = relationship("Enrollment", back_populates="student", cascade="all, delete-orphan", lazy='select')
     grades = relationship("Grade", back_populates="student", cascade="all, delete-orphan", lazy='select')
     notifications = relationship("Notification", back_populates="user", cascade="all, delete-orphan", lazy='select')
     uploaded_files = relationship("UploadedFile", back_populates="user", cascade="all, delete-orphan", lazy='select')
+    assignment_files = relationship("AssignmentFile", back_populates="uploaded_by", lazy='select')
+    assignment_submissions = relationship("AssignmentSubmission", foreign_keys="AssignmentSubmission.student_id", back_populates="student", cascade="all, delete-orphan", lazy='select')
 
     @hybrid_property
     def full_name(self):
