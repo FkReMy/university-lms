@@ -107,9 +107,25 @@ cp .env.example .env
 # Apply migrations
 alembic upgrade head
 
-# (Optional) Load test data
+# Option A: Seed with comprehensive test data (1000+ records, recommended for development)
+python scripts/seed_database.py
+
+# Option B: Seed with minimal data (basic users only)
+python scripts/seed_users.py
+
+# Option C: Load reference fixtures only (departments, courses)
 python scripts/load_fixtures.py
 ```
+
+**Automatic Seeding on Startup:**
+You can configure the app to automatically seed the database when it starts by setting an environment variable:
+
+```bash
+# In your .env file
+SEED_ON_STARTUP=true
+```
+
+This will run `seed_database.py` automatically on application startup. See [scripts/README_SEEDING.md](scripts/README_SEEDING.md) for detailed documentation on seeding options and sample credentials.
 
 #### Run the Server
 
