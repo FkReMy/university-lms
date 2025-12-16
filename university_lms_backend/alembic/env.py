@@ -15,6 +15,9 @@ from logging.config import fileConfig
 from sqlalchemy import engine_from_config, pool
 from alembic import context
 
+from dotenv import load_dotenv
+load_dotenv()  # Load environment variables from .env
+
 # Interpret the config file for Python logging.
 config = context.config
 fileConfig(config.config_file_name)

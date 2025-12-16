@@ -29,6 +29,9 @@ import sys
 import psycopg2
 from psycopg2.extras import execute_values
 
+from dotenv import load_dotenv
+load_dotenv()
+
 def env_or_die(var):
     value = os.environ.get(var)
     if not value:
@@ -83,32 +86,35 @@ def main():
             execute_values(
                 cur,
                 """
-                INSERT INTO departments (dept_code, dept_name)
+                INSERT INTO departments (code, name)
                 VALUES %s
-                ON CONFLICT (dept_code) DO UPDATE SET dept_name = EXCLUDED.dept_name
+                ON CONFLICT (code) DO UPDATE SET name = EXCLUDED.name
                 """,
                 departments,
             )
+            
             # Specializations
             print("Upserting specializations...")
             execute_values(
                 cur,
                 """
-                INSERT INTO specializations (spec_code, spec_name)
+                INSERT INTO specializations (code, name)
                 VALUES %s
-                ON CONFLICT (spec_code) DO UPDATE SET spec_name = EXCLUDED.spec_name
+                ON CONFLICT (code) DO UPDATE SET name = EXCLUDED.name
                 """,
                 specializations,
             )
+            
             # Course Catalog
+            # CORRECTED: Uses 'course_code' and 'course_name' to match the model
             print("Upserting course catalog...")
             execute_values(
                 cur,
                 """
                 INSERT INTO course_catalog (course_code, course_name, credits, dept_id)
-                SELECT data.course_code, data.course_name, data.credits, d.dept_id
-                FROM (VALUES %s) AS data(course_code, course_name, credits, dept_code)
-                JOIN departments d ON d.dept_code = data.dept_code
+                SELECT data.c_code, data.c_name, data.c_credits, d.dept_id
+                FROM (VALUES %s) AS data(c_code, c_name, c_credits, d_code)
+                JOIN departments d ON d.code = data.d_code
                 ON CONFLICT (course_code) DO UPDATE SET
                   course_name = EXCLUDED.course_name,
                   credits = EXCLUDED.credits,
