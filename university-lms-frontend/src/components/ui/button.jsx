@@ -88,7 +88,7 @@ export default function Button({
 
 Button.propTypes = {
   type: PropTypes.oneOf(['button', 'submit', 'reset']),
-  variant: PropTypes.oneOf(['primary', 'secondary', 'danger', 'default']),
+  variant: PropTypes.oneOf(['primary', 'secondary', 'danger', 'default', 'outline']),
   loading: PropTypes.bool,
   disabled: PropTypes.bool,
   className: PropTypes.string,

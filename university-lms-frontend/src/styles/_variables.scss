@@ -19,22 +19,26 @@
  * - Encourage longer engagement and repeat visits
  */
 $colors-light: (
-  bg: #f8fafc,
+  bg: #f5f7fa,
   surface: #ffffff,
   surface-elevated: #ffffff,
-  border: #e5e7eb,
-  primary: #2563eb,
-  primary-soft: #e8f0fe,
-  primary-strong: #1e3a8a,
-  success: #22c55e,
+  border: #e2e8f0,
+  primary: #3b82f6,
+  primary-soft: #dbeafe,
+  primary-strong: #1e40af,
+  secondary: #8b5cf6,
+  secondary-soft: #ede9fe,
+  accent: #06b6d4,
+  accent-soft: #cffafe,
+  success: #10b981,
   warning: #f59e0b,
   danger: #ef4444,
   info: #0ea5e9,
-  text: #111827,
-  text-soft: #4b5563,
-  text-muted: #6b7280,
-  bg-muted: #f8fafc,
-  bg-subtle: #ecfdf5
+  text: #0f172a,
+  text-soft: #475569,
+  text-muted: #64748b,
+  bg-muted: #f1f5f9,
+  bg-subtle: #f8fafc
 );
 
 $colors-dark: (

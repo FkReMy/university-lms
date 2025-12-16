@@ -90,6 +90,22 @@
 }
 
 /*
+ * Variant: Outline
+ */
+.button--outline {
+  background: transparent;
+  color: currentColor;
+  border-color: currentColor;
+  border-width: 2px;
+
+  &:hover,
+  &:focus-visible {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: currentColor;
+  }
+}
+
+/*
  * Loading spinner styles
  */
 .button__spinner {

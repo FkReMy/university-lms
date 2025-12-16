@@ -8,39 +8,76 @@
 /* Root background */
 .loginPage {
   min-height: 100vh;
-  background: linear-gradient(125deg, #f8fafc 65%, #e0edff 95%);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   font-family: 'Inter', system-ui, sans-serif;
   font-size: 1.07em;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -30%;
+    width: 80%;
+    height: 80%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, transparent 70%);
+    animation: float 15s ease-in-out infinite;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(20px, 20px);
+  }
 }
 
 /* Main card */
 .loginPage__box {
   background: #fff;
-  border-radius: 1.06em;
-  box-shadow: 0 5.3px 32px 0 rgba(30,34,89,0.13);
-  border: 1.2px solid #e5e7eb;
+  border-radius: 1.5rem;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  border: none;
   width: 100%;
-  max-width: 24em;
-  padding: 2em 2.2em 1.9em 2.2em;
+  max-width: 26em;
+  padding: 2.5em 2.8em 2.5em 2.8em;
   margin-top: 2.6em;
   margin-bottom: 1.3em;
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: 1.3em;
+  gap: 1.5em;
+  position: relative;
+  z-index: 1;
+  backdrop-filter: blur(10px);
+  animation: slideUp 0.5s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .loginPage__title {
-  font-size: 1.36em;
+  font-size: 1.75em;
   font-weight: 800;
-  color: #213050;
-  margin-bottom: 0.7em;
+  color: #1e293b;
+  margin-bottom: 0.5em;
   text-align: center;
-  letter-spacing: 0.015em;
+  letter-spacing: -0.02em;
 }
 
 /* Form fields */
@@ -51,32 +88,33 @@
 }
 
 .loginPage__label {
-  color: #374151;
+  color: #475569;
   font-weight: 600;
-  font-size: 1em;
+  font-size: 0.95em;
   display: flex;
   flex-direction: column;
   margin-bottom: 0.02em;
-  gap: 0.37em;
+  gap: 0.5em;
 }
 
 .loginPage__input {
-  border-radius: 0.7em;
-  border: 1.5px solid #d1d5db;
+  border-radius: 0.75rem;
+  border: 2px solid #e2e8f0;
   background: #f8fafc;
-  padding: 0.72em 1.13em;
+  padding: 0.85em 1.2em;
   font-size: 1em;
   font-weight: 500;
-  color: #213050;
+  color: #1e293b;
   margin-top: 0.13em;
-  transition: border-color 0.12s, box-shadow 0.13s;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   outline: none;
   width: 100%;
 
   &:focus {
-    border-color: #2563eb;
-    background: #eaf3ff;
-    box-shadow: 0 1.8px 11px 0 #2563eb13;
+    border-color: #8b5cf6;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+    transform: translateY(-1px);
   }
   &:disabled {
     background: #f1f5f9;
@@ -112,43 +150,48 @@
 
 /* Forgot password link */
 .loginPage__link {
-  color: #2563eb;
+  color: #8b5cf6;
   text-decoration: none;
-  font-weight: 500;
+  font-weight: 600;
   font-size: 1em;
   cursor: pointer;
-  transition: color 0.13s;
+  transition: color 0.2s;
 
   &:hover,
   &:focus-visible {
-    color: #174ca6;
+    color: #7c3aed;
     text-decoration: underline;
     outline: none;
   }
 }
 
 .loginPage__submit {
-  border-radius: 0.74em;
-  background: #2563eb;
+  border-radius: 0.75rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: #fff;
   font-weight: 700;
-  font-size: 1.09em;
+  font-size: 1.1em;
   border: none;
-  padding: 0.97em 0;
-  margin-top: 0.42em;
-  box-shadow: 0 2.8px 18px 0 #2563eb12;
-  transition: background 0.14s;
+  padding: 1rem 0;
+  margin-top: 0.5em;
+  box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
 
   &:hover,
   &:focus-visible {
-    background: #174ca6;
+    transform: translateY(-2px);
+    box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
     outline: none;
   }
+  &:active {
+    transform: translateY(0);
+  }
   &:disabled {
-    background: #dbeafe;
-    color: #bdbdbd;
+    background: #e2e8f0;
+    color: #94a3b8;
     cursor: default;
+    box-shadow: none;
   }
 }
 
@@ -229,9 +272,11 @@
 /* Footer text */
 .loginPage__footer {
   text-align: center;
-  color: #b9b9be;
-  font-size: 0.96em;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9em;
   margin: 1em 0 0.5em 0;
+  position: relative;
+  z-index: 1;
 }
 
 @media (max-width: 600px) {
