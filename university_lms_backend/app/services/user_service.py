@@ -17,6 +17,7 @@ from app.schemas.user import (
     UserUpdate,
 )
 from app.schemas.user import User as UserSchema
+from app.core.security import get_password_hash
 
 class UserService:
     """
@@ -77,6 +78,7 @@ class UserService:
         Create and persist a new user record.
         Maps 'status' from the schema to the model's 'is_active' boolean field.
         Splits 'full_name' into 'first_name' and 'last_name' for the model.
+        Hashes the password before storing.
         """
         user_data = user_in.dict()
         # Map schema field 'status' (string) to model field 'is_active' (bool)
@@ -89,6 +91,11 @@ class UserService:
         first_name, last_name = UserService._split_full_name(full_name)
         user_data["first_name"] = first_name
         user_data["last_name"] = last_name
+        
+        # Hash password if present
+        if "password" in user_data:
+            password = user_data.pop("password")
+            user_data["password_hash"] = get_password_hash(password)
         
         # Remove any extra keys not present in the model
         # Only keep fields that exist in the User model
@@ -109,6 +116,7 @@ class UserService:
         Update an existing user record with provided fields.
         Handles the mapping between 'status' and 'is_active' if present.
         Splits 'full_name' into 'first_name' and 'last_name' if present.
+        Hashes password if present.
         """
         user_obj = db.query(User).filter(User.user_id == user_id).first()
         if not user_obj:
@@ -126,6 +134,11 @@ class UserService:
                 first_name, last_name = UserService._split_full_name(full_name)
                 update_data["first_name"] = first_name
                 update_data["last_name"] = last_name
+        
+        # Hash password if present
+        if "password" in update_data:
+            password = update_data.pop("password")
+            update_data["password_hash"] = get_password_hash(password)
         
         # Remove any extra unexpected keys for the model
         filtered_data = {k: v for k, v in update_data.items() if k in UserService.USER_MODEL_FIELDS}

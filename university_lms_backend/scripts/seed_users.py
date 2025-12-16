@@ -60,11 +60,12 @@ def main():
         # 2. Create Users
         print("\nSeeding Users...")
         # (username, email, password, first, last, role_key)
+        # Default password format: {username}@12345!
         users = [
-            ("admin", "admin@uni.edu", "Admin123!", "System", "Admin", "admin"),
-            ("prof_smith", "smith@uni.edu", "Prof123!", "John", "Smith", "professor"),
-            ("student_jane", "jane@uni.edu", "Student123!", "Jane", "Doe", "student"),
-            ("ta_bob", "bob@uni.edu", "Associate123!", "Bob", "Assistant", "associate"),
+            ("admin_remy", "admin@uni.edu", "Admin_Remy@12345!", "Admin", "Remy", "admin"),
+            ("prof_smith", "smith@uni.edu", "Prof_Smith@12345!", "Prof", "Smith", "professor"),
+            ("student_jane", "jane@uni.edu", "Student_Jane@12345!", "Student", "Jane", "student"),
+            ("associate_bob", "bob@uni.edu", "Associate_Bob@12345!", "Associate", "Bob", "associate"),
         ]
 
         for username, email, raw_pass, first, last, role_key in users:
@@ -86,7 +87,22 @@ def main():
                 print(f" - User {username} already exists.")
 
         conn.commit()
-        print("\n✅ Success! You can now log in.")
+        print("\n✅ Success! Default users created with the following credentials:")
+        print("\n=== Default User Credentials ===")
+        print("Role: Admin")
+        print("  Username: admin_remy")
+        print("  Password: Admin_Remy@12345!")
+        print("\nRole: Professor")
+        print("  Username: prof_smith")
+        print("  Password: Prof_Smith@12345!")
+        print("\nRole: Student")
+        print("  Username: student_jane")
+        print("  Password: Student_Jane@12345!")
+        print("\nRole: Associate")
+        print("  Username: associate_bob")
+        print("  Password: Associate_Bob@12345!")
+        print("\nPassword format: {username}@12345!")
+        print("================================\n")
 
     except Exception as e:
         conn.rollback()

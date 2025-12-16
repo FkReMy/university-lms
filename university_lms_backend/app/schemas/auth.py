@@ -41,7 +41,7 @@ class AuthRefreshResponse(BaseModel):
 
 class AuthPasswordChangeRequest(BaseModel):
     """Schema for password change request (authenticated user)"""
-    current_password: str = Field(..., description="Current password for verification")
+    old_password: str = Field(..., description="Current password for verification")
     new_password: str = Field(..., min_length=8, description="New password (minimum 8 characters)")
 
 
@@ -54,3 +54,9 @@ class AuthPasswordResetConfirmRequest(BaseModel):
     """Schema for password reset confirmation with token"""
     token: str = Field(..., description="Password reset token from email")
     new_password: str = Field(..., min_length=8, description="New password (minimum 8 characters)")
+
+
+class AdminPasswordResetRequest(BaseModel):
+    """Schema for admin to reset a user's password"""
+    new_password: str = Field(..., min_length=8, description="New password for the user (minimum 8 characters)")
+
