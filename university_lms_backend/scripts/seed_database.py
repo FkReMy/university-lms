@@ -366,10 +366,10 @@ def create_users(session, role_map, spec_ids,
                 text("SELECT user_id FROM users WHERE username = :username"),
                 {"username": username}
             )
-            user_ids['student'].append(result.fetchone()[0])
+            student_user_id = result.fetchone()[0]
+            user_ids['student'].append(student_user_id)
             
             # Create student profile
-            student_user_id = result.fetchone()[0] if result.rowcount == 0 else user_ids['student'][-1]
             year = random.randint(1, 4)
             status = random.choice(['active', 'active', 'active', 'active', 'inactive'])
             
