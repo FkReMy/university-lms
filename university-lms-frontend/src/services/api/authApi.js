@@ -12,13 +12,36 @@ import axiosInstance, { setAuthToken, clearAuthToken } from './axiosInstance';
 
 const authApi = {
   /**
+   * Register a new user account.
+   * Expects backend to return { accessToken, user } on success.
+   * @param {Object} userData - { username, email, full_name, password }
+   * @returns {Promise<Object>} response data
+   */
+  async register(userData) {
+    const data = await axiosInstance.post('/auth/register', userData);
+    if (data?.accessToken) {
+      setAuthToken(data.accessToken);
+    }
+    return data;
+  },
+
+  /**
    * Log in with supplied user credentials.
    * Expects backend to return { accessToken, user } on success.
    * @param {Object} credentials - { username/email, password }
    * @returns {Promise<Object>} response data
    */
   async login(credentials) {
-    const data = await axiosInstance.post('/auth/login', credentials);
+    // Convert to form data for OAuth2PasswordRequestForm
+    const formData = new URLSearchParams();
+    formData.append('username', credentials.username);
+    formData.append('password', credentials.password);
+    
+    const data = await axiosInstance.post('/auth/login', formData, {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    });
     if (data?.accessToken) {
       setAuthToken(data.accessToken);
     }

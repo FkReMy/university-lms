@@ -18,13 +18,32 @@ from app.schemas.auth import (
     AuthRefreshResponse,
     AuthPasswordChangeRequest,
     AuthPasswordResetRequest,
-    AuthPasswordResetConfirmRequest
+    AuthPasswordResetConfirmRequest,
+    UserInfo
 )
+from app.schemas.user import UserCreate
 from app.services.auth_service import AuthService
 from app.core.auth import get_current_user
 from app.core.database import get_db
 
 router = APIRouter()
+
+@router.post(
+    "/register",
+    response_model=AuthTokenResponse,
+    status_code=status.HTTP_201_CREATED,
+    summary="Register a new user account",
+)
+async def register(
+    user_data: UserCreate,
+    db: Session = Depends(get_db)
+):
+    """
+    Register a new user account and automatically log them in.
+    Returns JWT tokens for the newly created user.
+    """
+    return await AuthService.register(user_data, db)
+
 
 @router.post(
     "/login",
@@ -109,3 +128,29 @@ async def confirm_password_reset(
     """
     await AuthService.confirm_password_reset(confirm_request=reset_data)
     return None
+
+
+@router.get(
+    "/me",
+    summary="Get current authenticated user"
+)
+async def get_current_user_info(
+    current_user=Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Get information about the currently authenticated user.
+    """
+    # Get role name if available
+    role_name = None
+    if current_user.role:
+        role_name = current_user.role.name if hasattr(current_user.role, 'name') else str(current_user.role)
+    
+    return UserInfo(
+        user_id=current_user.user_id,
+        username=current_user.username,
+        email=current_user.email,
+        full_name=current_user.full_name,
+        role=role_name,
+        is_active=current_user.is_active
+    )

@@ -11,6 +11,7 @@
 import { create } from 'zustand';
 
 import { clearAuthToken, getAuthToken, setAuthToken } from '@/services/api/axiosInstance';
+import authApi from '@/services/api/authApi';
 
 // Persistent storage key for localStorage
 const STORAGE_KEY = 'authState';
@@ -93,6 +94,35 @@ export const useAuthStore = create((set, get) => ({
    * Mark the store as starting authentication.
    */
   startAuth: () => set({ loading: true, error: null }),
+
+  /**
+   * Login with username and password.
+   * @param {object} credentials - { username, password, remember }
+   * @returns {Promise<void>}
+   */
+  login: async (credentials) => {
+    const { username, password, remember = true } = credentials;
+    set({ loading: true, error: null });
+    try {
+      // Call the auth API
+      const response = await authApi.login({ username, password });
+      
+      // Extract token and user from response
+      const token = response.accessToken || response.access_token;
+      const user = response.user;
+      
+      if (!token) {
+        throw new Error('No token received from server');
+      }
+      
+      // Use loginSuccess to set the state
+      get().loginSuccess({ user, token }, remember);
+    } catch (error) {
+      const errorMessage = error?.response?.data?.detail || error?.message || 'Login failed';
+      set({ loading: false, error: errorMessage, isAuthenticated: false });
+      throw new Error(errorMessage);
+    }
+  },
 
   /**
    * Set user/token and full state after a successful login (call with real API data).
