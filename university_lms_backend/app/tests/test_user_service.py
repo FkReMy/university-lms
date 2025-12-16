@@ -78,7 +78,7 @@ class TestUserServiceStatusMapping:
             email="test@example.com",
             password="securepassword123",
             full_name="Test User",  # Extra field not in User model
-            phone="1234567890",  # Extra field not in User model
+            phone="1234567890",  # Valid field in User model
             status="active"
         )
         
@@ -97,8 +97,8 @@ class TestUserServiceStatusMapping:
                 # Assert - Verify extra fields are not passed to User model
                 call_kwargs = MockUser.call_args[1]
                 assert 'full_name' not in call_kwargs, "full_name should be filtered out"
-                assert 'phone' not in call_kwargs, "phone should be filtered out"
-                assert 'profile_image_path' not in call_kwargs, "profile_image_path should be filtered out"
+                assert 'phone' in call_kwargs, "phone should be passed through (valid model field)"
+                assert call_kwargs.get('phone') == "1234567890", "phone value should match input"
                 assert 'password' not in call_kwargs, "password should be filtered out (model expects password_hash)"
 
     def test_update_user_maps_active_status_to_true(self, db_session):
@@ -133,8 +133,8 @@ class TestUserServiceStatusMapping:
         user_id = 1
         update_data = UserUpdate(
             username="newusername",
-            full_name="New Name",  # Extra field
-            phone="9876543210",  # Extra field
+            full_name="New Name",  # Extra field that gets split
+            phone="9876543210",  # Valid field in User model
             status="active"
         )
         
@@ -162,9 +162,9 @@ class TestUserServiceStatusMapping:
             
             # Assert - Verify extra fields were not set
             set_field_names = [name for name, _ in setattr_calls]
-            assert 'full_name' not in set_field_names, "full_name should be filtered out"
-            assert 'phone' not in set_field_names, "phone should be filtered out"
-            assert 'status' not in set_field_names, "status should be mapped, not set directly"
+            assert 'full_name' not in set_field_names, "full_name should be split into first_name/last_name"
+            assert 'phone' in set_field_names, "phone should be passed through (valid model field)"
+            assert 'status' not in set_field_names, "status should be mapped to is_active, not set directly"
 
 
 class TestUserSchemaRoleSerialization:
