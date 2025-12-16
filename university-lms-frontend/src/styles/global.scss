@@ -158,7 +158,7 @@ select {
 /* Scrollbar for scrollable regions                                           */
 /* -------------------------------------------------------------------------- */
 .scrollable {
-  @include mixins.custom-scrollbar(#9ca3af, transparent, 8px);
+  @include mixins.custom-scrollbar(#6b7280, transparent, 8px);
 }
 
 /* -------------------------------------------------------------------------- */
