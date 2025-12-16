@@ -32,6 +32,22 @@ class UserService:
     }
 
     @staticmethod
+    def _split_full_name(full_name: Optional[str]) -> tuple[str, str]:
+        """
+        Split full_name into first_name and last_name.
+        If full_name is None or empty, returns empty strings.
+        If only one name is provided, it becomes the first_name.
+        Splits on any whitespace (spaces, tabs, newlines, etc.).
+        """
+        if not full_name or not full_name.strip():
+            return "", ""
+        
+        parts = full_name.strip().split(None, 1)  # None means split on any whitespace, max 2 parts
+        if len(parts) == 1:
+            return parts[0], ""
+        return parts[0], parts[1]
+
+    @staticmethod
     def get_by_id(db: Session, user_id: int) -> Optional[UserSchema]:
         """
         Retrieve a user by their unique identifier.
@@ -60,11 +76,20 @@ class UserService:
         """
         Create and persist a new user record.
         Maps 'status' from the schema to the model's 'is_active' boolean field.
+        Splits 'full_name' into 'first_name' and 'last_name' for the model.
         """
         user_data = user_in.dict()
         # Map schema field 'status' (string) to model field 'is_active' (bool)
         status = user_data.pop("status", "active")
         user_data["is_active"] = (status == "active")
+        
+        # Split full_name into first_name and last_name
+        # full_name is now required by the schema, but we handle None defensively
+        full_name = user_data.pop("full_name", None)
+        first_name, last_name = UserService._split_full_name(full_name)
+        user_data["first_name"] = first_name
+        user_data["last_name"] = last_name
+        
         # Remove any extra keys not present in the model
         # Only keep fields that exist in the User model
         filtered_data = {k: v for k, v in user_data.items() if k in UserService.USER_MODEL_FIELDS}
@@ -83,6 +108,7 @@ class UserService:
         """
         Update an existing user record with provided fields.
         Handles the mapping between 'status' and 'is_active' if present.
+        Splits 'full_name' into 'first_name' and 'last_name' if present.
         """
         user_obj = db.query(User).filter(User.user_id == user_id).first()
         if not user_obj:
@@ -92,6 +118,15 @@ class UserService:
         if "status" in update_data:
             status = update_data.pop("status")
             update_data["is_active"] = (status == "active")
+        
+        # If 'full_name' is present, split into first_name and last_name
+        if "full_name" in update_data:
+            full_name = update_data.pop("full_name")
+            if full_name:
+                first_name, last_name = UserService._split_full_name(full_name)
+                update_data["first_name"] = first_name
+                update_data["last_name"] = last_name
+        
         # Remove any extra unexpected keys for the model
         filtered_data = {k: v for k, v in update_data.items() if k in UserService.USER_MODEL_FIELDS}
         for field, value in filtered_data.items():
