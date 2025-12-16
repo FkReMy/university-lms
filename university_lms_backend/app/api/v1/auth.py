@@ -10,6 +10,7 @@ Handles secure login, logout, password management, and token refresh for Univers
 
 from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
 from fastapi.security import OAuth2PasswordRequestForm
+from sqlalchemy.orm import Session
 from app.schemas.auth import (
     AuthLoginRequest,
     AuthTokenResponse,
@@ -21,6 +22,7 @@ from app.schemas.auth import (
 )
 from app.services.auth_service import AuthService
 from app.core.auth import get_current_user
+from app.core.database import get_db
 
 router = APIRouter()
 
@@ -30,12 +32,13 @@ router = APIRouter()
     summary="Login with username and password",
 )
 async def login(
-    form_data: OAuth2PasswordRequestForm = Depends()
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    db: Session = Depends(get_db)
 ):
     """
     Authenticate a user and obtain JWT tokens.
     """
-    return await AuthService.login(form_data)
+    return await AuthService.login(form_data, db)
 
 @router.post(
     "/refresh",
@@ -71,11 +74,12 @@ async def logout(
 async def change_password(
     password_data: AuthPasswordChangeRequest,
     current_user=Depends(get_current_user),
+    db: Session = Depends(get_db)
 ):
     """
     Change password for the current authenticated user.
     """
-    await AuthService.change_password(user=current_user, change_request=password_data)
+    await AuthService.change_password(user=current_user, change_request=password_data, db=db)
     return None
 
 @router.post(

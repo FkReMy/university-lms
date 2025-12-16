@@ -37,14 +37,14 @@ class User(Base):
     updated_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
 
     # Relationships
-    role = relationship("Role", back_populates="users")
-    student_profile = relationship("Student", back_populates="user", uselist=False)
-    professor_roles = relationship("Professor", back_populates="user", cascade="all, delete-orphan")
-    specialization = relationship("Specialization", back_populates="students")
-    enrollments = relationship("Enrollment", back_populates="student", cascade="all, delete-orphan")
-    grades = relationship("Grade", back_populates="student", cascade="all, delete-orphan")
-    notifications = relationship("Notification", back_populates="user", cascade="all, delete-orphan")
-    uploaded_files = relationship("UploadedFile", back_populates="user", cascade="all, delete-orphan")
+    role = relationship("Role", back_populates="users", lazy='select')
+    student_profile = relationship("Student", back_populates="user", uselist=False, lazy='select')
+    professor_roles = relationship("Professor", back_populates="user", cascade="all, delete-orphan", lazy='select')
+    specialization = relationship("Specialization", back_populates="students", lazy='select')
+    enrollments = relationship("Enrollment", back_populates="student", cascade="all, delete-orphan", lazy='select')
+    grades = relationship("Grade", back_populates="student", cascade="all, delete-orphan", lazy='select')
+    notifications = relationship("Notification", back_populates="user", cascade="all, delete-orphan", lazy='select')
+    uploaded_files = relationship("UploadedFile", back_populates="user", cascade="all, delete-orphan", lazy='select')
 
     @hybrid_property
     def full_name(self):
@@ -52,6 +52,11 @@ class User(Base):
         if self.first_name and self.last_name:
             return f"{self.first_name} {self.last_name}"
         return self.first_name or self.last_name or ""
+
+    @property
+    def is_admin(self):
+        """Check if user has admin role."""
+        return self.role and self.role.name.lower() == "administrator"
 
     def __repr__(self):
         return (

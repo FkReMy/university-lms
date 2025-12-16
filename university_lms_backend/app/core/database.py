@@ -14,6 +14,15 @@ from sqlalchemy.orm import sessionmaker, Session
 from typing import Generator
 from functools import lru_cache
 from app.config import get_settings
+
+# Import all models to ensure relationships are properly configured
+# This must happen before any queries
+try:
+    import app.models.__all_models__  # noqa: F401
+except ImportError:
+    # If the __all_models__ file doesn't exist, fallback to individual imports
+    pass
+
 from app.models.base import Base
 
 @lru_cache(maxsize=1)

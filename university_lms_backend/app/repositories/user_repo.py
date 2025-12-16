@@ -8,6 +8,7 @@ Handles all CRUD, authentication, and query operations on User entities in the L
 """
 
 from sqlalchemy.orm import Session
+from sqlalchemy import select
 from app.models.user import User
 
 class UserRepository:
@@ -21,7 +22,8 @@ class UserRepository:
         username: str,
         email: str,
         password_hash: str,
-        full_name: str = None,
+        first_name: str = "",
+        last_name: str = "",
         is_active: bool = True,
         is_verified: bool = False,
         role_id: int = None
@@ -33,7 +35,8 @@ class UserRepository:
             username=username,
             email=email,
             password_hash=password_hash,
-            full_name=full_name,
+            first_name=first_name,
+            last_name=last_name,
             is_active=is_active,
             is_verified=is_verified,
             role_id=role_id
@@ -48,28 +51,32 @@ class UserRepository:
         """
         Retrieve a user by their primary key.
         """
-        return db.query(User).filter(User.user_id == user_id).first()
+        stmt = select(User).where(User.user_id == user_id)
+        return db.execute(stmt).scalar_one_or_none()
 
     @staticmethod
     def get_by_username(db: Session, username: str):
         """
         Retrieve a user by username (unique).
         """
-        return db.query(User).filter(User.username == username).first()
+        stmt = select(User).where(User.username == username)
+        return db.execute(stmt).scalar_one_or_none()
 
     @staticmethod
     def get_by_email(db: Session, email: str):
         """
         Retrieve a user by email address (unique).
         """
-        return db.query(User).filter(User.email == email).first()
+        stmt = select(User).where(User.email == email)
+        return db.execute(stmt).scalar_one_or_none()
 
     @staticmethod
     def list_all(db: Session):
         """
         List all users in the LMS.
         """
-        return db.query(User).all()
+        stmt = select(User)
+        return db.execute(stmt).scalars().all()
 
     @staticmethod
     def authenticate(db: Session, username: str, password_hash: str):
@@ -77,18 +84,20 @@ class UserRepository:
         Authenticate a user by username and password hash.
         (NOTE: Password validation and hashing is handled at the service layer.)
         """
-        return db.query(User).filter(
+        stmt = select(User).where(
             User.username == username,
             User.password_hash == password_hash,
             User.is_active == True
-        ).first()
+        )
+        return db.execute(stmt).scalar_one_or_none()
 
     @staticmethod
     def update(db: Session, user_id: int, **kwargs):
         """
         Update user fields with provided values.
         """
-        user = db.query(User).filter(User.user_id == user_id).first()
+        stmt = select(User).where(User.user_id == user_id)
+        user = db.execute(stmt).scalar_one_or_none()
         if not user:
             return None
         for key, value in kwargs.items():
@@ -102,7 +111,8 @@ class UserRepository:
         """
         Delete a user by primary key.
         """
-        user = db.query(User).filter(User.user_id == user_id).first()
+        stmt = select(User).where(User.user_id == user_id)
+        user = db.execute(stmt).scalar_one_or_none()
         if not user:
             return False
         db.delete(user)
