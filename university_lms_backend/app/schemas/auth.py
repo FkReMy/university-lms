@@ -18,14 +18,30 @@ class AuthLoginRequest(BaseModel):
     password: str = Field(..., description="User password")
 
 
+class UserInfo(BaseModel):
+    """Minimal user information returned with auth tokens"""
+    user_id: int = Field(..., description="User ID")
+    username: str = Field(..., description="Username")
+    email: str = Field(..., description="Email address")
+    full_name: str = Field(..., description="User's full name")
+    role: Optional[str] = Field(None, description="User role name")
+    is_active: bool = Field(True, description="Whether user is active")
+
+    model_config = {
+        "from_attributes": True
+    }
+
+
 class AuthTokenResponse(BaseModel):
     """Schema for successful authentication response with tokens"""
-    access_token: str = Field(..., description="JWT access token")
-    refresh_token: Optional[str] = Field(None, description="JWT refresh token")
-    token_type: str = Field(default="bearer", description="Token type")
-    user_id: Optional[int] = Field(None, description="Authenticated user ID")
-    username: Optional[str] = Field(None, description="Authenticated username")
-    role: Optional[str] = Field(None, description="User role")
+    access_token: str = Field(..., description="JWT access token", alias="accessToken")
+    refresh_token: Optional[str] = Field(None, description="JWT refresh token", alias="refreshToken")
+    token_type: str = Field(default="bearer", description="Token type", alias="tokenType")
+    user: Optional[UserInfo] = Field(None, description="Authenticated user information")
+
+    model_config = {
+        "populate_by_name": True
+    }
 
 
 class AuthRefreshRequest(BaseModel):

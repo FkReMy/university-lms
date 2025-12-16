@@ -24,6 +24,7 @@ class UserRepository:
         password_hash: str,
         first_name: str = "",
         last_name: str = "",
+        phone: str = None,
         is_active: bool = True,
         is_verified: bool = False,
         role_id: int = None
@@ -37,6 +38,7 @@ class UserRepository:
             password_hash=password_hash,
             first_name=first_name,
             last_name=last_name,
+            phone=phone,
             is_active=is_active,
             is_verified=is_verified,
             role_id=role_id

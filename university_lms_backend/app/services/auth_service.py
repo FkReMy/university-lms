@@ -80,10 +80,118 @@ class AuthService:
             expires_delta=refresh_token_expires
         )
         
+        # Get role name if available
+        role_name = None
+        if user.role:
+            role_name = user.role.name if hasattr(user.role, 'name') else str(user.role)
+        
+        # Import UserInfo schema
+        from app.schemas.auth import UserInfo
+        
+        # Create user info
+        user_info = UserInfo(
+            user_id=user.user_id,
+            username=user.username,
+            email=user.email,
+            full_name=user.full_name,
+            role=role_name,
+            is_active=user.is_active
+        )
+        
         return AuthTokenResponse(
             access_token=access_token,
             refresh_token=refresh_token,
-            token_type="bearer"
+            token_type="bearer",
+            user=user_info
+        )
+
+    @staticmethod
+    async def register(user_data, db: Session) -> AuthTokenResponse:
+        """
+        Register a new user and return JWT tokens for automatic login.
+        """
+        from app.schemas.user import UserCreate
+        from app.schemas.auth import UserInfo
+        
+        # Check if username already exists
+        existing_user = UserRepository.get_by_username(db, user_data.username)
+        if existing_user:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Username already registered"
+            )
+        
+        # Check if email already exists
+        existing_email = UserRepository.get_by_email(db, user_data.email)
+        if existing_email:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Email already registered"
+            )
+        
+        # Split full_name into first_name and last_name
+        full_name = user_data.full_name.strip()
+        name_parts = full_name.split(None, 1)  # Split on first whitespace
+        first_name = name_parts[0] if name_parts else full_name
+        last_name = name_parts[1] if len(name_parts) > 1 else ""
+        
+        # Hash the password
+        password_hash = get_password_hash(user_data.password)
+        
+        # Create the user with default "Student" role
+        # First, get the Student role ID
+        from app.repositories.role_repo import RoleRepository
+        student_role = RoleRepository.get_by_name(db, "Student")
+        role_id = student_role.role_id if student_role else None
+        
+        # Create user
+        new_user = UserRepository.create(
+            db,
+            username=user_data.username,
+            email=user_data.email,
+            password_hash=password_hash,
+            first_name=first_name,
+            last_name=last_name,
+            phone=user_data.phone,
+            is_active=True,
+            is_verified=False,
+            role_id=role_id
+        )
+        
+        # Create access token
+        access_token_expires = timedelta(minutes=settings.JWT_ACCESS_TOKEN_EXPIRES_MINUTES)
+        access_token = create_access_token(
+            data={"sub": str(new_user.user_id)},
+            expires_delta=access_token_expires
+        )
+        
+        # Create refresh token
+        refresh_token_expires = timedelta(minutes=settings.JWT_REFRESH_TOKEN_EXPIRES_MINUTES)
+        refresh_token = create_access_token(
+            data={"sub": str(new_user.user_id), "type": "refresh"},
+            expires_delta=refresh_token_expires
+        )
+        
+        # Get role name
+        role_name = None
+        if new_user.role:
+            role_name = new_user.role.name if hasattr(new_user.role, 'name') else str(new_user.role)
+        
+        # Create user info
+        user_info = UserInfo(
+            user_id=new_user.user_id,
+            username=new_user.username,
+            email=new_user.email,
+            full_name=new_user.full_name,
+            role=role_name,
+            is_active=new_user.is_active
+        )
+        
+        return AuthTokenResponse(
+            access_token=access_token,
+            refresh_token=refresh_token,
+            token_type="bearer",
+            user=user_info
         )
 
     @staticmethod
