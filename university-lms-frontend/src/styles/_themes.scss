@@ -1,3 +1,4 @@
+@use 'sass:map';
 @use './variables' as *;
 
 /*
@@ -24,17 +25,30 @@
   --primary-soft: #{$color-primary-soft};
   --primary-strong: #{$color-primary-strong};
 
+  --secondary: #{$color-secondary};
+  --secondary-soft: #{$color-secondary-soft};
+
+  --accent: #{$color-accent};
+  --accent-soft: #{$color-accent-soft};
+
   --success: #{$color-success};
+  --success-soft: #{$color-success-soft};
   --warning: #{$color-warning};
+  --warning-soft: #{$color-warning-soft};
   --danger: #{$color-danger};
+  --danger-soft: #{$color-danger-soft};
   --info: #{$color-info};
+  --info-soft: #{$color-info-soft};
 
   --bg-muted: #{$color-bg-muted};
   --bg-subtle: #{$color-bg-subtle};
 
+  --shadow-xs: #{$shadow-xs};
   --shadow-sm: #{$shadow-sm};
   --shadow-md: #{$shadow-md};
   --shadow-lg: #{$shadow-lg};
+  --shadow-xl: #{$shadow-xl};
+  --shadow-inner: #{$shadow-inner};
 
   --radius-sm: #{$radius-sm};
   --radius-md: #{$radius-md};
@@ -59,19 +73,32 @@
   --primary-soft: #{$color-primary-soft-dark};
   --primary-strong: #{$color-primary-dark};
 
-  --success: #{$color-success};
-  --warning: #{$color-warning};
-  --danger: #{$color-danger};
-  --info: #{$color-info};
+  --secondary: #{map.get($colors-dark, secondary)};
+  --secondary-soft: #{map.get($colors-dark, secondary-soft)};
+
+  --accent: #{map.get($colors-dark, accent)};
+  --accent-soft: #{map.get($colors-dark, accent-soft)};
+
+  --success: #{map.get($colors-dark, success)};
+  --success-soft: #{map.get($colors-dark, success-soft)};
+  --warning: #{map.get($colors-dark, warning)};
+  --warning-soft: #{map.get($colors-dark, warning-soft)};
+  --danger: #{map.get($colors-dark, danger)};
+  --danger-soft: #{map.get($colors-dark, danger-soft)};
+  --info: #{map.get($colors-dark, info)};
+  --info-soft: #{map.get($colors-dark, info-soft)};
 
   /* Slight translucency for layered dark surfaces */
   --bg-muted: rgba(255, 255, 255, 0.04);
   --bg-subtle: rgba(255, 255, 255, 0.02);
 
   /* Heavier shadows improve contrast on dark backgrounds */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.45);
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.35), 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.45), 0 4px 6px -2px rgba(0, 0, 0, 0.4);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.45);
+  --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.4);
 
   --radius-sm: #{$radius-sm};
   --radius-md: #{$radius-md};
