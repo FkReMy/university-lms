@@ -45,7 +45,7 @@ class Settings(BaseSettings):
 
     # Allowed CORS origins
     CORS_ORIGINS: str = "*"
-    ALLOWED_ORIGINS: str = "http://localhost:5173,http://localhost:3000"
+    ALLOWED_ORIGINS: str = "http://localhost:5173,http://localhost:5000,http://localhost:3000"
     ALLOWED_METHODS: str = "GET,POST,PUT,PATCH,DELETE,OPTIONS"
     ALLOWED_HEADERS: str = "Authorization,Content-Type"
 
