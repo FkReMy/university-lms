@@ -36,43 +36,45 @@
 }
 
 .departmentsPage__search {
-  border-radius: 0.7em;
-  border: 1.45px solid #d1d5db;
+  border-radius: 0.75em;
+  border: 2px solid #e2e8f0;
   background: #fff;
-  padding: 0.8em 1.05em;
+  padding: 0.75em 1em;
   font-size: 1em;
   min-width: 14em;
   font-weight: 500;
-  color: #233151;
-  transition: border-color 0.13s, box-shadow 0.13s;
+  color: #1e293b;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   outline: none;
   &:focus {
-    border-color: #2563eb;
-    background: #eaf3ff;
-    box-shadow: 0 1.2px 15px #2563eb16;
+    border-color: #4f46e5;
+    background: #f8fafc;
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.12);
+    transform: translateY(-1px);
   }
 }
 
 .departmentsPage__schoolSelect {
-  border-radius: 0.7em;
-  border: 1.45px solid #d1d5db;
+  border-radius: 0.75em;
+  border: 2px solid #e2e8f0;
   background: #fff;
-  padding: 0.8em 1.35em 0.8em 0.8em;
+  padding: 0.75em 1.35em 0.75em 0.85em;
   font-size: 1em;
-  color: #2563eb;
+  color: #4f46e5;
   font-weight: 600;
   min-width: 11em;
   outline: none;
-  transition: border-color 0.13s, box-shadow 0.13s;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   &:focus {
-    border-color: #2563eb;
-    background: #eaf3ff;
+    border-color: #4f46e5;
+    background: #f8fafc;
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.12);
   }
 }
 
 .departmentsPage__addBtn {
   border-radius: 0.75em;
-  background: #2563eb;
+  background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
   color: #fff;
   font-weight: 700;
   font-size: 1.07em;
