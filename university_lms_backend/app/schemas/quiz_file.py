@@ -54,6 +54,12 @@ class QuizFile(QuizFileInDBBase):
     """
     pass
 
+class QuizFileResponse(QuizFileInDBBase):
+    """
+    Response schema returned by API endpoints.
+    """
+    pass
+
 class QuizFileInDB(QuizFileInDBBase):
     """
     Internal DB schema for quiz file records.

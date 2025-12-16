@@ -22,18 +22,20 @@ class Settings(BaseSettings):
     VERSION: str = Field("1.0.0", description="Release version")
 
     # Database
-    POSTGRES_DB: str
-    POSTGRES_USER: str
-    POSTGRES_PASSWORD: str
-    POSTGRES_HOST: str = "db"
+    POSTGRES_DB: str = "lms"
+    POSTGRES_USER: str = "lms_user"
+    POSTGRES_PASSWORD: str = "changeme"
+    POSTGRES_HOST: str = "localhost"
     POSTGRES_PORT: int = 5432
-    DATABASE_URL: str
+    DATABASE_URL: str = "sqlite:///./test.db"
 
     # JWT/Auth
-    JWT_SECRET_KEY: str
+    JWT_SECRET_KEY: str = "INSECURE_DEV_SECRET_CHANGE_IN_PRODUCTION"
+    SECRET_KEY: Optional[str] = None  # Alias for JWT_SECRET_KEY
     JWT_ACCESS_TOKEN_EXPIRES_MINUTES: int = 30
     JWT_REFRESH_TOKEN_EXPIRES_MINUTES: int = 43200
     JWT_ALGORITHM: str = "HS256"
+    ALGORITHM: str = "HS256"  # Alias for JWT_ALGORITHM
 
     # Argon2 Password Hasher settings
     ARGON2_TIME_COST: int = 3
@@ -46,17 +48,17 @@ class Settings(BaseSettings):
     ALLOWED_UPLOAD_MIME_TYPES: str = "pdf,docx,zip,txt,png,jpg"
 
     # Email (notifications, password reset)
-    EMAIL_HOST: str
-    EMAIL_PORT: int
-    EMAIL_HOST_USER: str
-    EMAIL_HOST_PASSWORD: str
-    EMAIL_FROM: str
+    EMAIL_HOST: str = "localhost"
+    EMAIL_PORT: int = 587
+    EMAIL_HOST_USER: str = ""
+    EMAIL_HOST_PASSWORD: str = ""
+    EMAIL_FROM: str = "noreply@example.com"
     EMAIL_TLS: bool = True
 
     # Redis (for caching/future features)
-    REDIS_HOST: str = "redis"
+    REDIS_HOST: str = "localhost"
     REDIS_PORT: int = 6379
-    REDIS_URL: str = "redis://redis:6379/0"
+    REDIS_URL: str = "redis://localhost:6379/0"
 
     # Security / CORS
     ALLOWED_ORIGINS: Union[str, List[str]] = "http://localhost:5173"
@@ -75,6 +77,12 @@ class Settings(BaseSettings):
         "env_file": ".env",
         "case_sensitive": True
     }
+    
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        # Set aliases
+        if not self.SECRET_KEY:
+            self.SECRET_KEY = self.JWT_SECRET_KEY
 
     @field_validator("ALLOWED_ORIGINS", mode="before")
     @classmethod

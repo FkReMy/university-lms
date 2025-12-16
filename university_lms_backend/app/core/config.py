@@ -15,48 +15,62 @@ import os
 from functools import lru_cache
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import Field
+from typing import Optional
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
-        extra="ignore"
+        extra="ignore",
+        case_sensitive=True
     )
     
     # App metadata
-    PROJECT_NAME: str = Field(default="University LMS")
-    VERSION: str = Field(default="1.0.0")
+    PROJECT_NAME: str = "University LMS"
+    VERSION: str = "1.0.0"
     
     # Security & JWT config
-    SECRET_KEY: str = Field(default="INSECURE_DEV_SECRET_CHANGE_IN_PRODUCTION")
-    ALGORITHM: str = Field(default="HS256", alias="JWT_ALGORITHM")
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = Field(default=60)
-    REFRESH_TOKEN_EXPIRE_MINUTES: int = Field(default=60 * 24 * 7)  # 1 week
+    SECRET_KEY: str = "INSECURE_DEV_SECRET_CHANGE_IN_PRODUCTION"
+    JWT_SECRET_KEY: Optional[str] = None  # Alias for SECRET_KEY
+    ALGORITHM: str = "HS256"
+    JWT_ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
+    JWT_ACCESS_TOKEN_EXPIRES_MINUTES: int = 60
+    REFRESH_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7  # 1 week
+    JWT_REFRESH_TOKEN_EXPIRES_MINUTES: int = 60 * 24 * 7
 
     # Database config
-    SQLALCHEMY_DATABASE_URI: str = Field(
-        default="sqlite:///./test.db",
-        alias="DATABASE_URL"
-    )
+    DATABASE_URL: str = "sqlite:///./test.db"
+    SQLALCHEMY_DATABASE_URI: Optional[str] = None  # Will use DATABASE_URL if not set
 
     # Allowed CORS origins
-    CORS_ORIGINS: str = Field(default="*")
-    ALLOWED_ORIGINS: str = Field(default="http://localhost:5173,http://localhost:3000")
-    ALLOWED_METHODS: str = Field(default="GET,POST,PUT,PATCH,DELETE,OPTIONS")
-    ALLOWED_HEADERS: str = Field(default="Authorization,Content-Type")
+    CORS_ORIGINS: str = "*"
+    ALLOWED_ORIGINS: str = "http://localhost:5173,http://localhost:3000"
+    ALLOWED_METHODS: str = "GET,POST,PUT,PATCH,DELETE,OPTIONS"
+    ALLOWED_HEADERS: str = "Authorization,Content-Type"
 
     # File upload limits, in bytes
-    MAX_UPLOAD_SIZE: int = Field(default=10485760)  # 10MB
+    MAX_UPLOAD_SIZE: int = 10485760  # 10MB
 
-    # Email/SMS notification (example keys, expand as needed)
-    EMAIL_FROM: str = Field(default="noreply@example.com")
-    EMAIL_SERVER: str = Field(default="localhost")
-    EMAIL_PORT: int = Field(default=587)
-    EMAIL_USERNAME: str = Field(default="")
-    EMAIL_PASSWORD: str = Field(default="")
+    # Email/SMS notification settings
+    EMAIL_HOST: str = "localhost"
+    EMAIL_PORT: int = 587
+    EMAIL_HOST_USER: str = ""
+    EMAIL_HOST_PASSWORD: str = ""
+    EMAIL_FROM: str = "noreply@example.com"
+    EMAIL_TLS: bool = True
 
     # Environment marker for audit/tracing
-    ENVIRONMENT: str = Field(default="production")
+    ENVIRONMENT: str = "production"
+    
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        # Set SQLALCHEMY_DATABASE_URI from DATABASE_URL if not set
+        if not self.SQLALCHEMY_DATABASE_URI:
+            self.SQLALCHEMY_DATABASE_URI = self.DATABASE_URL
+        # Use JWT_SECRET_KEY if SECRET_KEY not explicitly set
+        if self.JWT_SECRET_KEY and self.SECRET_KEY == "INSECURE_DEV_SECRET_CHANGE_IN_PRODUCTION":
+            self.SECRET_KEY = self.JWT_SECRET_KEY
 
 # Singleton instance holder for the whole project
 @lru_cache()

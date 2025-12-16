@@ -54,6 +54,12 @@ class AssignmentFile(AssignmentFileInDBBase):
     """
     pass
 
+class AssignmentFileResponse(AssignmentFileInDBBase):
+    """
+    Response schema returned by API endpoints.
+    """
+    pass
+
 class AssignmentFileInDB(AssignmentFileInDBBase):
     """
     Schema for returning assignment files internally from DB operations.

@@ -58,6 +58,12 @@ class QuizAttempt(QuizAttemptInDBBase):
     """
     pass
 
+class QuizAttemptResponse(QuizAttemptInDBBase):
+    """
+    Response schema returned by API endpoints.
+    """
+    pass
+
 class QuizAttemptInDB(QuizAttemptInDBBase):
     """
     Internal DB schema for quiz attempt records.

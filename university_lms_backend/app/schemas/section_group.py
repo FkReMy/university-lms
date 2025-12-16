@@ -54,6 +54,12 @@ class SectionGroup(SectionGroupInDBBase):
     """
     pass
 
+class SectionGroupResponse(SectionGroupInDBBase):
+    """
+    Response schema returned by API endpoints.
+    """
+    pass
+
 class SectionGroupInDB(SectionGroupInDBBase):
     """
     Internal DB schema for section group records.

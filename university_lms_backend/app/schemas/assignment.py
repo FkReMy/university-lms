@@ -56,6 +56,12 @@ class Assignment(AssignmentInDBBase):
     """
     pass
 
+class AssignmentResponse(AssignmentInDBBase):
+    """
+    Response schema returned by API endpoints.
+    """
+    pass
+
 class AssignmentInDB(AssignmentInDBBase):
     """
     Schema for returning assignment records from DB.

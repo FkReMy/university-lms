@@ -50,6 +50,12 @@ class StudentSectionAssignment(StudentSectionAssignmentInDBBase):
     """
     pass
 
+class StudentSectionAssignmentResponse(StudentSectionAssignmentInDBBase):
+    """
+    Response schema returned by API endpoints.
+    """
+    pass
+
 class StudentSectionAssignmentInDB(StudentSectionAssignmentInDBBase):
     """
     Internal DB schema for student section assignment records.
