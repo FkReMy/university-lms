@@ -1,149 +1,224 @@
-// RegisterPage.module.scss
-// ----------------------------------------------------------------------------
-// Styles for the LMS user registration page, unified with the design system.
-// Keep consistent spacing, color, and component classes for production LMS UX.
-
 .registerPage {
   display: flex;
   flex-direction: column;
   align-items: center;
   min-height: 100vh;
   justify-content: center;
-  background: #fafbfc;
+  background: linear-gradient(135deg, #f7f9fc 0%, #e0e7ff 50%, #ddd6fe 100%);
+  padding: 2rem 1rem;
+  position: relative;
+  overflow: hidden;
+
+  // Decorative background elements
+  &::before {
+    content: '';
+    position: absolute;
+    top: -15%;
+    right: -10%;
+    width: 550px;
+    height: 550px;
+    background: radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: floatDecoration 22s ease-in-out infinite;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -15%;
+    left: -10%;
+    width: 450px;
+    height: 450px;
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: floatDecoration 28s ease-in-out infinite reverse;
+  }
 
   &__box {
     background: #fff;
-    border-radius: 1.25rem;
-    box-shadow: 0 4px 32px 0 rgba(44, 62, 80, 0.10);
-    padding: 2.5rem 2.25rem 2rem 2.25rem;
+    border-radius: 1.5rem;
+    box-shadow: 0 8px 40px rgba(99, 102, 241, 0.2);
+    border: 1px solid rgba(99, 102, 241, 0.1);
+    padding: 2.5rem 2rem;
     width: 100%;
-    max-width: 410px;
+    max-width: 460px;
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    margin-top: 2rem;
+    position: relative;
+    z-index: 1;
+    backdrop-filter: blur(10px);
+    animation: slideUpFade 0.5s ease-out;
   }
 
   &__title {
-    font-size: 2rem;
-    font-weight: 700;
+    font-size: 1.875rem;
+    font-weight: 800;
     margin-bottom: 1.5rem;
-    color: #233150;
+    color: #0f172a;
     text-align: center;
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 
   &__form {
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
-    margin-bottom: 1.5rem;
+    gap: 1.125rem;
+    margin-bottom: 1.25rem;
   }
 
   &__label {
-    font-size: 1rem;
-    color: #355173;
-    font-weight: 500;
-    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+    color: #475569;
+    font-weight: 600;
+    margin-bottom: 0;
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+    letter-spacing: -0.01em;
   }
 
   &__input {
     font-size: 1rem;
-    padding: 0.65rem 0.85rem;
-    border: 1px solid #d2d9e4;
-    border-radius: 0.33rem;
-    transition: border .2s;
-    background: #f7fafd;
-    color: #263047;
+    padding: 0.875rem 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 0.75rem;
+    transition: all 0.2s ease;
+    background: #f8fafc;
+    color: #0f172a;
+    font-weight: 500;
 
     &:focus {
-      border-color: #2563eb;
+      border-color: #6366f1;
       outline: none;
       background: #fff;
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+      box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+      transform: translateY(-1px);
     }
 
     &:disabled {
-      background: #ebedf0;
-      color: #9a9eaf;
+      background: #f1f5f9;
+      color: #94a3b8;
       cursor: not-allowed;
+    }
+
+    &::placeholder {
+      color: #94a3b8;
     }
   }
 
   &__submit {
-    margin-top: 0.35rem;
-    padding: 0.85rem 0;
-    font-size: 1.12rem;
-    font-weight: 600;
-    border-radius: 0.4rem;
-    background: linear-gradient(135deg, #2563eb 0%, #1e3a8a 100%);
+    margin-top: 0.75rem;
+    padding: 1rem 0;
+    font-size: 1rem;
+    font-weight: 700;
+    border-radius: 0.75rem;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
     color: #fff;
     border: none;
-    letter-spacing: 0.02em;
     cursor: pointer;
-    transition: all .2s ease;
-    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2);
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
 
     &:hover:not(:disabled) {
-      background: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 100%);
-      box-shadow: 0 4px 12px rgba(30, 58, 138, 0.3);
+      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+      box-shadow: 0 8px 30px rgba(99, 102, 241, 0.4);
+      transform: translateY(-2px);
     }
+    
+    &:active:not(:disabled) {
+      transform: translateY(0);
+    }
+    
     &:disabled {
-      opacity: 0.6;
-      cursor: progress;
+      background: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%);
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
     }
   }
 
   &__errorMsg {
-    background: #fee2e2;
-    color: #991b1b;
-    border-radius: 0.33rem;
-    padding: 0.7rem 1rem;
-    margin: 0.5rem 0 0.5rem 0;
-    font-size: 1rem;
-    border-left: 3px solid #ef4444;
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    color: #dc2626;
+    border-radius: 0.75rem;
+    padding: 0.75rem 1rem;
+    margin: 0;
+    font-size: 0.875rem;
+    font-weight: 600;
+    border-left: 4px solid #ef4444;
   }
 
   &__successMsg {
-    background: #ecfdf5;
-    color: #065f46;
-    border-radius: 0.33rem;
-    padding: 0.7rem 1rem;
-    margin: 0.5rem 0 0.5rem 0;
-    font-size: 1rem;
-    border-left: 3px solid #22c55e;
+    background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+    color: #059669;
+    border-radius: 0.75rem;
+    padding: 0.75rem 1rem;
+    margin: 0;
+    font-size: 0.875rem;
+    font-weight: 600;
+    border-left: 4px solid #10b981;
   }
 
   &__footer {
     width: 100%;
     text-align: center;
-    color: #7e869e;
-    font-size: 1rem;
-    margin-top: 0.35rem;
+    color: #64748b;
+    font-size: 0.875rem;
+    margin-top: 0.75rem;
+    
     a {
-      color: #2563eb;
+      color: #6366f1;
       text-decoration: none;
       font-weight: 600;
+      transition: all 0.2s ease;
+      
       &:hover {
         text-decoration: underline;
-        color: #1e3a8a;
+        color: #4f46e5;
       }
     }
   }
 
   &__link {
-    color: #2563eb;
+    color: #6366f1;
     background: none;
     border: none;
     padding: 0;
     margin: 0;
     cursor: pointer;
-    font-size: 1em;
-    text-decoration: underline;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    
     &:hover {
-      color: #1e3a8a;
+      color: #4f46e5;
+      text-decoration: underline;
     }
+  }
+}
+
+@keyframes floatDecoration {
+  0%, 100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(20px, -20px);
+  }
+}
+
+@keyframes slideUpFade {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
